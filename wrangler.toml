@@ -1,0 +1,16 @@
+name = "modelobservatory"
+main = "src/worker.ts"
+compatibility_date = "2025-06-01"
+keep_vars = true
+
+assets = { directory = "dist", binding = "ASSETS" }
+
+[dev]
+port = 8788
+
+[observability]
+enabled = true
+
+[[kv_namespaces]]
+binding = "METRICS"
+id = "2da8406333284ec79307b7b75034fec7"

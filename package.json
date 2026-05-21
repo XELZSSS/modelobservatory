@@ -1,0 +1,45 @@
+{
+  "name": "modelobservatory",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"wrangler dev --port 8788\"",
+    "dev:ui": "vite",
+    "type-check": "tsc --noEmit",
+    "build": "vite build && wrangler deploy --dry-run --outdir=dist/worker",
+    "deploy": "vite build && wrangler deploy",
+    "preview": "vite build && wrangler dev",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.100.10",
+    "fast-xml-parser": "^5.8.0",
+    "hono": "^4.12.21",
+    "lucide-react": "^1.16.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "react-router-dom": "^7.15.1",
+    "recharts": "^3.8.1",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250610.0",
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.0",
+    "@types/node": "^25.8.0",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "concurrently": "^10.0.3",
+    "eslint": "^10.4.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.3",
+    "vite": "^8.0.13",
+    "wrangler": "^4.20.0"
+  }
+}
