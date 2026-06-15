@@ -50,8 +50,8 @@ export async function apiFetch<T>(path: string, opts?: FetchOptions): Promise<T>
         const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
         throw new Error(body?.error?.message || `HTTP ${res.status}: ${res.statusText}`);
       }
-      const json = (await res.json()) as { data?: T };
-      return (json?.data ?? json) as T;
+      const json = (await res.json()) as { data: T };
+      return json.data;
     } catch (e) {
       if (opts?.signal && isAbortError(e)) throw e;
       if (isTimeoutError(e)) throw e;

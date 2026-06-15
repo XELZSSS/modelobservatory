@@ -24,13 +24,10 @@ const TAB_IDS = ["modelRankings", "openRouterRankings", "openSourceRankings", "h
 function RankingsContent({ defaultTab }: { defaultTab: number }) {
   const { t } = useTranslation();
   const [activeTabId, setActiveTabId] = useState(() => TAB_IDS[defaultTab] ?? TAB_IDS[0]);
-  const { data: artificialData } = useSuspenseArtificialRankings();
-  const hallucinationQ = useHallucinationRankings(artificialData, activeTabId === "hallucinationRankings");
+  const { data: artificialRankings } = useSuspenseArtificialRankings();
+  const hallucinationRankings = useHallucinationRankings(artificialRankings, activeTabId === "hallucinationRankings");
   const openSourceQ = useOpenSourceModels(activeTabId === "openSourceRankings");
   const orQ = useOpenRouterRankings(activeTabId === "openRouterRankings");
-
-  const artificialRankings = artificialData;
-  const hallucinationRankings = hallucinationQ;
 
   const tabs: TabItem[] = useMemo(
     () => [

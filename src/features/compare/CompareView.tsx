@@ -1,11 +1,12 @@
 import { memo, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Gamepad2, TrendingUp, TrendingDown, Trash2 } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, Tooltip } from "recharts";
 import { Button } from "../../shared/components/ui/button";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { BackButton } from "../../shared/components/composite/BackButton";
+import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
 import { secondaryTextClass, numberTextClass, chartTooltipStyle, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import type { TFunction } from "../../shared/i18n";
@@ -13,7 +14,7 @@ import { useCompareStore } from "../../shared/stores/compareStore";
 import { buildCompareMetrics, buildRadarData } from "../../shared/utils/compareMetrics";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
 import { getModelColor } from "../../shared/components/rankColor";
-import { useArtificialRankings } from "../../shared/hooks/useQueries";
+import { useCompareModels } from "../../shared/hooks/useCompareModels";
 import { modelId } from "../../shared/utils/modelId";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { CompareMetric } from "../../shared/utils/compareMetrics";
@@ -25,10 +26,6 @@ function getWinnerStatus(value: number | null | undefined, metric: CompareMetric
   if (values.length === 0) return null;
   const best = metric.higherIsBetter === false ? Math.min(...values) : Math.max(...values);
   const worst = metric.higherIsBetter === false ? Math.max(...values) : Math.min(...values);
-  // Use tolerance comparison: best/worst come from Math.min/max over possibly-computed
-  // floats (e.g. intelligence/blended), and `value` may be the same computation rendered
-  // with ULP drift, so strict === misses legitimate ties. Check best first so that when
-  // all values are (nearly) equal, the row is flagged as a win rather than a loss.
   if (approxEq(value, best)) return "win";
   if (approxEq(value, worst)) return "loss";
   return null;
@@ -140,14 +137,9 @@ const MetricTable = memo(function MetricTable({ metrics, models, t }: { metrics:
 export function CompareView() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const compareIds = useCompareStore((s) => s.compareIds);
   const removeCompareModel = useCompareStore((s) => s.removeCompareModel);
   const clearCompare = useCompareStore((s) => s.clearCompare);
-  const rankingsQ = useArtificialRankings();
-  const models = useMemo(() => {
-    if (!rankingsQ.data) return [];
-    return compareIds.map((id) => rankingsQ.data!.find((m) => modelId(m) === id)).filter((m): m is ArtificialAnalysisModel => !!m);
-  }, [compareIds, rankingsQ.data]);
+  const models = useCompareModels();
   const [radarRef, radarWidth] = useElementWidth();
   const radarSize = Math.max(100, Math.min(radarWidth - 16, 500));
 
@@ -171,33 +163,16 @@ export function CompareView() {
       <SectionHeader title={t("modelComparison")} />
       <p className={secondaryTextClass}>{t("artificialSource")}</p>
 
-      <div className="flex flex-wrap gap-2 items-center justify-between">
-        <div className="flex flex-wrap gap-2 items-center">
-          {models.map((model) => (
-            <span key={modelId(model)} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-bg-tertiary border border-border">
-              <span className="text-sm font-medium truncate max-w-[120px]">{model.short_name || model.name}</span>
-              <Button variant="ghost" size="icon" onClick={() => removeCompareModel(model)} className="shrink-0" aria-label={`${t("remove")} ${model.short_name || model.name}`}>
-                <X size={14} />
-              </Button>
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => navigate("/models")}>
-            <Gamepad2 size={14} /> {t("addModel")}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              clearCompare();
-              navigate("/models");
-            }}
-          >
-            <Trash2 size={14} /> {t("clear")}
-          </Button>
-        </div>
-      </div>
+      <CompareChipBar
+        models={models}
+        onRemove={removeCompareModel}
+        onAdd={() => navigate("/models")}
+        onClear={() => {
+          clearCompare();
+          navigate("/models");
+        }}
+        addLabel={t("addModel")}
+      />
 
       <Card className="p-4">
         <div className="flex flex-col md:flex-row gap-4 md:items-stretch">

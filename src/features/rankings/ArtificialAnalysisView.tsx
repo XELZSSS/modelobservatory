@@ -10,12 +10,13 @@ import { FilterChip } from "../../shared/components/composite/TabButton";
 import { Input } from "../../shared/components/ui/input";
 import { MAX_COMPARE_MODELS } from "../../shared/constants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useSearchStore } from "../../shared/stores/searchStore";
+import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useCompareStore } from "../../shared/stores/compareStore";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { calcModelCost } from "../../shared/utils/costCalc";
 import { modelId } from "../../shared/utils/modelId";
+import { formatDollar } from "../../shared/utils/format";
 
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { buildRankingColumns, buildPricingColumns, ModelExpandedDetail } from "./aaColumns";
@@ -29,10 +30,11 @@ function isReasoningModel(model: ArtificialAnalysisModel) {
   return REASONING_KEYWORDS.test(model.name) || REASONING_PREFIXES.test(model.name);
 }
 
+const getSearchFields = (m: ArtificialAnalysisModel) => [m.name, m.slug, m.model_creators?.name || ""];
+
 export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnalysisModel[] }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const searchTerm = useSearchStore((s) => s.searchTerm);
   const compareIds = useCompareStore((s) => s.compareIds);
   const toggleCompareModel = useCompareStore((s) => s.toggleCompareModel);
   const clearCompare = useCompareStore((s) => s.clearCompare);
@@ -55,19 +57,20 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
     [compareIds],
   );
 
-  const filteredRankings = useMemo(() => {
-    const valid = rankings.filter((model) => {
+  const validModels = useMemo(() => {
+    return rankings.filter((model) => {
       if (viewMode === "rankings") return typeof model.intelligence_index === "number" && Number.isFinite(model.intelligence_index);
       return model.pricing?.input != null || model.pricing?.output != null || model.pricing?.cache_hit != null || model.pricing?.blended?.["7_2_1"] != null;
     });
-    let filtered = valid;
-    if (reasoningFilter === "reasoning") filtered = valid.filter(isReasoningModel);
-    else if (reasoningFilter === "non-reasoning") filtered = valid.filter((m) => !isReasoningModel(m));
-    const term = searchTerm.trim().toLowerCase();
-    if (term)
-      filtered = filtered.filter((m) => m.name.toLowerCase().includes(term) || m.slug.toLowerCase().includes(term) || (m.model_creators?.name || "").toLowerCase().includes(term));
-    return filtered;
-  }, [rankings, reasoningFilter, searchTerm, viewMode]);
+  }, [rankings, viewMode]);
+
+  const reasoningFiltered = useMemo(() => {
+    if (reasoningFilter === "reasoning") return validModels.filter(isReasoningModel);
+    if (reasoningFilter === "non-reasoning") return validModels.filter((m) => !isReasoningModel(m));
+    return validModels;
+  }, [validModels, reasoningFilter]);
+
+  const filteredRankings = useFilteredData(reasoningFiltered, getSearchFields);
 
   const rankMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -152,7 +155,7 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
           />
           <div className="flex items-center">
             <span className={textSecondaryClass}>{t("estimatedMonthlyCost")}: </span>
-            <span className="text-base font-bold ml-1">${avgCost.toFixed(2)}</span>
+            <span className="text-base font-bold ml-1">{formatDollar(avgCost)}</span>
             <span className={`${secondaryTextClass} ml-[2px]`}>{t("perModelAvg")}</span>
           </div>
         </div>

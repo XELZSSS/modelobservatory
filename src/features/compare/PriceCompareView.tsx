@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Trash2, Gamepad2 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
 import { Button } from "../../shared/components/ui/button";
@@ -8,28 +7,22 @@ import { Card, CardContent } from "../../shared/components/ui/card";
 import { Input } from "../../shared/components/ui/input";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { BackButton } from "../../shared/components/composite/BackButton";
+import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
 import { secondaryTextClass, winnerPriceClass, chartTooltipStyle, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useCompareStore } from "../../shared/stores/compareStore";
 import { getModelColor } from "../../shared/components/rankColor";
 import { calcModelCost } from "../../shared/utils/costCalc";
 import { approxEq } from "../../shared/utils/math";
-import { useArtificialRankings } from "../../shared/hooks/useQueries";
-import { modelId } from "../../shared/utils/modelId";
-import type { ArtificialAnalysisModel } from "../../shared/types";
+import { useCompareModels } from "../../shared/hooks/useCompareModels";
 import { buildPriceRows, getBestPrice, WinnerMark, PriceTableDesktop, PriceCardsMobile, EfficiencyTableDesktop, EfficiencyCardsMobile } from "./PriceComponents";
 
 export function PriceCompareView() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const compareIds = useCompareStore((s) => s.compareIds);
-  const rankingsQ = useArtificialRankings();
-  const models = useMemo(() => {
-    if (!rankingsQ.data) return [];
-    return compareIds.map((id) => rankingsQ.data!.find((m) => modelId(m) === id)).filter((m): m is ArtificialAnalysisModel => !!m);
-  }, [compareIds, rankingsQ.data]);
   const removeCompareModel = useCompareStore((s) => s.removeCompareModel);
   const clearCompare = useCompareStore((s) => s.clearCompare);
+  const models = useCompareModels();
   const [chartRef, chartWidth] = useElementWidth();
 
   const [promptTokens, setPromptTokens] = useState(10);
@@ -89,33 +82,16 @@ export function PriceCompareView() {
       <SectionHeader title={t("priceComparison")} />
       <p className={secondaryTextClass}>{t("artificialSource")}</p>
 
-      <div className="flex flex-wrap gap-2 items-center justify-between">
-        <div className="flex flex-wrap gap-2 items-center">
-          {models.map((model) => (
-            <span key={modelId(model)} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-bg-tertiary border border-border">
-              <span className="text-sm font-medium truncate max-w-[120px]">{model.short_name || model.name}</span>
-              <Button variant="ghost" size="icon" onClick={() => removeCompareModel(model)} className="shrink-0" aria-label={`${t("remove")} ${model.short_name || model.name}`}>
-                <X size={14} />
-              </Button>
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => navigate("/models", { state: { viewMode: "pricing" } })}>
-            <Gamepad2 size={14} /> {t("addModel")}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              clearCompare();
-              navigate("/models", { state: { viewMode: "pricing" } });
-            }}
-          >
-            <Trash2 size={14} /> {t("clear")}
-          </Button>
-        </div>
-      </div>
+      <CompareChipBar
+        models={models}
+        onRemove={removeCompareModel}
+        onAdd={() => navigate("/models", { state: { viewMode: "pricing" } })}
+        onClear={() => {
+          clearCompare();
+          navigate("/models", { state: { viewMode: "pricing" } });
+        }}
+        addLabel={t("addModel")}
+      />
 
       {/* Price breakdown */}
       <Card>

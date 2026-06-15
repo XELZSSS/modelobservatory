@@ -15,15 +15,4 @@ export function TabButton({ active, onClick, children, size = "md" }: { active: 
   );
 }
 
-export function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={`text-xs px-2 py-0.5 rounded-[4px] border font-semibold cursor-pointer transition-colors ${active ? "border-text-primary bg-text-primary text-bg-secondary" : "border-border text-text-secondary hover:text-text-primary"}`}
-    >
-      {children}
-    </button>
-  );
-}
+export const FilterChip = TabButton;

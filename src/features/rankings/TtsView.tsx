@@ -1,29 +1,25 @@
 import { useMemo } from "react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useSearchStore } from "../../shared/stores/searchStore";
+import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useTtsLeaderboard } from "../../shared/hooks/useQueries";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { ellipsisTextClasses, secondaryTextClass, modelCellClass, modelNameCellClass } from "../../shared/utils/cssConstants";
 import { RankBadge } from "../../shared/components/composite/RankBadge";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
+import { formatDollar } from "../../shared/utils/format";
 import type { TtsModel } from "../../shared/types";
 
 function getRowId(model: TtsModel) {
   return model.id;
 }
 
+const getSearchFields = (m: TtsModel) => [m.name, m.provider || ""];
+
 export function TtsView() {
   const { t } = useTranslation();
-  const searchTerm = useSearchStore((s) => s.searchTerm);
   const { data } = useTtsLeaderboard();
-
-  const filtered = useMemo(() => {
-    const models = data ?? [];
-    const term = searchTerm.trim().toLowerCase();
-    if (!term) return models;
-    return models.filter((m) => m.name.toLowerCase().includes(term) || (m.provider || "").toLowerCase().includes(term));
-  }, [data, searchTerm]);
+  const filtered = useFilteredData(data ?? [], getSearchFields);
 
   const rankMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -75,7 +71,7 @@ export function TtsView() {
         sortable: true,
         align: "right",
         hiddenMd: true,
-        cell: (model) => <span className="text-sm">{model.price_per_1m_chars != null ? `$${model.price_per_1m_chars.toFixed(2)}` : t("notAvailable")}</span>,
+        cell: (model) => <span className="text-sm">{formatDollar(model.price_per_1m_chars, t)}</span>,
       },
     ],
     [t, rankMap],

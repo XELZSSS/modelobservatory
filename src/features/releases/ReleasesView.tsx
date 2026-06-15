@@ -4,7 +4,7 @@ import { useTranslation } from "../../shared/i18n/useTranslation";
 import { ellipsisTextClasses, secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { DataTable } from "../../shared/components/data/DataTable";
-import { useSearchStore } from "../../shared/stores/searchStore";
+import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useSuspenseOpenSourceReleases, useSuspenseArtificialRankings } from "../../shared/hooks/useQueries";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 import type { ArtificialAnalysisModel } from "../../shared/types";
@@ -24,15 +24,11 @@ interface DatedModel {
   time: number;
 }
 
+const getFeedSearchFields = (e: FeedEntry) => [e.name, e.id];
+
 function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
   const { t } = useTranslation();
-  const searchTerm = useSearchStore((s) => s.searchTerm);
-
-  const feedRows = useMemo(() => {
-    const term = searchTerm.toLowerCase().trim();
-    if (!term) return allEntries;
-    return allEntries.filter((e) => e.name.toLowerCase().includes(term) || e.id.toLowerCase().includes(term));
-  }, [allEntries, searchTerm]);
+  const feedRows = useFilteredData(allEntries, getFeedSearchFields);
 
   const feedColumns = useMemo<DataTableColumn<FeedEntry>[]>(() => {
     const getTypeMeta = (type: FeedEntry["type"]) => {

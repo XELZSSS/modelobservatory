@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useSearchStore } from "../../shared/stores/searchStore";
+import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { RankBadge } from "../../shared/components/composite/RankBadge";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
@@ -18,15 +18,13 @@ function getRowId(row: TableRow) {
   return row.model.id;
 }
 
+const getSearchFields = (m: OpenSourceModelEntry) => [m.id];
+
 export function OpenSourceRankingsView({ rankings }: { rankings: OpenSourceModelEntry[] }) {
   const { t } = useTranslation();
-  const searchTerm = useSearchStore((s) => s.searchTerm);
+  const filtered = useFilteredData(rankings, getSearchFields);
 
-  const rows = useMemo(() => {
-    const term = searchTerm.toLowerCase().trim();
-    const filtered = term ? rankings.filter((m) => m.id.toLowerCase().includes(term)) : rankings;
-    return filtered.map((model, index) => ({ rank: index + 1, model }));
-  }, [rankings, searchTerm]);
+  const rows = useMemo(() => filtered.map((model, index) => ({ rank: index + 1, model })), [filtered]);
 
   const columns = useMemo<DataTableColumn<TableRow>[]>(
     () => [

@@ -8,9 +8,9 @@ import { InfoRow } from "../../shared/components/composite/InfoRow";
 import { numberTextClass, secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { formatShortNumber } from "../../shared/utils/format";
 import type { ArenaModel } from "../../shared/types";
-import { MetricCard } from "../../shared/components/composite/MetricCard";
+import { StatCard } from "../../shared/components/composite/StatCard";
 
-export { MetricCard as KpiCard };
+export { StatCard as KpiCard };
 
 export function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ name: string; value: number; share: number }> }) {
   const { t, lang } = useTranslation();

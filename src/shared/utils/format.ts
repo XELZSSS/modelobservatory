@@ -47,6 +47,11 @@ export function formatContext(t: TFunction, model: ArtificialAnalysisModel) {
   return model.context_window_tokens.toLocaleString();
 }
 
+export function formatDollar(v: number | null | undefined, t?: TFunction): string {
+  if (typeof v !== "number" || !Number.isFinite(v)) return t?.("notAvailable") ?? "N/A";
+  return `$${v.toFixed(2)}`;
+}
+
 export function formatPricePerMillion(t: TFunction, v?: number | null) {
   if (typeof v === "number") return `$${v.toFixed(2)}${t("perMTokens")}`;
   return t("notAvailable");

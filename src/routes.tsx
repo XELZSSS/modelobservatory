@@ -1,8 +1,5 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { ErrorBoundary } from "./shared/components/feedback/ErrorBoundary";
-import { Spinner } from "./shared/components/feedback/SuspenseQuery";
-import { useTranslation } from "./shared/i18n/useTranslation";
 import { useSearchStore } from "./shared/stores/searchStore";
 
 const HomeView = lazy(() => import("./features/home/HomeView").then((m) => ({ default: m.HomeView })));
@@ -18,7 +15,6 @@ const ModelDetailView = lazy(() => import("./features/models/ModelDetailView").t
 const NotFound = lazy(() => import("./features/system/NotFound").then((m) => ({ default: m.NotFound })));
 
 export function AppRoutes() {
-  const { t } = useTranslation();
   const location = useLocation();
   const resetSearch = useSearchStore((s) => s.resetSearch);
 
@@ -27,27 +23,23 @@ export function AppRoutes() {
   }, [location.pathname, resetSearch]);
 
   return (
-    <Suspense fallback={<Spinner />}>
-      <ErrorBoundary errorTitle={t("errorBoundaryTitle")} retryLabel={t("errorBoundaryRetry")}>
-        <Routes>
-          <Route path="/" element={<HomeView />} />
-          <Route path="/models" element={<RankingsHubView defaultTab={0} />} />
-          <Route path="/pricing" element={<Navigate to="/models" replace />} />
-          <Route path="/releases" element={<ReleasesView defaultMode="feed" />} />
-          <Route path="/news" element={<NewsView />} />
-          <Route path="/score-release" element={<ReleasesView defaultMode="release-dates" lockedMode />} />
-          <Route path="/status" element={<StatusView />} />
-          <Route path="/hallucinations" element={<RankingsHubView defaultTab={TAB_INDEX.hallucinationRankings} />} />
-          <Route path="/tts" element={<RankingsHubView defaultTab={TAB_INDEX.tts} />} />
-          <Route path="/open-source" element={<RankingsHubView defaultTab={TAB_INDEX.openSourceRankings} />} />
-          <Route path="/rankings" element={<RankingsHubView defaultTab={0} />} />
-          <Route path="/categories/:slug" element={<Navigate to="/rankings" replace />} />
-          <Route path="/compare" element={<CompareView />} />
-          <Route path="/price-compare" element={<PriceCompareView />} />
-          <Route path="/model/:source/*" element={<ModelDetailView />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ErrorBoundary>
-    </Suspense>
+    <Routes>
+      <Route path="/" element={<HomeView />} />
+      <Route path="/models" element={<RankingsHubView defaultTab={0} />} />
+      <Route path="/pricing" element={<Navigate to="/models" replace />} />
+      <Route path="/releases" element={<ReleasesView defaultMode="feed" />} />
+      <Route path="/news" element={<NewsView />} />
+      <Route path="/score-release" element={<ReleasesView defaultMode="release-dates" lockedMode />} />
+      <Route path="/status" element={<StatusView />} />
+      <Route path="/hallucinations" element={<RankingsHubView defaultTab={TAB_INDEX.hallucinationRankings} />} />
+      <Route path="/tts" element={<RankingsHubView defaultTab={TAB_INDEX.tts} />} />
+      <Route path="/open-source" element={<RankingsHubView defaultTab={TAB_INDEX.openSourceRankings} />} />
+      <Route path="/rankings" element={<RankingsHubView defaultTab={0} />} />
+      <Route path="/categories/:slug" element={<Navigate to="/rankings" replace />} />
+      <Route path="/compare" element={<CompareView />} />
+      <Route path="/price-compare" element={<PriceCompareView />} />
+      <Route path="/model/:source/*" element={<ModelDetailView />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }

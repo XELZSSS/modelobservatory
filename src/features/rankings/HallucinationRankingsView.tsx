@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useSearchStore } from "../../shared/stores/searchStore";
+import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { RankBadge } from "../../shared/components/composite/RankBadge";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
@@ -24,15 +24,13 @@ function fmtScore(v: number) {
   return v.toLocaleString(undefined, { maximumFractionDigits: 1 });
 }
 
+const getSearchFields = (entry: HallucinationRankingEntry) => [entry.model];
+
 export function HallucinationRankingsView({ rankings }: { rankings: HallucinationRankingEntry[] }) {
   const { t } = useTranslation();
-  const searchTerm = useSearchStore((s) => s.searchTerm);
+  const filtered = useFilteredData(rankings, getSearchFields);
 
-  const rows = useMemo(() => {
-    const term = searchTerm.toLowerCase().trim();
-    const filtered = term ? rankings.filter((e) => e.model.toLowerCase().includes(term)) : rankings;
-    return filtered.map((entry, index) => ({ rank: index + 1, entry }));
-  }, [rankings, searchTerm]);
+  const rows = useMemo(() => filtered.map((entry, index) => ({ rank: index + 1, entry })), [filtered]);
 
   const columns = useMemo<DataTableColumn<TableRow>[]>(
     () => [

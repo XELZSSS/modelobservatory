@@ -105,6 +105,16 @@ export interface SearchResult {
   link: string;
 }
 
+function searchDataset<T>(data: T[], term: string, fields: (item: T) => (string | undefined | null)[], mapResult: (item: T) => SearchResult): SearchResult[] {
+  const results: SearchResult[] = [];
+  for (const item of data) {
+    if (fields(item).some((f) => f?.toLowerCase().includes(term))) {
+      results.push(mapResult(item));
+    }
+  }
+  return results;
+}
+
 export function useSearchAllRankings(searchTerm: string): SearchResult[] {
   const { data: artificialData } = useSuspenseArtificialRankings();
   const { data: dashboardData } = useSuspenseHomeDashboard();
@@ -118,80 +128,28 @@ export function useSearchAllRankings(searchTerm: string): SearchResult[] {
     if (!searchTerm || searchTerm.length < 2) return [];
 
     const term = searchTerm.toLowerCase();
-    const results: SearchResult[] = [];
-
-    for (const model of artificialData) {
-      const name = model.name?.toLowerCase() || "";
-      const slug = model.slug?.toLowerCase() || "";
-      const creator = model.model_creators?.name?.toLowerCase() || "";
-      if (name.includes(term) || slug.includes(term) || creator.includes(term)) {
-        results.push({
-          id: model.id,
-          name: model.name,
-          source: "modelRankings",
-          score: model.intelligence_index,
-          provider: model.model_creators?.name || null,
-          link: `/model/aa/${model.slug || model.id}`,
-        });
-      }
-    }
-
-    for (const model of openRouterData) {
-      const name = model.name?.toLowerCase() || "";
-      const id = model.id?.toLowerCase() || "";
-      if (name.includes(term) || id.includes(term)) {
-        results.push({
-          id: model.id,
-          name: model.name,
-          source: "openRouterRankings",
-          score: null,
-          provider: model.creator || null,
-          link: `/model/or/${model.id}`,
-        });
-      }
-    }
-
-    for (const model of openSourceRankings) {
-      const id = model.id?.toLowerCase() || "";
-      if (id.includes(term)) {
-        results.push({
-          id: model.id,
-          name: model.id,
-          source: "openSourceRankings",
-          score: null,
-          provider: model.author || null,
-          link: `/model/os/${model.id}`,
-        });
-      }
-    }
-
-    for (const model of hallucinationRankings) {
-      const name = model.model?.toLowerCase() || "";
-      if (name.includes(term)) {
-        results.push({
-          id: model.id,
-          name: model.model,
-          source: "hallucinationRankings",
-          score: model.omniscienceIndex,
-          provider: null,
-          link: `/model/hall/${model.slug || model.id}`,
-        });
-      }
-    }
-
-    for (const model of ttsData) {
-      const name = model.name?.toLowerCase() || "";
-      if (name.includes(term)) {
-        results.push({
-          id: model.id,
-          name: model.name,
-          source: "tts",
-          score: model.quality_elo,
-          provider: model.provider || null,
-          link: `/model/tts/${model.name}`,
-        });
-      }
-    }
+    const results: SearchResult[] = [
+      ...searchDataset(artificialData, term, (m) => [m.name, m.slug, m.model_creators?.name], (m) => ({
+        id: m.id, name: m.name, source: "modelRankings", score: m.intelligence_index,
+        provider: m.model_creators?.name || null, link: `/model/aa/${m.slug || m.id}`,
+      })),
+      ...searchDataset(openRouterData, term, (m) => [m.name, m.id], (m) => ({
+        id: m.id, name: m.name, source: "openRouterRankings", score: null,
+        provider: m.creator || null, link: `/model/or/${m.id}`,
+      })),
+      ...searchDataset(openSourceRankings, term, (m) => [m.id], (m) => ({
+        id: m.id, name: m.id, source: "openSourceRankings", score: null,
+        provider: m.author || null, link: `/model/os/${m.id}`,
+      })),
+      ...searchDataset(hallucinationRankings, term, (m) => [m.model], (m) => ({
+        id: m.id, name: m.model, source: "hallucinationRankings", score: m.omniscienceIndex,
+        provider: null, link: `/model/hall/${m.slug || m.id}`,
+      })),
+      ...searchDataset(ttsData, term, (m) => [m.name], (m) => ({
+        id: m.id, name: m.name, source: "tts", score: m.quality_elo,
+        provider: m.provider || null, link: `/model/tts/${m.name}`,
+      })),
+    ];
 
     return results
       .sort((a, b) => {
