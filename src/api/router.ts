@@ -23,7 +23,7 @@ export const app = new Hono();
 app.use("*", logger());
 app.use("*", timing());
 app.use("*", etag());
-app.use("/api/*", timeout(30_000));
+app.use("/api/*", timeout(45_000));
 
 app.use(
   "/api/*",

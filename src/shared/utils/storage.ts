@@ -14,6 +14,7 @@ export function writeStorage(key: string, value: string): void {
   }
 }
 
+
 export function removeStorage(key: string): void {
   try {
     localStorage.removeItem(key);

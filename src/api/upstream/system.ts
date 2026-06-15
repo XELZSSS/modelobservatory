@@ -1,6 +1,6 @@
 import { globalCache } from "../cache";
 import type { CloudflareInfo } from "../../shared/types";
-import { START_TTL_MS } from "../../shared/config/cache";
+import { START_TTL_MS } from "../../shared/config";
 
 const START_KEY = "metrics:start";
 const START_TTL = START_TTL_MS;

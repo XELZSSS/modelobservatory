@@ -31,9 +31,9 @@ export function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }
   return (
     <Card>
       <CardContent>
-        <div ref={chartRef} className="w-full h-[200px] overflow-hidden">
+        <div ref={chartRef} className="w-full h-[180px] overflow-hidden">
           {chartWidth > 0 && top10.length > 0 && (
-            <LineChart width={chartWidth} height={200} data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
+            <LineChart width={chartWidth} height={180} data={chartData} margin={{ top: 2, right: 8, bottom: 2, left: 0 }}>
               <CartesianGrid stroke="var(--border)" />
               <XAxis dataKey="name" tick={false} stroke="var(--border)" />
               <YAxis

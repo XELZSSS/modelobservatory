@@ -1,7 +1,7 @@
 import { fetchJSON, CACHE_TTL_MS } from "../http";
 import { withCache } from "../cache";
 import { getOpenLicense } from "../parsers/license";
-import { upstreamConfig } from "../../shared/config/upstream";
+import { upstreamConfig } from "../../shared/config";
 import type { OpenSourceModelEntry } from "../../shared/types";
 
 interface HFModel {

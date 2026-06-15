@@ -1,4 +1,4 @@
-import type { TFunction } from "../i18n";
+import type { TFunction, TranslationKey } from "../i18n";
 import type { ArtificialAnalysisModel } from "../types";
 
 export function safeHref(url: string | null | undefined): string | undefined {
@@ -62,20 +62,24 @@ export function formatTrend(change?: number | null, t?: TFunction): string {
   return `${change >= 0 ? "+" : ""}${(change * 100).toFixed(1)}%`;
 }
 
+const REC_RULES: [RegExp, TranslationKey][] = [
+  [/claude-3[.-]5-sonnet/, "recClaude"],
+  [/deepseek-[vr]/, "recDeepSeek"],
+  [/gpt-[45]/, "recGpt"],
+  [/gemini/, "recGemini"],
+  [/mimo/, "recMiMo"],
+];
+
 export function getRecommendation(id: string, t: TFunction): string {
-  const lowerId = id.toLowerCase();
-  if (lowerId.includes("claude-3-5-sonnet") || lowerId.includes("claude-3.5-sonnet")) return t("recClaude");
-  if (lowerId.includes("deepseek-v3") || lowerId.includes("deepseek-r1")) return t("recDeepSeek");
-  if (lowerId.includes("gpt-4o") || lowerId.includes("gpt-5")) return t("recGpt");
-  if (lowerId.includes("gemini")) return t("recGemini");
-  if (lowerId.includes("mimo")) return t("recMiMo");
-  return t("recDefault");
+  const lower = id.toLowerCase();
+  const match = REC_RULES.find(([re]) => re.test(lower));
+  return t(match ? match[1] : "recDefault");
 }
 
+const CAT_MAP: Record<string, TranslationKey> = { coding: "catCoding", reasoning: "catReasoning" };
+
 export function categoryLabel(cat: string, t: TFunction): string {
-  if (cat === "coding") return t("catCoding");
-  if (cat === "reasoning") return t("catReasoning");
-  return t("catGeneral");
+  return t(CAT_MAP[cat] ?? "catGeneral");
 }
 
 export function formatRelativeTime(isoString: string, t: TFunction): string {

@@ -2,8 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import { withCacheTtl } from "../cache";
 import { fetchText } from "../http";
 import type { NewsItem } from "../../shared/types";
-import { rssConfig } from "../../shared/config/rss";
-import { NEWS_TTL_MS } from "../../shared/config/cache";
+import { rssConfig, NEWS_TTL_MS } from "../../shared/config";
 import { decodeEntities, stripHtml } from "../parsers/feed";
 
 const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" });

@@ -17,27 +17,16 @@ import { buildHallucinationRankings } from "../utils/artificial";
 
 const FIVE_MINUTES = 5 * 60_000;
 
-interface QueryCtx {
-  signal?: AbortSignal;
-}
+interface QueryCtx { signal?: AbortSignal }
+
+const fetcher = <T>(path: string) => ({ signal }: QueryCtx) => apiFetch<T>(path, signal);
 
 function createApiQuery<T>(path: string, opts?: { staleTime?: number; refetchInterval?: number | false }) {
   const key = [path.split("?")[0]!.replace(/\//g, ":")];
-  const defaults = { ...opts };
+  const qf = fetcher<T>(path);
   return {
-    use: (enabled = true) =>
-      useQuery<T>({
-        queryKey: key,
-        queryFn: ({ signal }: QueryCtx) => apiFetch<T>(path, { signal }),
-        ...defaults,
-        enabled,
-      }),
-    useSuspense: () =>
-      useSuspenseQuery<T>({
-        queryKey: key,
-        queryFn: ({ signal }: QueryCtx) => apiFetch<T>(path, { signal }),
-        ...defaults,
-      }),
+    use: (enabled = true) => useQuery<T>({ queryKey: key, queryFn: qf, ...opts, enabled }),
+    useSuspense: () => useSuspenseQuery<T>({ queryKey: key, queryFn: qf, ...opts }),
   };
 }
 
@@ -51,37 +40,28 @@ const qHomeDashboard = createApiQuery<HomeDashboardData>(api.homeDashboard, { st
 
 export const useArtificialRankings = qArtificial.use;
 export const useSuspenseArtificialRankings = qArtificial.useSuspense;
-
 export const useTtsLeaderboard = qTts.use;
 export const useSuspenseTtsLeaderboard = qTts.useSuspense;
-
 export const useOpenSourceReleases = qOpenSourceReleases.use;
 export const useSuspenseOpenSourceReleases = qOpenSourceReleases.useSuspense;
-
 export const useSuspenseHealthStatus = qHealth.useSuspense;
-
 export const useSystemStats = qSystemStats.use;
-
 export const useSuspenseHomeDashboard = qHomeDashboard.useSuspense;
+export const useOpenRouterRankings = qOpenRouter.use;
+export const useSuspenseOpenRouterRankings = qOpenRouter.useSuspense;
 
 export function useHallucinationRankings(data: ArtificialAnalysisModel[], enabled = true): HallucinationRankingEntry[] {
-  return useMemo(
-    () => (enabled && data.length > 0 ? buildHallucinationRankings(data) : []),
-    [data, enabled],
-  );
+  return useMemo(() => (enabled && data.length > 0 ? buildHallucinationRankings(data) : []), [data, enabled]);
 }
 
 export function useOpenSourceModels(enabled = true) {
   return useQuery<OpenSourceModelEntry[]>({
     queryKey: ["openSourceModels"],
-    queryFn: ({ signal }: QueryCtx) => apiFetch<OpenSourceModelEntry[]>(api.openSourceModels(), { signal }),
+    queryFn: fetcher<OpenSourceModelEntry[]>(api.openSourceModels()),
     staleTime: FIVE_MINUTES,
     enabled,
   });
 }
-
-export const useOpenRouterRankings = qOpenRouter.use;
-export const useSuspenseOpenRouterRankings = qOpenRouter.useSuspense;
 
 export const NEWS_CATEGORIES_LIST = ["official", "industry", "research", "agentic", "policy", "hardware", "funding", "opensource"] as const;
 
@@ -89,7 +69,7 @@ export function useAllNews() {
   return useQueries({
     queries: NEWS_CATEGORIES_LIST.map((cat) => ({
       queryKey: ["news", cat],
-      queryFn: ({ signal }: QueryCtx) => apiFetch<NewsItem[]>(api.news(cat), { signal }),
+      queryFn: fetcher<NewsItem[]>(api.news(cat)),
       staleTime: FIVE_MINUTES,
       refetchInterval: FIVE_MINUTES,
     })),
@@ -108,9 +88,7 @@ export interface SearchResult {
 function searchDataset<T>(data: T[], term: string, fields: (item: T) => (string | undefined | null)[], mapResult: (item: T) => SearchResult): SearchResult[] {
   const results: SearchResult[] = [];
   for (const item of data) {
-    if (fields(item).some((f) => f?.toLowerCase().includes(term))) {
-      results.push(mapResult(item));
-    }
+    if (fields(item).some((f) => f?.toLowerCase().includes(term))) results.push(mapResult(item));
   }
   return results;
 }
@@ -126,9 +104,8 @@ export function useSearchAllRankings(searchTerm: string): SearchResult[] {
 
   return useMemo(() => {
     if (!searchTerm || searchTerm.length < 2) return [];
-
     const term = searchTerm.toLowerCase();
-    const results: SearchResult[] = [
+    return [
       ...searchDataset(artificialData, term, (m) => [m.name, m.slug, m.model_creators?.name], (m) => ({
         id: m.id, name: m.name, source: "modelRankings", score: m.intelligence_index,
         provider: m.model_creators?.name || null, link: `/model/aa/${m.slug || m.id}`,
@@ -149,15 +126,10 @@ export function useSearchAllRankings(searchTerm: string): SearchResult[] {
         id: m.id, name: m.name, source: "tts", score: m.quality_elo,
         provider: m.provider || null, link: `/model/tts/${m.name}`,
       })),
-    ];
-
-    return results
-      .sort((a, b) => {
-        const aExact = a.name.toLowerCase() === term ? 1 : 0;
-        const bExact = b.name.toLowerCase() === term ? 1 : 0;
-        if (aExact !== bExact) return bExact - aExact;
-        return (b.score ?? 0) - (a.score ?? 0);
-      })
-      .slice(0, 20);
+    ].sort((a, b) => {
+      const aExact = a.name.toLowerCase() === term ? 1 : 0;
+      const bExact = b.name.toLowerCase() === term ? 1 : 0;
+      return aExact !== bExact ? bExact - aExact : (b.score ?? 0) - (a.score ?? 0);
+    }).slice(0, 20);
   }, [searchTerm, artificialData, openRouterData, openSourceRankings, hallucinationRankings, ttsData]);
 }

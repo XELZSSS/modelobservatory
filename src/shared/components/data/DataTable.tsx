@@ -103,7 +103,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                   return (
                     <Fragment key={rowId}>
                       <tr
-                        className={`${isLast ? "" : "border-b border-border"} transition-colors hover:bg-hover ${isExpandable ? "cursor-pointer" : ""}`}
+                        className={`${isLast ? "" : "border-b border-border"} transition-[background-color] hover:bg-hover ${isExpandable ? "cursor-pointer" : ""}`}
                         tabIndex={isExpandable ? 0 : undefined}
                         aria-expanded={isExpandable ? isExpanded : undefined}
                         onClick={() => {

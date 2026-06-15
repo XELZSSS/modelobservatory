@@ -1,12 +1,14 @@
 /**
  * Normalize a value that may be a fraction (0-1) or a percentage (0-100).
- * Heuristic: values strictly between 0 and 1 (exclusive) are treated as fractions.
- * Values 0, 1, or >= 2 are assumed to already be percentages.
+ * Heuristic: values strictly between 0 and 1 (exclusive) are treated as fractions
+ * and multiplied by 100. Values >= 2 are assumed to already be percentages.
+ * 0 is returned as-is (0%). 1 is treated as a fraction (100%) because upstream
+ * omniscience/accuracy fields use 0-1 fractions where 1 means 100%.
  */
 export function normalizePercent(value: number | null | undefined): number | null {
   if (value == null) return null;
-  if (value === 0 || value === 1) return value;
-  if (value > 0 && value < 1) return value * 100;
+  if (value === 0) return 0;
+  if (value > 0 && value <= 1) return value * 100;
   return value;
 }
 

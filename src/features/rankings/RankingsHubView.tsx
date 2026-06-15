@@ -14,16 +14,20 @@ const HallucinationRankingsView = lazy(() => import("./HallucinationRankingsView
 const OpenSourceRankingsView = lazy(() => import("./OpenSourceRankingsView").then((m) => ({ default: m.OpenSourceRankingsView })));
 const OpenRouterRankingsView = lazy(() => import("./OpenRouterRankingsView").then((m) => ({ default: m.OpenRouterRankingsView })));
 const TtsView = lazy(() => import("./TtsView").then((m) => ({ default: m.TtsView })));
+const BenchmarkRankingsView = lazy(() => import("./BenchmarkRankingsView").then((m) => ({ default: m.BenchmarkRankingsView })));
+
+const ProviderCompareView = lazy(() => import("../compare/ProviderCompareView").then((m) => ({ default: m.ProviderCompareView })));
 
 interface RankingsHubProps {
   defaultTab?: number;
 }
 
-const TAB_IDS = ["modelRankings", "openRouterRankings", "openSourceRankings", "hallucinationRankings", "tts"] as const;
+const TAB_IDS = ["modelRankings", "openRouterRankings", "openSourceRankings", "hallucinationRankings", "tts", "benchmarkRankings", "providerCompare"] as const;
 
 function RankingsContent({ defaultTab }: { defaultTab: number }) {
   const { t } = useTranslation();
   const [activeTabId, setActiveTabId] = useState(() => TAB_IDS[defaultTab] ?? TAB_IDS[0]);
+
   const { data: artificialRankings } = useSuspenseArtificialRankings();
   const hallucinationRankings = useHallucinationRankings(artificialRankings, activeTabId === "hallucinationRankings");
   const openSourceQ = useOpenSourceModels(activeTabId === "openSourceRankings");
@@ -75,6 +79,24 @@ function RankingsContent({ defaultTab }: { defaultTab: number }) {
         content: (
           <Suspense fallback={<Spinner />}>
             <TtsView />
+          </Suspense>
+        ),
+      },
+      {
+        id: "benchmarkRankings",
+        label: t("benchmarkRankings"),
+        content: (
+          <Suspense fallback={<Spinner />}>
+            <BenchmarkRankingsView />
+          </Suspense>
+        ),
+      },
+      {
+        id: "providerCompare",
+        label: t("providerCompare"),
+        content: (
+          <Suspense fallback={<Spinner />}>
+            <ProviderCompareView />
           </Suspense>
         ),
       },

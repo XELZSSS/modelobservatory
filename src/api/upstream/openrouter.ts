@@ -1,7 +1,7 @@
 import { withCache } from "../cache";
 import { fetchJSON, CACHE_TTL_MS } from "../http";
 import { numOr } from "../parsers/coerce";
-import { upstreamConfig } from "../../shared/config/upstream";
+import { upstreamConfig } from "../../shared/config";
 import type { OpenRouterAppEntry, OpenRouterRankingsPayload, OpenRouterRankEntry } from "../../shared/types";
 
 const OPENROUTER = upstreamConfig.openrouter;

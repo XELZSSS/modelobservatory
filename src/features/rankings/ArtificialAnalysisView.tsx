@@ -39,6 +39,7 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
   const toggleCompareModel = useCompareStore((s) => s.toggleCompareModel);
   const clearCompare = useCompareStore((s) => s.clearCompare);
   const [reasoningFilter, setReasoningFilter] = useState<"all" | "reasoning" | "non-reasoning">("all");
+  const [modalityFilter, setModalityFilter] = useState<string>("all");
   const location = useLocation();
   const [viewMode, setViewMode] = useState<ViewMode>((location.state as { viewMode?: ViewMode })?.viewMode ?? "rankings");
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
@@ -70,7 +71,20 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
     return validModels;
   }, [validModels, reasoningFilter]);
 
-  const filteredRankings = useFilteredData(reasoningFiltered, getSearchFields);
+  const searchFiltered = useFilteredData(reasoningFiltered, getSearchFields);
+
+  const filteredRankings = useMemo(() => {
+    if (modalityFilter === "all") return searchFiltered;
+    return searchFiltered.filter((m) => {
+      switch (modalityFilter) {
+        case "text": return m.input_modality_text || m.output_modality_text;
+        case "image": return m.input_modality_image || m.output_modality_image;
+        case "speech": return m.input_modality_speech || m.output_modality_speech;
+        case "video": return m.input_modality_video || m.output_modality_video;
+        default: return true;
+      }
+    });
+  }, [searchFiltered, modalityFilter]);
 
   const rankMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -130,6 +144,18 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
               { key: "non-reasoning" as const, label: t("nonReasoning") },
             ].map((tab) => (
               <FilterChip key={tab.key} active={reasoningFilter === tab.key} onClick={() => setReasoningFilter(tab.key)}>
+                {tab.label}
+              </FilterChip>
+            ))}
+            <span className="w-[1px] h-4 bg-border mx-1" />
+            {[
+              { key: "all" as const, label: t("allModalities") },
+              { key: "text" as const, label: t("textOnly") },
+              { key: "image" as const, label: t("imageInput") },
+              { key: "speech" as const, label: t("speechInput") },
+              { key: "video" as const, label: t("videoInput") },
+            ].map((tab) => (
+              <FilterChip key={tab.key} active={modalityFilter === tab.key} onClick={() => setModalityFilter(tab.key)}>
                 {tab.label}
               </FilterChip>
             ))}

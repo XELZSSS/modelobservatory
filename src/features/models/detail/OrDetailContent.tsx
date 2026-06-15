@@ -24,8 +24,8 @@ export function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
           <InfoRow compact label={t("totalTokens")} value={formatShortNumber(model.totalTokens ?? 0)} />
         </InfoCard>
         <InfoCard title={t("pricing")}>
-          <InfoRow compact label={t("promptPrice")} value={model.pricing ? `$${model.pricing.prompt.toFixed(2)}` : t("notAvailable")} />
-          <InfoRow compact label={t("completionPrice")} value={model.pricing ? `$${model.pricing.completion.toFixed(2)}` : t("notAvailable")} />
+          <InfoRow compact label={t("promptPrice")} value={typeof model.pricing?.prompt === "number" ? `$${model.pricing.prompt.toFixed(2)}` : t("notAvailable")} />
+          <InfoRow compact label={t("completionPrice")} value={typeof model.pricing?.completion === "number" ? `$${model.pricing.completion.toFixed(2)}` : t("notAvailable")} />
         </InfoCard>
       </div>
       <InfoCard title={t("techSelectionAdvice")}>

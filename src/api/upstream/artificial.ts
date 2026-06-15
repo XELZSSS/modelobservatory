@@ -1,9 +1,9 @@
-import { fetchText, CACHE_TTL_MS } from "../http";
+import { fetchRsc, CACHE_TTL_MS } from "../http";
 import { withCache } from "../cache";
 import { findNextData, parseRscPayload, rscParseError } from "../parsers/rsc";
 import { num, str, strOr, bool, obj } from "../parsers/coerce";
 import type { ArtificialAnalysisModel } from "../../shared/types";
-import { upstreamConfig } from "../../shared/config/upstream";
+import { upstreamConfig } from "../../shared/config";
 
 function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
   const mc = obj(m.model_creators);
@@ -76,7 +76,7 @@ function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
 
 export async function getIntelligenceIndex(): Promise<ArtificialAnalysisModel[]> {
   return withCache("aa-defaultData", CACHE_TTL_MS, async () => {
-    const rsc = await fetchText(`${upstreamConfig.artificialAnalysis}/evaluations/artificial-analysis-intelligence-index`, { headers: { accept: "text/x-component,text/html,*/*", RSC: "1" } });
+    const rsc = await fetchRsc(`${upstreamConfig.artificialAnalysis}/evaluations/artificial-analysis-intelligence-index`, { headers: { RSC: "1", "Next-Router-State-Tree": "%5B%5D" } });
     let raw: Record<string, unknown>[];
     try {
       raw = parseRscPayload<Record<string, unknown>>(rsc, "defaultData", (tree) => findNextData(tree, "defaultData"));

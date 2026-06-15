@@ -1,7 +1,5 @@
 import { withCache } from "../cache";
-import { HEALTH_TIMEOUT_MS, USER_AGENT } from "../../shared/config/http";
-import { upstreamConfig } from "../../shared/config/upstream";
-import { HEALTH_TTL_MS } from "../../shared/config/cache";
+import { HEALTH_TIMEOUT_MS, USER_AGENT, upstreamConfig, HEALTH_TTL_MS } from "../../shared/config";
 import type { HealthEntry } from "../../shared/types";
 
 const HEALTH_TIMEOUT = HEALTH_TIMEOUT_MS;

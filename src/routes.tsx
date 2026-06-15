@@ -10,6 +10,7 @@ const ReleasesView = lazy(() => import("./features/releases/ReleasesView").then(
 const StatusView = lazy(() => import("./features/system/StatusView").then((m) => ({ default: m.StatusView })));
 const CompareView = lazy(() => import("./features/compare/CompareView").then((m) => ({ default: m.CompareView })));
 const PriceCompareView = lazy(() => import("./features/compare/PriceCompareView").then((m) => ({ default: m.PriceCompareView })));
+const ProviderCompareView = lazy(() => import("./features/compare/ProviderCompareView").then((m) => ({ default: m.ProviderCompareView })));
 const NewsView = lazy(() => import("./features/news/NewsView").then((m) => ({ default: m.NewsView })));
 const ModelDetailView = lazy(() => import("./features/models/ModelDetailView").then((m) => ({ default: m.ModelDetailView })));
 const NotFound = lazy(() => import("./features/system/NotFound").then((m) => ({ default: m.NotFound })));
@@ -38,6 +39,7 @@ export function AppRoutes() {
       <Route path="/categories/:slug" element={<Navigate to="/rankings" replace />} />
       <Route path="/compare" element={<CompareView />} />
       <Route path="/price-compare" element={<PriceCompareView />} />
+      <Route path="/provider-compare" element={<ProviderCompareView />} />
       <Route path="/model/:source/*" element={<ModelDetailView />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

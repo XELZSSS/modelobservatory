@@ -15,7 +15,7 @@ export function useNavigation() {
   return useMemo(() => {
     const primary: NavItem[] = [
       { path: "/", label: t("home"), icon: <Home size={18} /> },
-      { path: "/models", label: t("rankings"), icon: <Award size={18} />, matchPrefix: ["/model/", "/compare", "/price-compare"] },
+      { path: "/models", label: t("rankings"), icon: <Award size={18} />, matchPrefix: ["/model/", "/compare", "/price-compare", "/provider-compare"] },
     ];
     const secondary: NavItem[] = [
       { path: "/releases", label: t("releases"), icon: <Megaphone size={18} />, matchPrefix: ["/score-release"] },
