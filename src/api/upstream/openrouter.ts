@@ -59,6 +59,8 @@ function titleFromSlug(permaslug: string): string {
     .join(" ");
 }
 
+const SUM_KEYS = ["total_prompt_tokens", "total_completion_tokens", "total_native_tokens_reasoning", "total_native_tokens_cached", "total_tool_calls", "count", "num_media_prompt", "num_media_completion", "num_audio_prompt"] as const;
+
 function mergeRows(rows: ModelRow[]): ModelRow[] {
   const grouped = new Map<string, ModelRow>();
   let idx = 0;
@@ -66,8 +68,7 @@ function mergeRows(rows: ModelRow[]): ModelRow[] {
     const key = row.variant_permaslug || row.model_permaslug || `unknown-${idx++}`;
     const existing = grouped.get(key);
     if (!existing) { grouped.set(key, { ...row, variant_permaslug: key }); continue; }
-    const sumKeys = ["total_prompt_tokens", "total_completion_tokens", "total_native_tokens_reasoning", "total_native_tokens_cached", "total_tool_calls", "count", "num_media_prompt", "num_media_completion", "num_audio_prompt"] as const;
-    for (const k of sumKeys) {
+    for (const k of SUM_KEYS) {
       existing[k] = numOr(existing[k]) + numOr(row[k]);
     }
     if (row.date && (!existing.date || row.date > existing.date)) existing.date = row.date;

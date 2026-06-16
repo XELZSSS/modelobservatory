@@ -23,91 +23,101 @@ interface RankingsHubProps {
 }
 
 const TAB_IDS = ["modelRankings", "openRouterRankings", "openSourceRankings", "hallucinationRankings", "tts", "benchmarkRankings", "providerCompare"] as const;
+type TabId = (typeof TAB_IDS)[number];
 
-function RankingsContent({ defaultTab }: { defaultTab: number }) {
-  const { t } = useTranslation();
-  const [activeTabId, setActiveTabId] = useState(() => TAB_IDS[defaultTab] ?? TAB_IDS[0]);
+const TAB_LABELS: Record<TabId, TranslationKey> = {
+  modelRankings: "modelRankings",
+  openRouterRankings: "openRouterRankings",
+  openSourceRankings: "openSourceRankings",
+  hallucinationRankings: "hallucinationRankings",
+  tts: "tts",
+  benchmarkRankings: "benchmarkRankings",
+  providerCompare: "providerCompare",
+};
 
-  const { data: artificialRankings } = useSuspenseArtificialRankings();
+function ActiveTabContent({
+  activeTabId,
+  artificialRankings,
+}: {
+  activeTabId: TabId;
+  artificialRankings: import("../../shared/types").ArtificialAnalysisModel[];
+}) {
   const hallucinationRankings = useHallucinationRankings(artificialRankings, activeTabId === "hallucinationRankings");
   const openSourceQ = useOpenSourceModels(activeTabId === "openSourceRankings");
   const orQ = useOpenRouterRankings(activeTabId === "openRouterRankings");
 
+  switch (activeTabId) {
+    case "modelRankings":
+      return <ArtificialAnalysisView rankings={artificialRankings} />;
+    case "openRouterRankings":
+      return orQ.data ? (
+        <Suspense fallback={null}>
+          <OpenRouterRankingsView data={orQ.data} />
+        </Suspense>
+      ) : (
+        <Spinner />
+      );
+    case "openSourceRankings":
+      return openSourceQ.data ? (
+        <Suspense fallback={null}>
+          <OpenSourceRankingsView rankings={openSourceQ.data ?? []} />
+        </Suspense>
+      ) : (
+        <Spinner />
+      );
+    case "hallucinationRankings":
+      return hallucinationRankings.length > 0 ? (
+        <Suspense fallback={null}>
+          <HallucinationRankingsView rankings={hallucinationRankings} />
+        </Suspense>
+      ) : (
+        <Spinner />
+      );
+    case "tts":
+      return (
+        <Suspense fallback={<Spinner />}>
+          <TtsView />
+        </Suspense>
+      );
+    case "benchmarkRankings":
+      return (
+        <Suspense fallback={<Spinner />}>
+          <BenchmarkRankingsView />
+        </Suspense>
+      );
+    case "providerCompare":
+      return (
+        <Suspense fallback={<Spinner />}>
+          <ProviderCompareView />
+        </Suspense>
+      );
+    default:
+      return null;
+  }
+}
+
+function RankingsContent({ defaultTab }: { defaultTab: number }) {
+  const { t } = useTranslation();
+  const [activeTabId, setActiveTabId] = useState<TabId>(() => TAB_IDS[defaultTab] ?? TAB_IDS[0]);
+
+  const { data: artificialRankings } = useSuspenseArtificialRankings();
+
   const tabs: TabItem[] = useMemo(
-    () => [
-      {
-        id: "modelRankings",
-        label: t("modelRankings"),
-        content: <ArtificialAnalysisView rankings={artificialRankings} />,
-      },
-      {
-        id: "openRouterRankings",
-        label: t("openRouterRankings"),
-        content: orQ.data ? (
-          <Suspense fallback={null}>
-            <OpenRouterRankingsView data={orQ.data} />
-          </Suspense>
-        ) : (
-          <Spinner />
-        ),
-      },
-      {
-        id: "openSourceRankings",
-        label: t("openSourceRankings"),
-        content: openSourceQ.data ? (
-          <Suspense fallback={null}>
-            <OpenSourceRankingsView rankings={openSourceQ.data ?? []} />
-          </Suspense>
-        ) : (
-          <Spinner />
-        ),
-      },
-      {
-        id: "hallucinationRankings",
-        label: t("hallucinationRankings"),
-        content: hallucinationRankings.length > 0 ? (
-          <Suspense fallback={null}>
-            <HallucinationRankingsView rankings={hallucinationRankings} />
-          </Suspense>
-        ) : (
-          <Spinner />
-        ),
-      },
-      {
-        id: "tts",
-        label: t("tts"),
-        content: (
-          <Suspense fallback={<Spinner />}>
-            <TtsView />
-          </Suspense>
-        ),
-      },
-      {
-        id: "benchmarkRankings",
-        label: t("benchmarkRankings"),
-        content: (
-          <Suspense fallback={<Spinner />}>
-            <BenchmarkRankingsView />
-          </Suspense>
-        ),
-      },
-      {
-        id: "providerCompare",
-        label: t("providerCompare"),
-        content: (
-          <Suspense fallback={<Spinner />}>
-            <ProviderCompareView />
-          </Suspense>
-        ),
-      },
-    ],
-    [t, artificialRankings, orQ.data, openSourceQ.data, hallucinationRankings],
+    () =>
+      TAB_IDS.map((id) => ({
+        id,
+        label: t(TAB_LABELS[id]),
+        content: null,
+      })),
+    [t],
   );
 
   return (
     <>
       <SectionHeader title={t(activeTabId as TranslationKey)} />
-      <TabContainer tabs={tabs} defaultTabId={activeTabId} onTabChange={(tabId) => setActiveTabId(tabId as typeof activeTabId)} />
+      <TabContainer tabs={tabs} defaultTabId={activeTabId} onTabChange={(tabId) => setActiveTabId(tabId as TabId)}>
+        <ActiveTabContent activeTabId={activeTabId} artificialRankings={artificialRankings} />
+      </TabContainer>
     </>
   );
 }

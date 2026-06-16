@@ -5,12 +5,16 @@ import { apiBase } from "../../shared/config";
  * caller's AbortSignal (React Query provides one). Retries are handled by
  * React Query globally — not here.
  */
+const FETCH_TIMEOUT_MS = 30_000;
+
 export async function apiFetch<T>(path: string, signal?: AbortSignal): Promise<T> {
   const url = apiBase && path.startsWith("/") ? apiBase + path : path;
+  const timeout = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+  const merged = signal ? AbortSignal.any([signal, timeout]) : timeout;
   const res = await fetch(url, {
     cache: "no-store",
     headers: { accept: "application/json" },
-    signal: signal ?? AbortSignal.timeout(30_000),
+    signal: merged,
   });
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;

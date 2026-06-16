@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useQueries, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import type {
   ArtificialAnalysisModel,
   HallucinationRankingEntry,
@@ -16,6 +16,7 @@ import { apiFetch, api } from "../../api/client/httpClient";
 import { buildHallucinationRankings } from "../utils/artificial";
 
 const FIVE_MINUTES = 5 * 60_000;
+const THIRTY_MINUTES = 30 * 60_000;
 
 interface QueryCtx { signal?: AbortSignal }
 
@@ -30,9 +31,9 @@ function createApiQuery<T>(path: string, opts?: { staleTime?: number; refetchInt
   };
 }
 
-const qArtificial = createApiQuery<ArtificialAnalysisModel[]>(api.artificialIndex);
-const qTts = createApiQuery<TtsModel[]>(api.ttsLeaderboard);
-const qOpenSourceReleases = createApiQuery<OpenSourceModelEntry[]>(api.openSourceReleases);
+const qArtificial = createApiQuery<ArtificialAnalysisModel[]>(api.artificialIndex, { staleTime: THIRTY_MINUTES });
+const qTts = createApiQuery<TtsModel[]>(api.ttsLeaderboard, { staleTime: THIRTY_MINUTES });
+const qOpenSourceReleases = createApiQuery<OpenSourceModelEntry[]>(api.openSourceReleases, { staleTime: THIRTY_MINUTES });
 const qOpenRouter = createApiQuery<OpenRouterRankingsPayload>(api.openRouterRankings, { staleTime: FIVE_MINUTES });
 const qHealth = createApiQuery<HealthEntry[]>(api.health, { staleTime: 0, refetchInterval: HEALTH_CHECK_INTERVAL });
 const qSystemStats = createApiQuery<SystemStats>(api.systemStats, { staleTime: 0, refetchInterval: SYSTEM_STATS_INTERVAL });
@@ -65,14 +66,12 @@ export function useOpenSourceModels(enabled = true) {
 
 export const NEWS_CATEGORIES_LIST = ["official", "industry", "research", "agentic", "policy", "hardware", "funding", "opensource"] as const;
 
-export function useAllNews() {
-  return useQueries({
-    queries: NEWS_CATEGORIES_LIST.map((cat) => ({
-      queryKey: ["news", cat],
-      queryFn: fetcher<NewsItem[]>(api.news(cat)),
-      staleTime: FIVE_MINUTES,
-      refetchInterval: FIVE_MINUTES,
-    })),
+export function useNewsByCategory(category: string) {
+  return useQuery<NewsItem[]>({
+    queryKey: ["news", category],
+    queryFn: fetcher<NewsItem[]>(api.news(category)),
+    staleTime: FIVE_MINUTES,
+    refetchInterval: FIVE_MINUTES,
   });
 }
 
@@ -94,16 +93,18 @@ function searchDataset<T>(data: T[], term: string, fields: (item: T) => (string 
 }
 
 export function useSearchAllRankings(searchTerm: string): SearchResult[] {
-  const { data: artificialData } = useSuspenseArtificialRankings();
-  const { data: dashboardData } = useSuspenseHomeDashboard();
+  const enabled = searchTerm.length >= 2;
+  const artificialQ = useArtificialRankings(enabled);
+  const dashboardQ = useSuspenseHomeDashboard();
 
-  const openSourceRankings = useMemo(() => dashboardData.opensource ?? [], [dashboardData.opensource]);
-  const ttsData = useMemo(() => dashboardData.tts ?? [], [dashboardData.tts]);
-  const openRouterData = useMemo(() => dashboardData.orRankings?.tokenUsageRankings ?? [], [dashboardData.orRankings]);
-  const hallucinationRankings = useHallucinationRankings(artificialData);
+  const artificialData = useMemo(() => artificialQ.data ?? [], [artificialQ.data]);
+  const openSourceRankings = useMemo(() => dashboardQ.data.opensource ?? [], [dashboardQ.data.opensource]);
+  const ttsData = useMemo(() => dashboardQ.data.tts ?? [], [dashboardQ.data.tts]);
+  const openRouterData = useMemo(() => dashboardQ.data.orRankings?.tokenUsageRankings ?? [], [dashboardQ.data.orRankings]);
+  const hallucinationRankings = useHallucinationRankings(artificialData, enabled);
 
   return useMemo(() => {
-    if (!searchTerm || searchTerm.length < 2) return [];
+    if (!enabled) return [];
     const term = searchTerm.toLowerCase();
     return [
       ...searchDataset(artificialData, term, (m) => [m.name, m.slug, m.model_creators?.name], (m) => ({
@@ -131,5 +132,5 @@ export function useSearchAllRankings(searchTerm: string): SearchResult[] {
       const bExact = b.name.toLowerCase() === term ? 1 : 0;
       return aExact !== bExact ? bExact - aExact : (b.score ?? 0) - (a.score ?? 0);
     }).slice(0, 20);
-  }, [searchTerm, artificialData, openRouterData, openSourceRankings, hallucinationRankings, ttsData]);
+  }, [enabled, searchTerm, artificialData, openRouterData, openSourceRankings, hallucinationRankings, ttsData]);
 }

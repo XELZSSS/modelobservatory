@@ -1,5 +1,6 @@
 const MAX_ENTRIES = 500;
 const NEG_TTL_MS = 5_000;
+const MAX_NEG_KEYS = 100;
 
 class MemoryCache {
   private store = new Map<string, { data: unknown; expires: number }>();
@@ -63,6 +64,15 @@ function dedup<T>(key: string, fn: () => Promise<T>): Promise<T> {
 // Negative cache: prevent hammering a failing upstream
 const negKeys = new Set<string>();
 
+function addNegKey(key: string) {
+  if (negKeys.size >= MAX_NEG_KEYS) {
+    const first = negKeys.values().next().value;
+    if (first !== undefined) negKeys.delete(first);
+  }
+  negKeys.add(key);
+  setTimeout(() => negKeys.delete(key), NEG_TTL_MS);
+}
+
 export async function withCache<T>(key: string, ttlMs: number, fn: () => Promise<T>): Promise<T> {
   const cached = await globalCache.get<T>(key);
   if (cached !== null) return cached;
@@ -73,8 +83,7 @@ export async function withCache<T>(key: string, ttlMs: number, fn: () => Promise
       await globalCache.set(key, data, ttlMs);
       return data;
     } catch (err) {
-      negKeys.add(key);
-      setTimeout(() => negKeys.delete(key), NEG_TTL_MS);
+      addNegKey(key);
       throw err;
     }
   });
@@ -90,8 +99,7 @@ export async function withCacheTtl<T>(key: string, defaultTtl: number, fn: () =>
       await globalCache.set(key, data, ttl);
       return data;
     } catch (err) {
-      negKeys.add(key);
-      setTimeout(() => negKeys.delete(key), NEG_TTL_MS);
+      addNegKey(key);
       throw err;
     }
   });

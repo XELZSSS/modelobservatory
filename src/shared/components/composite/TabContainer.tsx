@@ -13,9 +13,10 @@ interface TabContainerProps {
   className?: string;
   tabSize?: "sm" | "md";
   onTabChange?: (tabId: string) => void;
+  children?: ReactNode;
 }
 
-export function TabContainer({ tabs, defaultTabId, className = "", tabSize = "md", onTabChange }: TabContainerProps) {
+export function TabContainer({ tabs, defaultTabId, className = "", tabSize = "md", onTabChange, children }: TabContainerProps) {
   const [activeTab, setActiveTab] = useState(() => {
     if (defaultTabId && tabs.some((t) => t.id === defaultTabId)) return defaultTabId;
     return tabs[0]?.id ?? "";
@@ -26,7 +27,7 @@ export function TabContainer({ tabs, defaultTabId, className = "", tabSize = "md
     onTabChange?.(tabId);
   };
 
-  const activeContent = tabs.find((t) => t.id === activeTab)?.content;
+  const activeContent = children ?? tabs.find((t) => t.id === activeTab)?.content;
 
   return (
     <div className={`flex flex-col gap-3 ${className}`}>

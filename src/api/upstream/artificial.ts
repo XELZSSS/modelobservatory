@@ -5,23 +5,21 @@ import { num, str, strOr, bool, obj } from "../parsers/coerce";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { upstreamConfig } from "../../shared/config";
 
-function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
-  const mc = obj(m.model_creators);
-  const omn = obj(m.omniscience_breakdown);
-  const iic = obj(m.intelligence_index_cost);
-  const iitc = obj(m.intelligence_index_token_counts);
-  const td = obj(m.timescaleData);
-  const ic = typeof iic?.input_cost === "number" && typeof iitc?.input_tokens === "number" && iitc.input_tokens > 0;
-  const oc = typeof iic?.output_cost === "number" && typeof iitc?.output_tokens === "number" && iitc.output_tokens > 0;
+const BENCHMARK_KEYS = ["aime25", "gpqa", "hle", "scicode", "gdpval", "tau2", "terminalbench_hard", "ifbench", "lcr", "omniscience", "critpt", "livecodebench", "mmlu_pro", "math_500", "humaneval", "apex_agents", "terminalbench_v2_1", "tau_banking"] as const;
 
+function compactBenchmarks(m: Record<string, unknown>): Record<string, number | null> {
   const benchmarks: Record<string, number | null> = {};
-  const benchmarkKeys = ["aime25", "gpqa", "hle", "scicode", "gdpval", "tau2", "terminalbench_hard", "ifbench", "lcr", "omniscience", "critpt", "livecodebench", "mmlu_pro", "math_500", "humaneval", "apex_agents", "terminalbench_v2_1", "tau_banking"];
-  for (const key of benchmarkKeys) {
+  for (const key of BENCHMARK_KEYS) {
     const val = num(m[key]);
     if (val !== undefined) benchmarks[key] = val;
   }
+  return benchmarks;
+}
 
-  const pricing: ArtificialAnalysisModel["pricing"] = {
+function compactPricing(m: Record<string, unknown>, iic: Record<string, unknown> | undefined, iitc: Record<string, unknown> | undefined): ArtificialAnalysisModel["pricing"] {
+  const ic = typeof iic?.input_cost === "number" && typeof iitc?.input_tokens === "number" && (iitc.input_tokens as number) > 0;
+  const oc = typeof iic?.output_cost === "number" && typeof iitc?.output_tokens === "number" && (iitc.output_tokens as number) > 0;
+  return {
     input: typeof m.price_1m_input_tokens === "number" ? m.price_1m_input_tokens : ic ? ((iic!.input_cost as number) / (iitc!.input_tokens as number)) * 1e6 : num(m.price_input),
     output: typeof m.price_1m_output_tokens === "number" ? m.price_1m_output_tokens : oc ? ((iic!.output_cost as number) / (iitc!.output_tokens as number)) * 1e6 : num(m.price_output),
     cache_hit: num(m.cache_hit_price),
@@ -36,14 +34,22 @@ function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
     },
     intelligence_index_cost: iic ? { ...iic } : undefined,
   };
+}
 
-  const speed: ArtificialAnalysisModel["speed"] = {
+function compactSpeed(m: Record<string, unknown>, td: Record<string, unknown> | undefined): ArtificialAnalysisModel["speed"] {
+  return {
     median_output_speed: num(m.median_output_speed),
     median_time_to_first_token: num(m.median_time_to_first_token),
     timescaleData: td ? { median_output_speed: typeof td.median_output_speed === "number" ? td.median_output_speed : undefined } : undefined,
   };
+}
 
-  const tokenCounts: ArtificialAnalysisModel["token_counts"] = iitc ? { ...iitc } : undefined;
+function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
+  const mc = obj(m.model_creators);
+  const omn = obj(m.omniscience_breakdown);
+  const iic = obj(m.intelligence_index_cost);
+  const iitc = obj(m.intelligence_index_token_counts);
+  const td = obj(m.timescaleData);
 
   return {
     id: str(m.id), slug: str(m.slug), name: str(m.name), short_name: strOr(m.short_name),
@@ -58,10 +64,10 @@ function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
     release_date: strOr(m.release_date), is_open_weights: bool(m.is_open_weights),
     open_source_categorization: strOr(m.open_source_categorization),
     license_name: strOr(m.license_name), license_url: strOr(m.license_url),
-    benchmarks,
-    pricing,
-    speed,
-    token_counts: tokenCounts,
+    benchmarks: compactBenchmarks(m),
+    pricing: compactPricing(m, iic, iitc),
+    speed: compactSpeed(m, td),
+    token_counts: iitc ? { ...iitc } : undefined,
     input_modality_text: bool(m.input_modality_text), input_modality_image: bool(m.input_modality_image),
     input_modality_speech: bool(m.input_modality_speech), input_modality_video: bool(m.input_modality_video),
     output_modality_text: bool(m.output_modality_text), output_modality_image: bool(m.output_modality_image),

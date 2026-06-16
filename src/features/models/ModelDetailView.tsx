@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { BackButton } from "../../shared/components/composite/BackButton";
@@ -30,62 +29,61 @@ const SOURCE_LABELS: Record<ModelSource, string> = {
   tts: "ttsSource",
 };
 
+/** Only load data for the relevant source instead of all sources. */
+function AADetail({ decodedId }: { decodedId: string }) {
+  const { data: aaData } = useSuspenseArtificialRankings();
+  const model = aaData.find((m) => m.id === decodedId || m.slug === decodedId);
+  return model ? <ModelDetailContent model={model} /> : null;
+}
+
+function ORDetail({ decodedId }: { decodedId: string }) {
+  const { data: orPayload } = useSuspenseOpenRouterRankings();
+  const orData = orPayload?.tokenUsageRankings ?? [];
+  const model = orData.find((m) => m.id === decodedId);
+  return model ? <OrDetailContent model={model} /> : null;
+}
+
+function OSDetail({ decodedId }: { decodedId: string }) {
+  const { data: osData } = useSuspenseOpenSourceReleases();
+  const model = osData.find((m) => m.id === decodedId);
+  return model ? <OsDetailContent model={model} /> : null;
+}
+
+function HallDetail({ decodedId }: { decodedId: string }) {
+  const { data: aaData } = useSuspenseArtificialRankings();
+  const hallucinationRankings = useHallucinationRankings(aaData);
+  const entry = hallucinationRankings.find((m) => m.id === decodedId || m.slug === decodedId);
+  const aaModel = aaData.find((m) => m.id === decodedId || m.slug === decodedId);
+  return entry ? <HallDetailContent model={entry} aaModel={aaModel} /> : null;
+}
+
+function TTSDetail({ decodedId }: { decodedId: string }) {
+  const { data: ttsData } = useSuspenseTtsLeaderboard();
+  const model = ttsData.find((m) => m.id === decodedId || m.name === decodedId);
+  return model ? <TtsDetailContent model={model} /> : null;
+}
+
+function SourceContent({ src, decodedId }: { src: ModelSource; decodedId: string }) {
+  switch (src) {
+    case "aa": return <AADetail decodedId={decodedId} />;
+    case "or": return <ORDetail decodedId={decodedId} />;
+    case "os": return <OSDetail decodedId={decodedId} />;
+    case "hall": return <HallDetail decodedId={decodedId} />;
+    case "tts": return <TTSDetail decodedId={decodedId} />;
+    default: return null;
+  }
+}
+
 function ModelDetailContentInner() {
   const { t } = useTranslation();
   const { source, "*": splat } = useParams<{ source: string; "*": string }>();
 
-  const { data: aaData } = useSuspenseArtificialRankings();
-  const { data: osData } = useSuspenseOpenSourceReleases();
-  const { data: orPayload } = useSuspenseOpenRouterRankings();
-  const { data: ttsData } = useSuspenseTtsLeaderboard();
-  const hallucinationRankings = useHallucinationRankings(aaData);
-
   const src = (source && source in MODEL_SOURCES ? source : null) as ModelSource | null;
   const decodedId = splat ? decodeURIComponent(splat) : "";
-
-  const content = useMemo(() => {
-    if (!src || !decodedId) return null;
-    switch (src) {
-      case "aa": {
-        const model = aaData.find((m) => m.id === decodedId || m.slug === decodedId);
-        return model ? <ModelDetailContent model={model} /> : null;
-      }
-      case "or": {
-        const orData = orPayload?.tokenUsageRankings ?? [];
-        const model = orData.find((m) => m.id === decodedId);
-        return model ? <OrDetailContent model={model} /> : null;
-      }
-      case "os": {
-        const model = osData.find((m) => m.id === decodedId);
-        return model ? <OsDetailContent model={model} /> : null;
-      }
-      case "hall": {
-        const entry = hallucinationRankings.find((m) => m.id === decodedId || m.slug === decodedId);
-        const aaModel = aaData.find((m) => m.id === decodedId || m.slug === decodedId);
-        return entry ? <HallDetailContent model={entry} aaModel={aaModel} /> : null;
-      }
-      case "tts": {
-        const model = ttsData.find((m) => m.id === decodedId || m.name === decodedId);
-        return model ? <TtsDetailContent model={model} /> : null;
-      }
-      default:
-        return null;
-    }
-  }, [src, decodedId, aaData, osData, orPayload, ttsData, hallucinationRankings]);
 
   if (!src || !decodedId) return <NotFound />;
 
   const config = MODEL_SOURCES[src];
-
-  if (!content) {
-    return (
-      <div className="flex flex-col gap-3.5">
-        <BackButton labelKey={config.backLabelKey} to={config.backTo} />
-        <p className={secondaryTextClass}>{t("notFound")}</p>
-      </div>
-    );
-  }
-
   const sourceLabel = t(SOURCE_LABELS[src] as Parameters<typeof t>[0]);
 
   return (
@@ -93,7 +91,7 @@ function ModelDetailContentInner() {
       <BackButton labelKey={config.backLabelKey} to={config.backTo} />
       <SectionHeader title={decodedId.split("/").pop() || decodedId} />
       <p className={secondaryTextClass}>{sourceLabel}</p>
-      {content}
+      <SourceContent src={src} decodedId={decodedId} />
     </ViewLayout>
   );
 }

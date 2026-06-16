@@ -22,89 +22,76 @@ function HomeContent() {
   const { data: dashboardData } = useSuspenseHomeDashboard();
   const { data: healthData } = useSuspenseHealthStatus();
 
-  const artificialRankings = artificialData;
-  const openSourceRankings = useMemo(() => dashboardData.opensource ?? [], [dashboardData.opensource]);
-  const arenaT2IModels = useMemo(() => dashboardData.arena?.models ?? [], [dashboardData.arena]);
-
-  const openRouterApps = useMemo(() => dashboardData.orRankings?.appUsageRankings ?? [], [dashboardData.orRankings]);
-  const latestOpenRouterModel = dashboardData.orRankings?.tokenUsageRankings?.[0] ?? null;
-  const ttsData = useMemo(() => dashboardData.tts ?? [], [dashboardData.tts]);
-  const bestTtsModel = ttsData[0] ?? null;
-
-  const downloadStats = useMemo(
-    () =>
-      openSourceRankings.slice(0, 5).map((model) => ({
-        label: model.id.split("/").pop() || model.id,
-        value: model.downloads,
-        valueLabel: formatShortNumber(model.downloads),
-      })),
-    [openSourceRankings],
-  );
-  const hallucinationStats = useMemo(
-    () =>
-      hallucinationRankings.slice(0, 5).map((entry) => ({
-        label: entry.model,
-        value: entry.hallucinationRate,
-        valueLabel: `${entry.hallucinationRate.toFixed(1)}%`,
-      })),
-    [hallucinationRankings],
-  );
-
-  const latestReleaseModel = useMemo(
-    () =>
-      artificialRankings.reduce(
-        (best, m) => {
-          if (!m.release_date) return best;
-          if (!best?.release_date) return m;
-          return m.release_date > best.release_date ? m : best;
-        },
-        null as ArtificialAnalysisModel | null,
-      ),
-    [artificialRankings],
-  );
-
-  const toolUsageShare = useMemo(() => {
-    const total = openRouterApps.reduce((sum, app) => sum + app.totalTokens, 0);
-    if (total <= 0) return { total, rows: [] as Array<{ name: string; value: number; share: number }> };
-    const topRows = [...openRouterApps]
-      .sort((a, b) => b.totalTokens - a.totalTokens)
-      .slice(0, 4)
-      .map((app) => ({ name: app.name, value: app.totalTokens, share: app.totalTokens / total }));
-    const topTotal = topRows.reduce((sum, row) => sum + row.value, 0);
-    const otherValue = total - topTotal;
-    const rows = otherValue > 0 ? [...topRows, { name: t("otherTools"), value: otherValue, share: otherValue / total }] : topRows;
-    return { total, rows };
-  }, [openRouterApps, t]);
-
   const predictions = dashboardData.predictions ?? null;
 
-  const kpiStrip = useMemo(
-    () => [
+  const { downloadStats, hallucinationStats, toolUsageShare, kpiStrip, providerStats, arenaT2IModels } = useMemo(() => {
+    const openSourceRankings = dashboardData.opensource ?? [];
+    const arenaT2IModels = dashboardData.arena?.models ?? [];
+    const openRouterApps = dashboardData.orRankings?.appUsageRankings ?? [];
+    const latestOpenRouterModel = dashboardData.orRankings?.tokenUsageRankings?.[0] ?? null;
+    const ttsData = dashboardData.tts ?? [];
+    const bestTtsModel = ttsData[0] ?? null;
+    const dlStats = openSourceRankings.slice(0, 5).map((model) => ({
+      label: model.id.split("/").pop() || model.id,
+      value: model.downloads,
+      valueLabel: formatShortNumber(model.downloads),
+    }));
+
+    const halStats = hallucinationRankings.slice(0, 5).map((entry) => ({
+      label: entry.model,
+      value: entry.hallucinationRate,
+      valueLabel: `${entry.hallucinationRate.toFixed(1)}%`,
+    }));
+
+    const latestRelease = artificialData.reduce(
+      (best, m) => {
+        if (!m.release_date) return best;
+        if (!best?.release_date) return m;
+        return m.release_date > best.release_date ? m : best;
+      },
+      null as ArtificialAnalysisModel | null,
+    );
+
+    const total = openRouterApps.reduce((sum, app) => sum + app.totalTokens, 0);
+    let usageShare: { total: number; rows: Array<{ name: string; value: number; share: number }> };
+    if (total <= 0) {
+      usageShare = { total, rows: [] };
+    } else {
+      const topRows = [...openRouterApps]
+        .sort((a, b) => b.totalTokens - a.totalTokens)
+        .slice(0, 4)
+        .map((app) => ({ name: app.name, value: app.totalTokens, share: app.totalTokens / total }));
+      const topTotal = topRows.reduce((sum, row) => sum + row.value, 0);
+      const otherValue = total - topTotal;
+      usageShare = { total, rows: otherValue > 0 ? [...topRows, { name: t("otherTools"), value: otherValue, share: otherValue / total }] : topRows };
+    }
+
+    const kpis = [
       { label: t("openRouterRankings"), value: latestOpenRouterModel?.name || t("notAvailable"), Icon: BarChart3 },
       { label: t("bestT2IModel"), value: arenaT2IModels[0]?.model || t("notAvailable"), Icon: Image },
-      { label: t("latestRelease"), value: latestReleaseModel?.short_name || latestReleaseModel?.name || t("notAvailable"), Icon: Rocket },
+      { label: t("latestRelease"), value: latestRelease?.short_name || latestRelease?.name || t("notAvailable"), Icon: Rocket },
       { label: t("bestTtsModel"), value: bestTtsModel?.name || t("notAvailable"), Icon: Mic },
-    ],
-    [latestOpenRouterModel, arenaT2IModels, latestReleaseModel, bestTtsModel, t],
-  );
+    ];
 
-  const providerStats = useMemo(() => {
     const providers = new Map<string, { models: ArtificialAnalysisModel[]; color: string }>();
-    for (const m of artificialRankings) {
+    for (const m of artificialData) {
       const name = m.model_creators?.name || "Unknown";
       const color = m.model_creators?.color || "#6b7280";
       let bucket = providers.get(name);
       if (!bucket) { bucket = { models: [], color }; providers.set(name, bucket); }
       bucket.models.push(m);
     }
-    return Array.from(providers.entries())
+    const provStats = Array.from(providers.entries())
       .map(([name, { models, color }]) => {
         const speeds = models.map((m) => m.speed?.median_output_speed ?? m.speed?.timescaleData?.median_output_speed).filter((s): s is number => s != null);
         const avgSpeed = speeds.length > 0 ? speeds.reduce((a, b) => a + b, 0) / speeds.length : 0;
         return { name, color, avgSpeed, count: models.length };
       })
       .sort((a, b) => b.avgSpeed - a.avgSpeed);
-  }, [artificialRankings]);
+
+    return { downloadStats: dlStats, hallucinationStats: halStats, toolUsageShare: usageShare, kpiStrip: kpis, providerStats: provStats, arenaT2IModels };
+  }, [artificialData, hallucinationRankings, dashboardData, t]);
+
   const healthyCount = healthData.filter((e) => e.status === "ok").length;
   const totalCount = healthData.length;
 
@@ -127,7 +114,7 @@ function HomeContent() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4">
-        <IndexLineChart models={artificialRankings} />
+        <IndexLineChart models={artificialData} />
         <Card className="h-fit">
           <CardContent className="p-4">
             <div className="flex flex-col gap-3">

@@ -58,20 +58,17 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
     [compareIds],
   );
 
-  const validModels = useMemo(() => {
-    return rankings.filter((model) => {
+  const preFiltered = useMemo(() => {
+    let result = rankings.filter((model) => {
       if (viewMode === "rankings") return typeof model.intelligence_index === "number" && Number.isFinite(model.intelligence_index);
       return model.pricing?.input != null || model.pricing?.output != null || model.pricing?.cache_hit != null || model.pricing?.blended?.["7_2_1"] != null;
     });
-  }, [rankings, viewMode]);
+    if (reasoningFilter === "reasoning") result = result.filter(isReasoningModel);
+    else if (reasoningFilter === "non-reasoning") result = result.filter((m) => !isReasoningModel(m));
+    return result;
+  }, [rankings, viewMode, reasoningFilter]);
 
-  const reasoningFiltered = useMemo(() => {
-    if (reasoningFilter === "reasoning") return validModels.filter(isReasoningModel);
-    if (reasoningFilter === "non-reasoning") return validModels.filter((m) => !isReasoningModel(m));
-    return validModels;
-  }, [validModels, reasoningFilter]);
-
-  const searchFiltered = useFilteredData(reasoningFiltered, getSearchFields);
+  const searchFiltered = useFilteredData(preFiltered, getSearchFields);
 
   const filteredRankings = useMemo(() => {
     if (modalityFilter === "all") return searchFiltered;

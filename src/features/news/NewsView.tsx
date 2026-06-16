@@ -5,7 +5,7 @@ import type { TranslationKey } from "../../shared/i18n";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { Card } from "../../shared/components/ui/card";
 import { Pagination } from "../../shared/components/ui/pagination";
-import { useAllNews, NEWS_CATEGORIES_LIST } from "../../shared/hooks/useQueries";
+import { useNewsByCategory } from "../../shared/hooks/useQueries";
 import { Spinner } from "../../shared/components/feedback/SuspenseQuery";
 import { safeHref, formatRelativeTime } from "../../shared/utils/format";
 import { COOL_COLORS } from "../../shared/components/rankColor";
@@ -14,15 +14,15 @@ import { TabContainer, type TabItem } from "../../shared/components/composite/Ta
 import type { NewsItem } from "../../shared/types";
 import { useIsMobile } from "../../shared/hooks/useIsMobile";
 
-const CATEGORIES = [
-  { id: "official", labelKey: "catOfficial" as TranslationKey, color: COOL_COLORS[0]! },
-  { id: "industry", labelKey: "catIndustry" as TranslationKey, color: COOL_COLORS[1]! },
-  { id: "research", labelKey: "catResearch" as TranslationKey, color: COOL_COLORS[2]! },
-  { id: "agentic", labelKey: "catAgentic" as TranslationKey, color: COOL_COLORS[3]! },
-  { id: "hardware", labelKey: "catHardware" as TranslationKey, color: COOL_COLORS[4]! },
-  { id: "policy", labelKey: "catPolicy" as TranslationKey, color: COOL_COLORS[5]! },
-  { id: "funding", labelKey: "catFunding" as TranslationKey, color: COOL_COLORS[6]! },
-  { id: "opensource", labelKey: "catOpenSource" as TranslationKey, color: COOL_COLORS[7]! },
+const CATEGORIES: { id: string; labelKey: TranslationKey; color: string }[] = [
+  { id: "official", labelKey: "catOfficial", color: COOL_COLORS[0]! },
+  { id: "industry", labelKey: "catIndustry", color: COOL_COLORS[1]! },
+  { id: "research", labelKey: "catResearch", color: COOL_COLORS[2]! },
+  { id: "agentic", labelKey: "catAgentic", color: COOL_COLORS[3]! },
+  { id: "hardware", labelKey: "catHardware", color: COOL_COLORS[4]! },
+  { id: "policy", labelKey: "catPolicy", color: COOL_COLORS[5]! },
+  { id: "funding", labelKey: "catFunding", color: COOL_COLORS[6]! },
+  { id: "opensource", labelKey: "catOpenSource", color: COOL_COLORS[7]! },
 ];
 
 function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color: string; isLoading: boolean; isError: boolean }) {
@@ -84,28 +84,33 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
   );
 }
 
+function NewsCategoryContent({ categoryId, color }: { categoryId: string; color: string }) {
+  const result = useNewsByCategory(categoryId);
+  return <NewsList news={result.data || []} color={color} isLoading={result.isLoading} isError={result.isError} />;
+}
+
 export function NewsView() {
   const { t } = useTranslation();
-  const allResults = useAllNews();
+  const [activeCategory, setActiveCategory] = useState("official");
+
+  const activeColor = CATEGORIES.find((c) => c.id === activeCategory)?.color ?? COOL_COLORS[0]!;
 
   const tabs: TabItem[] = useMemo(
     () =>
-      CATEGORIES.map((cat) => {
-        const categoryIndex = NEWS_CATEGORIES_LIST.indexOf(cat.id as (typeof NEWS_CATEGORIES_LIST)[number]);
-        const result = allResults[categoryIndex];
-        return {
-          id: cat.id,
-          label: t(cat.labelKey),
-          content: <NewsList news={result?.data || []} color={cat.color} isLoading={result?.isLoading ?? true} isError={result?.isError ?? false} />,
-        };
-      }),
-    [t, allResults],
+      CATEGORIES.map((cat) => ({
+        id: cat.id,
+        label: t(cat.labelKey),
+        content: null,
+      })),
+    [t],
   );
 
   return (
     <div className="flex flex-col gap-4">
       <SectionHeader title={t("newsTitle")} />
-      <TabContainer tabs={tabs} defaultTabId="official" tabSize="sm" />
+      <TabContainer tabs={tabs} defaultTabId="official" tabSize="sm" onTabChange={setActiveCategory}>
+        <NewsCategoryContent categoryId={activeCategory} color={activeColor} />
+      </TabContainer>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { Hono } from "hono";
+import { startTime, endTime } from "hono/timing";
 import type { RouteDef } from "../schema";
 import { ValidationError } from "../errors";
 
@@ -24,7 +25,6 @@ export function registerRoutes(app: Hono, routeArrays: RouteDef[][]): void {
           for (const p of get.params) {
             args.push(c.req.query(p) ?? get.defaults?.[p] ?? "");
           }
-          const { startTime, endTime } = await import("hono/timing");
           startTime(c, "upstream");
           const data = await get.handler(...args);
           endTime(c, "upstream");

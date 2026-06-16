@@ -30,14 +30,20 @@ export default defineConfig(() => ({
           if (id.includes("node_modules/react-router")) {
             return "vendor-router";
           }
-          if (id.includes("node_modules/recharts/") || id.includes("node_modules/d3-") || id.includes("node_modules/victory-vendor/")) {
+          if (id.includes("node_modules/recharts/")) {
             return "charts";
+          }
+          if (id.includes("node_modules/d3-") || id.includes("node_modules/victory-vendor/")) {
+            return "charts-deps";
           }
           if (id.includes("node_modules/@tanstack/react-query/")) {
             return "query";
           }
           if (id.includes("node_modules/lucide-react/")) {
             return "icons";
+          }
+          if (id.includes("node_modules/zustand/")) {
+            return "state";
           }
         },
       },

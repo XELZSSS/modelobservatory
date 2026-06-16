@@ -20,15 +20,17 @@ import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { CompareMetric } from "../../shared/utils/compareMetrics";
 import { approxEq } from "../../shared/utils/math";
 
-function getWinnerStatus(value: number | null | undefined, metric: CompareMetric, models: ArtificialAnalysisModel[]): "win" | "loss" | null {
-  if (value == null) return null;
-  const values = models.map((m) => metric.getNumericValue?.(m)).filter((v): v is number => typeof v === "number" && Number.isFinite(v));
-  if (values.length === 0) return null;
-  const best = metric.higherIsBetter === false ? Math.min(...values) : Math.max(...values);
-  const worst = metric.higherIsBetter === false ? Math.max(...values) : Math.min(...values);
-  if (approxEq(value, best)) return "win";
-  if (approxEq(value, worst)) return "loss";
-  return null;
+function computeMetricWinners(metric: CompareMetric, models: ArtificialAnalysisModel[]): Map<string, "win" | "loss"> {
+  const values = models.map((m) => ({ id: modelId(m), val: metric.getNumericValue?.(m) })).filter((v): v is { id: string; val: number } => typeof v.val === "number" && Number.isFinite(v.val));
+  if (values.length === 0) return new Map();
+  const best = metric.higherIsBetter === false ? Math.min(...values.map((v) => v.val)) : Math.max(...values.map((v) => v.val));
+  const worst = metric.higherIsBetter === false ? Math.max(...values.map((v) => v.val)) : Math.min(...values.map((v) => v.val));
+  const map = new Map<string, "win" | "loss">();
+  for (const { id, val } of values) {
+    if (approxEq(val, best)) map.set(id, "win");
+    else if (approxEq(val, worst)) map.set(id, "loss");
+  }
+  return map;
 }
 
 const MetricValueDisplay = memo(function MetricValueDisplay({
@@ -53,23 +55,17 @@ const MetricValueDisplay = memo(function MetricValueDisplay({
   );
 });
 
-const ModelMetricRow = memo(function ModelMetricRow({
-  model,
-  index,
-  metric,
-  models,
-  iconSize = 12,
-  className = "",
-}: {
+interface ModelMetricRowProps {
   model: ArtificialAnalysisModel;
   index: number;
   metric: CompareMetric;
-  models: ArtificialAnalysisModel[];
+  winners: Map<string, "win" | "loss">;
   iconSize?: number;
   className?: string;
-}) {
-  const numeric = metric.getNumericValue?.(model) ?? null;
-  const winner = getWinnerStatus(numeric, metric, models);
+}
+
+const ModelMetricRow = memo(function ModelMetricRow({ model, index, metric, winners, iconSize = 12, className = "" }: ModelMetricRowProps) {
+  const winner = winners.get(modelId(model)) ?? null;
   return (
     <div className="flex items-center justify-between gap-2">
       <span className="text-xs truncate" style={{ color: getModelColor(index) }}>
@@ -83,18 +79,21 @@ const ModelMetricRow = memo(function ModelMetricRow({
 const CompactMetricCards = memo(function CompactMetricCards({ metrics, models }: { metrics: CompareMetric[]; models: ArtificialAnalysisModel[] }) {
   return (
     <div className="flex flex-col gap-2">
-      {metrics.map((metric, mIndex) => (
-        <Card key={mIndex}>
-          <CardContent className="p-3">
-            <p className="text-xs font-bold text-text-secondary mb-2">{metric.label}</p>
-            <div className="flex flex-col gap-1">
-              {models.map((model, index) => (
-                <ModelMetricRow key={models[index]?.id ?? index} model={model} index={index} metric={metric} models={models} iconSize={10} className="text-xs font-mono" />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+      {metrics.map((metric, mIndex) => {
+        const winners = computeMetricWinners(metric, models);
+        return (
+          <Card key={mIndex}>
+            <CardContent className="p-3">
+              <p className="text-xs font-bold text-text-secondary mb-2">{metric.label}</p>
+              <div className="flex flex-col gap-1">
+                {models.map((model, index) => (
+                  <ModelMetricRow key={models[index]?.id ?? index} model={model} index={index} metric={metric} winners={winners} iconSize={10} className="text-xs font-mono" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 });
@@ -114,20 +113,19 @@ const MetricTable = memo(function MetricTable({ metrics, models, t }: { metrics:
           </tr>
         </thead>
         <tbody>
-          {metrics.map((metric, mIndex) => (
-            <tr key={mIndex} className="border-b border-border last:border-b-0">
-              <td className="px-2 py-2 text-text-secondary">{metric.label}</td>
-              {models.map((model, index) => {
-                const numeric = metric.getNumericValue?.(model) ?? null;
-                const winner = getWinnerStatus(numeric, metric, models);
-                return (
+          {metrics.map((metric, mIndex) => {
+            const winners = computeMetricWinners(metric, models);
+            return (
+              <tr key={mIndex} className="border-b border-border last:border-b-0">
+                <td className="px-2 py-2 text-text-secondary">{metric.label}</td>
+                {models.map((model, index) => (
                   <td key={models[index]?.id ?? index} className="px-2 py-2 text-right">
-                    <MetricValueDisplay value={metric.getValue(model)} winner={winner} iconSize={12} />
+                    <MetricValueDisplay value={metric.getValue(model)} winner={winners.get(modelId(model)) ?? null} iconSize={12} />
                   </td>
-                );
-              })}
-            </tr>
-          ))}
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

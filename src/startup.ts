@@ -2,7 +2,12 @@ import { useEffect } from "react";
 import { STORAGE_KEYS } from "./shared/constants";
 import { readStorageJson, removeStorage, writeStorage } from "./shared/utils/storage";
 
+let cacheMigrated = false;
+
 function migrateCacheVersion() {
+  if (cacheMigrated) return;
+  cacheMigrated = true;
+
   const stored = readStorageJson<string>(STORAGE_KEYS.cacheVersion, "");
   if (stored === "1") return;
 

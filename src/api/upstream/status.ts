@@ -6,20 +6,11 @@ const HEALTH_TIMEOUT = HEALTH_TIMEOUT_MS;
 const UA = USER_AGENT;
 
 async function ping(url: string): Promise<{ responseTime: number; statusCode: number }> {
-  const retries = 2;
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    if (attempt > 0) await new Promise((r) => setTimeout(r, 500 * attempt));
-    const start = Date.now();
-    try {
-      const res = await fetch(url, { method: "GET", headers: { "user-agent": UA }, signal: AbortSignal.timeout(HEALTH_TIMEOUT) });
-      const responseTime = Date.now() - start;
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return { responseTime, statusCode: res.status };
-    } catch (e) {
-      if (attempt === retries) throw e;
-    }
-  }
-  throw new Error("ping failed");
+  const start = Date.now();
+  const res = await fetch(url, { method: "GET", headers: { "user-agent": UA }, signal: AbortSignal.timeout(HEALTH_TIMEOUT) });
+  const responseTime = Date.now() - start;
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return { responseTime, statusCode: res.status };
 }
 
 async function probe(name: string, url: string, apiPath?: string): Promise<HealthEntry> {
