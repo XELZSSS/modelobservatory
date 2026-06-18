@@ -2,11 +2,17 @@ const MAX_ENTRIES = 500;
 const NEG_TTL_MS = 5_000;
 const MAX_NEG_KEYS = 100;
 
-class MemoryCache {
+export interface CacheBackend {
+  get<T>(key: string): Promise<T | null>;
+  set<T>(key: string, value: T, ttlMs: number): Promise<void>;
+  delete(key: string): Promise<void>;
+}
+
+class MemoryCache implements CacheBackend {
   private store = new Map<string, { data: unknown; expires: number }>();
   private writes = 0;
 
-  get<T>(key: string): T | null {
+  async get<T>(key: string): Promise<T | null> {
     const entry = this.store.get(key);
     if (!entry) return null;
     if (entry.expires <= Date.now()) { this.store.delete(key); return null; }
@@ -15,13 +21,13 @@ class MemoryCache {
     return entry.data as T;
   }
 
-  set<T>(key: string, value: T, ttlMs: number): void {
+  async set<T>(key: string, value: T, ttlMs: number): Promise<void> {
     this.store.delete(key);
     this.store.set(key, { data: value, expires: Date.now() + ttlMs });
     if (++this.writes >= 100) { this.writes = 0; this.evict(); }
   }
 
-  delete(key: string): void { this.store.delete(key); }
+  async delete(key: string): Promise<void> { this.store.delete(key); }
 
   private evict() {
     const now = Date.now();
@@ -34,11 +40,11 @@ class MemoryCache {
   }
 }
 
-export const cache = new MemoryCache();
-export let globalCache: MemoryCache | KVCache = cache;
-export function initCache(backend: MemoryCache | KVCache) { globalCache = backend; }
+export const cache: CacheBackend = new MemoryCache();
+export let globalCache: CacheBackend = cache;
+export function initCache(backend: CacheBackend) { globalCache = backend; }
 
-export class KVCache {
+export class KVCache implements CacheBackend {
   constructor(private kv: KVNamespace) {}
   async get<T>(key: string): Promise<T | null> {
     const raw = await this.kv.get(key, "text");
@@ -62,15 +68,19 @@ function dedup<T>(key: string, fn: () => Promise<T>): Promise<T> {
 }
 
 // Negative cache: prevent hammering a failing upstream
-const negKeys = new Set<string>();
+const negKeys = new Map<string, ReturnType<typeof setTimeout>>();
 
 function addNegKey(key: string) {
   if (negKeys.size >= MAX_NEG_KEYS) {
-    const first = negKeys.values().next().value;
-    if (first !== undefined) negKeys.delete(first);
+    const first = negKeys.keys().next().value;
+    if (first !== undefined) {
+      clearTimeout(negKeys.get(first)!);
+      negKeys.delete(first);
+    }
   }
-  negKeys.add(key);
-  setTimeout(() => negKeys.delete(key), NEG_TTL_MS);
+  const existing = negKeys.get(key);
+  if (existing) clearTimeout(existing);
+  negKeys.set(key, setTimeout(() => negKeys.delete(key), NEG_TTL_MS));
 }
 
 export async function withCache<T>(key: string, ttlMs: number, fn: () => Promise<T>): Promise<T> {

@@ -6,11 +6,12 @@ import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { Badge } from "../../shared/components/ui/badge";
 import { Button } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
-import { FilterChip } from "../../shared/components/composite/TabButton";
+import { TabButton } from "../../shared/components/composite/TabButton";
 import { Input } from "../../shared/components/ui/input";
 import { MAX_COMPARE_MODELS } from "../../shared/constants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
+import { useRankMap } from "../../shared/hooks/useRankMap";
 import { useCompareStore } from "../../shared/stores/compareStore";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
@@ -83,11 +84,7 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
     });
   }, [searchFiltered, modalityFilter]);
 
-  const rankMap = useMemo(() => {
-    const map = new Map<string, number>();
-    filteredRankings.forEach((m, i) => map.set(modelId(m), i + 1));
-    return map;
-  }, [filteredRankings]);
+  const rankMap = useRankMap(filteredRankings, modelId);
 
   const canOpenCompare = compareIds.length >= 2;
 
@@ -116,7 +113,7 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
         <div className="flex-1 min-w-0">
           <p className={secondaryTextClass}>{t("artificialSource")}</p>
           <div className="flex flex-row gap-1 mt-1 flex-wrap items-center">
-            <FilterChip
+            <TabButton
               active={viewMode === "rankings"}
               onClick={() => {
                 setViewMode("rankings");
@@ -124,8 +121,8 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
               }}
             >
               {t("modelRankings")}
-            </FilterChip>
-            <FilterChip
+            </TabButton>
+            <TabButton
               active={viewMode === "pricing"}
               onClick={() => {
                 setViewMode("pricing");
@@ -133,29 +130,31 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
               }}
             >
               {t("pricing")}
-            </FilterChip>
+            </TabButton>
             <span className="w-[1px] h-4 bg-border mx-1" />
             {[
               { key: "all" as const, label: t("all") },
               { key: "reasoning" as const, label: t("reasoning") },
               { key: "non-reasoning" as const, label: t("nonReasoning") },
             ].map((tab) => (
-              <FilterChip key={tab.key} active={reasoningFilter === tab.key} onClick={() => setReasoningFilter(tab.key)}>
+              <TabButton key={tab.key} active={reasoningFilter === tab.key} onClick={() => setReasoningFilter(tab.key)}>
                 {tab.label}
-              </FilterChip>
+              </TabButton>
             ))}
-            <span className="w-[1px] h-4 bg-border mx-1" />
-            {[
-              { key: "all" as const, label: t("allModalities") },
-              { key: "text" as const, label: t("textOnly") },
-              { key: "image" as const, label: t("imageInput") },
-              { key: "speech" as const, label: t("speechInput") },
-              { key: "video" as const, label: t("videoInput") },
-            ].map((tab) => (
-              <FilterChip key={tab.key} active={modalityFilter === tab.key} onClick={() => setModalityFilter(tab.key)}>
-                {tab.label}
-              </FilterChip>
-            ))}
+            <span className="w-[1px] h-4 bg-border mx-1 hidden sm:block" />
+            <div className="hidden sm:flex flex-row gap-1 items-center">
+              {[
+                { key: "all" as const, label: t("allModalities") },
+                { key: "text" as const, label: t("textOnly") },
+                { key: "image" as const, label: t("imageInput") },
+                { key: "speech" as const, label: t("speechInput") },
+                { key: "video" as const, label: t("videoInput") },
+              ].map((tab) => (
+                <TabButton key={tab.key} active={modalityFilter === tab.key} onClick={() => setModalityFilter(tab.key)}>
+                  {tab.label}
+                </TabButton>
+              ))}
+            </div>
           </div>
         </div>
       </div>

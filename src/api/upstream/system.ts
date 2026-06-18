@@ -32,7 +32,7 @@ export async function getSystemStats() {
   let startTime = await globalCache.get<number>(START_KEY);
   if (startTime === null) {
     startTime = appStartTime;
-    globalCache.set(START_KEY, startTime, START_TTL);
+    await globalCache.set(START_KEY, startTime, START_TTL);
   }
 
   return {

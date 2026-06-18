@@ -9,12 +9,12 @@ import type { OpenSourceModelEntry } from "../../../shared/types";
 export function OsDetailContent({ model }: { model: OpenSourceModelEntry }) {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="grid grid-cols-2 gap-1.5">
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-2">
         <StatCard label={t("downloads")} value={formatShortNumber(model.downloads)} />
         <StatCard label={t("likes")} value={formatShortNumber(model.likes)} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <InfoCard title={t("modelInfo")}>
           <InfoRow compact label={t("creator")} value={model.author || t("notAvailable")} />
           <InfoRow compact label={t("license")} value={model.license || t("notAvailable")} />

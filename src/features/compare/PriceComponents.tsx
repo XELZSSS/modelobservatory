@@ -4,7 +4,7 @@ import { TrendingUp } from "lucide-react";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import { getModelColor } from "../../shared/components/rankColor";
 import { approxEq } from "../../shared/utils/math";
-import { formatScore } from "../../shared/utils/format";
+import { formatScore, formatDollar } from "../../shared/utils/format";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { secondaryTextClass, smallBoldClass, winnerPriceClass } from "../../shared/utils/cssConstants";
 import type { TFunction } from "../../shared/i18n";
@@ -17,10 +17,10 @@ export interface PriceRow {
 
 export function buildPriceRows(t: TFunction): PriceRow[] {
   return [
-    { label: t("promptPrice"), getValue: (m) => m.pricing?.input, format: (v) => `$${v.toFixed(2)}` },
-    { label: t("completionPrice"), getValue: (m) => m.pricing?.output, format: (v) => `$${v.toFixed(2)}` },
-    { label: t("cacheHitPrice"), getValue: (m) => m.pricing?.cache_hit, format: (v) => `$${v.toFixed(2)}` },
-    { label: t("blendedPrice"), getValue: (m) => m.pricing?.blended?.["7_2_1"], format: (v) => `$${v.toFixed(2)}` },
+    { label: t("promptPrice"), getValue: (m) => m.pricing?.input, format: (v) => formatDollar(v) },
+    { label: t("completionPrice"), getValue: (m) => m.pricing?.output, format: (v) => formatDollar(v) },
+    { label: t("cacheHitPrice"), getValue: (m) => m.pricing?.cache_hit, format: (v) => formatDollar(v) },
+    { label: t("blendedPrice"), getValue: (m) => m.pricing?.blended?.["7_2_1"], format: (v) => formatDollar(v) },
   ];
 }
 
@@ -176,7 +176,7 @@ export const EfficiencyTableDesktop = React.memo(function EfficiencyTableDesktop
                   {model.short_name || model.name}
                 </td>
                 <td className="px-2 py-2 text-right font-mono">{formatScore(t, model.intelligence_index)}</td>
-                <td className="px-2 py-2 text-right font-mono">{model.pricing?.blended?.["7_2_1"] != null ? `$${model.pricing.blended["7_2_1"]!.toFixed(2)}` : t("notAvailable")}</td>
+                <td className="px-2 py-2 text-right font-mono">{formatDollar(model.pricing?.blended?.["7_2_1"], t)}</td>
                 <td className="px-2 py-2 text-right font-mono">
                   {eff != null ? (
                     <span className={isBest ? winnerPriceClass : ""}>
@@ -225,7 +225,7 @@ export const EfficiencyCardsMobile = React.memo(function EfficiencyCardsMobile({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className={secondaryTextClass}>{t("blendedPrice")}</span>
-                  <span className="text-xs font-mono">{model.pricing?.blended?.["7_2_1"] != null ? `$${model.pricing.blended["7_2_1"]!.toFixed(2)}` : t("notAvailable")}</span>
+                  <span className="text-xs font-mono">{formatDollar(model.pricing?.blended?.["7_2_1"], t)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className={secondaryTextClass}>{t("intelligencePerDollar")}</span>

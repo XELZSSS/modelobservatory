@@ -7,21 +7,12 @@ export function useElementWidth(): [RefObject<HTMLDivElement | null>, number] {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    let raf = 0;
-    const update = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        setWidth(Math.floor(el.getBoundingClientRect().width));
-      });
-    };
+    const update = () => setWidth(Math.floor(el.getBoundingClientRect().width));
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-    };
-  }, []);
+    return () => ro.disconnect();
+  });
 
   return [ref, width];
 }

@@ -6,14 +6,14 @@ import { Button } from "../../shared/components/ui/button";
 import { ModelDetailContent } from "../../shared/components/composite/ModelDetailContent";
 import { RankBadge } from "../../shared/components/composite/RankBadge";
 import { ellipsisTextClasses, modelCellClass } from "../../shared/utils/cssConstants";
-import { formatContext, formatScore } from "../../shared/utils/format";
+import { formatContext, formatScore, formatDollar } from "../../shared/utils/format";
 import { calcModelCost } from "../../shared/utils/costCalc";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { TFunction } from "../../shared/i18n";
 
 export function ModelExpandedDetail({ model }: { model: ArtificialAnalysisModel }) {
   return (
-    <div className="p-3">
+    <div className="p-4">
       <ModelDetailContent model={model} />
     </div>
   );
@@ -75,10 +75,7 @@ export function RankingModelCell({
 }
 
 export function priceCell(get: (m: ArtificialAnalysisModel) => number | null | undefined, t: TFunction) {
-  return (m: ArtificialAnalysisModel) => {
-    const p = get(m);
-    return p != null ? `$${p.toFixed(2)}` : t("notAvailable");
-  };
+  return (m: ArtificialAnalysisModel) => formatDollar(get(m), t);
 }
 
 export function scoreColumn(
@@ -238,7 +235,7 @@ export function buildPricingColumns(
       hiddenMd: true,
       cell: (model) => {
         const cost = calcModelCost(model, calcPrompt, calcCompletion);
-        return cost != null ? `$${cost.toFixed(2)}` : t("notAvailable");
+        return formatDollar(cost, t);
       },
     },
   ];

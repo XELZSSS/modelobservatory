@@ -39,7 +39,7 @@ function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
               </div>
               <ExternalLinkButton href={item.url} iconSize={12} />
             </div>
-            <p className={`${secondaryTextClass} mb-2 line-clamp-2`}>{item.question}</p>
+            <p className={`${secondaryTextClass} mb-2 line-clamp-1 sm:line-clamp-2`}>{item.question}</p>
             <div className="flex items-center justify-between">
               <span className={`text-lg font-extrabold ${numberTextClass}`} style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>
                 {(item.probability * 100).toFixed(1)}%
@@ -73,7 +73,7 @@ function ReleasesTab({ items }: { items: ReleasePrediction[] }) {
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
-              <p className={`${secondaryTextClass} mb-2 line-clamp-2`}>{item.question}</p>
+              <p className={`${secondaryTextClass} mb-2 line-clamp-1 sm:line-clamp-2`}>{item.question}</p>
               <div className="flex flex-col gap-1">
                 {item.predictions.map((p, j) => (
                   <div key={j} className="flex items-center justify-between gap-2">
@@ -113,7 +113,7 @@ function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
-              <p className={`${secondaryTextClass} mb-2 line-clamp-2`}>{item.question}</p>
+              <p className={`${secondaryTextClass} mb-2 line-clamp-1 sm:line-clamp-2`}>{item.question}</p>
               <div className="flex flex-col gap-1">
                 {item.options.slice(0, 3).map((opt, j) => (
                   <div key={j} className="flex items-center justify-between gap-2">
@@ -148,10 +148,10 @@ export function PredictionsSection({ data }: { data: PredictionsPayload }) {
   const hasData = data.modelRankings.length > 0 || data.releases.length > 0 || data.providers.length > 0;
   if (!hasData) return null;
 
-  const tabs: { key: TabKey; label: string; count: number }[] = [
-    { key: "rankings", label: t("modelRankingPredictions"), count: data.modelRankings.length },
-    { key: "releases", label: t("releasePredictions"), count: data.releases.length },
-    { key: "providers", label: t("providerPredictions"), count: data.providers.length },
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: "rankings", label: t("modelRankingPredictions") },
+    { key: "releases", label: t("releasePredictions") },
+    { key: "providers", label: t("providerPredictions") },
   ];
 
   return (
@@ -164,9 +164,7 @@ export function PredictionsSection({ data }: { data: PredictionsPayload }) {
         <div className="flex gap-1 overflow-x-auto">
           {tabs.map((tab) => (
             <TabButton key={tab.key} size="sm" active={active === tab.key} onClick={() => setActive(tab.key)}>
-              <span className="whitespace-nowrap">
-                {tab.label} ({tab.count})
-              </span>
+              <span className="whitespace-nowrap">{tab.label}</span>
             </TabButton>
           ))}
         </div>

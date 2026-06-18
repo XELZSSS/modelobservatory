@@ -169,15 +169,13 @@ function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "r
       {
         id: "feed",
         label: t("releases"),
-        content: <FeedTab allEntries={allEntries} />,
       },
       {
         id: "release-dates",
         label: t("scoreRelease"),
-        content: <ReleaseDatesTab releaseRows={releaseRows} />,
       },
     ],
-    [t, allEntries, releaseRows],
+    [t],
   );
 
   return (
@@ -189,7 +187,9 @@ function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "r
       {lockedMode ? (
         <ReleaseDatesTab releaseRows={releaseRows} />
       ) : (
-        <TabContainer tabs={tabs} defaultTabId={mode} onTabChange={(id) => setMode(id as "feed" | "release-dates")} tabSize="sm" />
+        <TabContainer tabs={tabs} defaultTabId={mode} onTabChange={(id) => setMode(id as "feed" | "release-dates")} tabSize="sm">
+          {mode === "feed" ? <FeedTab allEntries={allEntries} /> : <ReleaseDatesTab releaseRows={releaseRows} />}
+        </TabContainer>
       )}
     </ViewLayout>
   );

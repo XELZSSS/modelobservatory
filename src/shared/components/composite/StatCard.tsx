@@ -13,8 +13,8 @@ interface StatCardProps {
 export const StatCard = memo(function StatCard({ label, value, icon: Icon, className, valueClassName }: StatCardProps) {
   return (
     <Card className={className}>
-      <CardContent className="text-center p-2.5">
-        <div className="flex items-center justify-center gap-1 mb-1 min-w-0">
+      <CardContent className="text-center p-3">
+        <div className="flex items-center justify-center gap-1.5 mb-1.5 min-w-0">
           {Icon && (
             <span className="text-text-secondary shrink-0">
               <Icon className="size-4" />

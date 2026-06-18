@@ -87,7 +87,7 @@ const CompactMetricCards = memo(function CompactMetricCards({ metrics, models }:
               <p className="text-xs font-bold text-text-secondary mb-2">{metric.label}</p>
               <div className="flex flex-col gap-1">
                 {models.map((model, index) => (
-                  <ModelMetricRow key={models[index]?.id ?? index} model={model} index={index} metric={metric} winners={winners} iconSize={10} className="text-xs font-mono" />
+                  <ModelMetricRow key={modelId(model) || index} model={model} index={index} metric={metric} winners={winners} iconSize={10} className="text-xs font-mono" />
                 ))}
               </div>
             </CardContent>
@@ -106,7 +106,7 @@ const MetricTable = memo(function MetricTable({ metrics, models, t }: { metrics:
           <tr className="border-b border-border">
             <th className="text-left px-2 py-2 font-bold text-text-secondary">{t("metric")}</th>
             {models.map((model, index) => (
-              <th key={models[index]?.id ?? index} className="text-right px-2 py-2 font-bold" style={{ color: getModelColor(index) }}>
+              <th key={modelId(model) || index} className="text-right px-2 py-2 font-bold" style={{ color: getModelColor(index) }}>
                 {model.short_name || model.name}
               </th>
             ))}
@@ -119,7 +119,7 @@ const MetricTable = memo(function MetricTable({ metrics, models, t }: { metrics:
               <tr key={mIndex} className="border-b border-border last:border-b-0">
                 <td className="px-2 py-2 text-text-secondary">{metric.label}</td>
                 {models.map((model, index) => (
-                  <td key={models[index]?.id ?? index} className="px-2 py-2 text-right">
+                  <td key={modelId(model) || index} className="px-2 py-2 text-right">
                     <MetricValueDisplay value={metric.getValue(model)} winner={winners.get(modelId(model)) ?? null} iconSize={12} />
                   </td>
                 ))}
@@ -194,7 +194,7 @@ export function CompareView() {
           </div>
           <div className="min-w-0 w-full md:w-1/2 flex items-center">
             <div className="md:hidden w-full">
-              <CompactMetricCards metrics={metrics} models={models} />
+              <CompactMetricCards metrics={metrics.filter((m) => m.mobileKey)} models={models} />
             </div>
             <div className="hidden md:block w-full">
               <MetricTable metrics={metrics} models={models} t={t} />

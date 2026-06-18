@@ -30,7 +30,7 @@ export function formatShortNumber(n: number) {
 }
 
 export function formatScore(t: TFunction, n?: number | null) {
-  if (typeof n !== "number") return t("notAvailable");
+  if (typeof n !== "number" || !Number.isFinite(n)) return t("notAvailable");
   return n.toFixed(2);
 }
 

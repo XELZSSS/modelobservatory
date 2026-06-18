@@ -3,20 +3,20 @@ import { InfoCard } from "../../../shared/components/composite/InfoCard";
 import { InfoRow } from "../../../shared/components/composite/InfoRow";
 import { Badge } from "../../../shared/components/ui/badge";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
-import { formatShortNumber, formatTrend, getRecommendation, categoryLabel } from "../../../shared/utils/format";
+import { formatShortNumber, formatTrend, formatDollar, getRecommendation, categoryLabel } from "../../../shared/utils/format";
 import type { OpenRouterRankEntry } from "../../../shared/types";
 
 export function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <StatCard label={t("creator")} value={model.creator} />
         <StatCard label={t("inputTokens")} value={formatShortNumber(model.promptTokens ?? 0)} />
         <StatCard label={t("outputTokens")} value={formatShortNumber(model.completionTokens ?? 0)} />
         {model.reasoningTokens ? <StatCard label={t("reasoningTokens")} value={formatShortNumber(model.reasoningTokens)} /> : <StatCard label={t("category")} value={categoryLabel(model.category, t)} />}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <InfoCard title={t("modelInfo")}>
           <InfoRow compact label={t("apiModelId")} value={<code className="font-mono text-xs bg-bg-secondary px-1 rounded">{model.id}</code>} />
           <InfoRow compact label={t("category")} value={categoryLabel(model.category, t)} />
@@ -24,8 +24,8 @@ export function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
           <InfoRow compact label={t("totalTokens")} value={formatShortNumber(model.totalTokens ?? 0)} />
         </InfoCard>
         <InfoCard title={t("pricing")}>
-          <InfoRow compact label={t("promptPrice")} value={typeof model.pricing?.prompt === "number" ? `$${model.pricing.prompt.toFixed(2)}` : t("notAvailable")} />
-          <InfoRow compact label={t("completionPrice")} value={typeof model.pricing?.completion === "number" ? `$${model.pricing.completion.toFixed(2)}` : t("notAvailable")} />
+          <InfoRow compact label={t("promptPrice")} value={formatDollar(model.pricing?.prompt, t)} />
+          <InfoRow compact label={t("completionPrice")} value={formatDollar(model.pricing?.completion, t)} />
         </InfoCard>
       </div>
       <InfoCard title={t("techSelectionAdvice")}>

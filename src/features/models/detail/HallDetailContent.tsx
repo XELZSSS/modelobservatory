@@ -9,8 +9,8 @@ export function HallDetailContent({ model, aaModel }: { model: HallucinationRank
   const { t } = useTranslation();
   // Values are already in percentage form (0-100) via normalizePercent in buildHallucinationRankings
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <StatCard label={t("omniscienceIndex")} value={model.omniscienceIndex.toFixed(1)} />
         <StatCard label={t("accuracy")} value={`${model.accuracy.toFixed(1)}%`} />
         <StatCard label={t("hallucinationRate")} value={`${model.hallucinationRate.toFixed(1)}%`} />

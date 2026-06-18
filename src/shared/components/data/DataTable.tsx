@@ -46,7 +46,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
   }, [data, getRowId]);
 
   const { sortedData, sortState, toggleSort } = useTableSort(dedupedData, columns);
-  const { page, totalPages, pagedData, nextPage, prevPage, resetPage } = useTablePagination(sortedData, effectivePageSize);
+  const { page, totalPages, pagedData, goToPage, resetPage } = useTablePagination(sortedData, effectivePageSize);
 
   const handleSort = useCallback(
     (colId: string) => {
@@ -128,7 +128,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                       </tr>
                       {isExpanded && (
                         <tr>
-                          <td colSpan={columns.length} className="p-0">
+                          <td colSpan={columns.length} className="p-0 bg-bg-secondary border-t border-border">
                             {renderExpandedRow?.(record)}
                           </td>
                         </tr>
@@ -141,7 +141,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
           </div>
 
           {sortedData.length > effectivePageSize && (
-            <Pagination page={page} totalPages={totalPages} onChange={(p) => { if (p < page) prevPage(); else if (p > page) nextPage(); }} className="pt-1 self-center" />
+            <Pagination page={page} totalPages={totalPages} onChange={goToPage} className="pt-1 self-center" />
           )}
         </>
       )}

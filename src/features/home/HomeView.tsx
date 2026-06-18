@@ -10,6 +10,7 @@ import { getModelColor } from "../../shared/components/rankColor";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { formatShortNumber } from "../../shared/utils/format";
+import { groupByProvider } from "../../shared/utils/providerStats";
 import { PredictionsSection } from "../../shared/components/data/PredictionCards";
 import { KpiCard, ToolUsageShareDonut, UptimeDisplay, ClockDisplay, ArenaT2ICard, StatusBarPill } from "./components";
 import { SearchInput } from "./SearchInput";
@@ -73,16 +74,9 @@ function HomeContent() {
       { label: t("bestTtsModel"), value: bestTtsModel?.name || t("notAvailable"), Icon: Mic },
     ];
 
-    const providers = new Map<string, { models: ArtificialAnalysisModel[]; color: string }>();
-    for (const m of artificialData) {
-      const name = m.model_creators?.name || "Unknown";
-      const color = m.model_creators?.color || "#6b7280";
-      let bucket = providers.get(name);
-      if (!bucket) { bucket = { models: [], color }; providers.set(name, bucket); }
-      bucket.models.push(m);
-    }
-    const provStats = Array.from(providers.entries())
-      .map(([name, { models, color }]) => {
+    const providers = groupByProvider(artificialData);
+    const provStats = providers
+      .map(({ name, color, models }) => {
         const speeds = models.map((m) => m.speed?.median_output_speed ?? m.speed?.timescaleData?.median_output_speed).filter((s): s is number => s != null);
         const avgSpeed = speeds.length > 0 ? speeds.reduce((a, b) => a + b, 0) / speeds.length : 0;
         return { name, color, avgSpeed, count: models.length };
@@ -108,14 +102,16 @@ function HomeContent() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-2.5">
-        {kpiStrip.map((kpi) => (
-          <KpiCard key={kpi.label} icon={kpi.Icon} label={kpi.label} value={kpi.value} />
+        {kpiStrip.map((kpi, i) => (
+          <div key={kpi.label} className={i >= 2 ? "hidden sm:block" : ""}>
+            <KpiCard icon={kpi.Icon} label={kpi.label} value={kpi.value} />
+          </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4">
         <IndexLineChart models={artificialData} />
-        <Card className="h-fit">
+        <Card className="h-fit hidden md:block">
           <CardContent className="p-4">
             <div className="flex flex-col gap-3">
               {providerStats.slice(0, 6).map((p) => (
@@ -136,7 +132,7 @@ function HomeContent() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.3fr] gap-4">
         <BarStatsCard title={t("openSourceDownloadsStats")} source={t("huggingFaceSource")} rows={downloadStats} />
         <BarStatsCard title={t("hallucinationStats")} source={t("hallucinationSource")} rows={hallucinationStats} />
-        <Card className="lg:order-3">
+        <Card className="hidden md:block md:order-3">
           <CardContent>
             <ToolUsageShareDonut total={toolUsageShare.total} rows={toolUsageShare.rows} />
           </CardContent>
@@ -146,9 +142,9 @@ function HomeContent() {
       {arenaT2IModels.length > 0 && (
         <div>
           <SectionHeader title={t("textToImage")} meta={t("arenaAISource")} />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
             {arenaT2IModels.slice(0, 8).map((entry, index) => (
-              <div key={entry.model} className={index >= 4 ? "hidden lg:block" : ""}>
+              <div key={entry.model} className={index >= 2 ? "hidden sm:block" : ""}>
                 <ArenaT2ICard entry={entry} rank={index + 1} color={getModelColor(index)} />
               </div>
             ))}

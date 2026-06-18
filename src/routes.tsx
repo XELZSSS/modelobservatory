@@ -27,7 +27,7 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<HomeView />} />
       <Route path="/models" element={<RankingsHubView defaultTab={0} />} />
-      <Route path="/pricing" element={<Navigate to="/models" replace />} />
+      <Route path="/pricing" element={<Navigate to="/models" replace state={{ viewMode: "pricing" }} />} />
       <Route path="/releases" element={<ReleasesView defaultMode="feed" />} />
       <Route path="/news" element={<NewsView />} />
       <Route path="/score-release" element={<ReleasesView defaultMode="release-dates" lockedMode />} />

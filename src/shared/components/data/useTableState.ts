@@ -53,10 +53,10 @@ export function useTablePagination<T>(data: T[], pageSize: number) {
   const safePage = Math.min(page, totalPages);
   const pagedData = data.length > pageSize ? data.slice((safePage - 1) * pageSize, safePage * pageSize) : data;
 
-  const goToPage = (p: number) => setPage(Math.max(1, Math.min(p, totalPages)));
-  const nextPage = () => goToPage(safePage + 1);
-  const prevPage = () => goToPage(safePage - 1);
-  const resetPage = () => setPage(1);
+  const goToPage = useCallback((p: number) => setPage(Math.max(1, Math.min(p, totalPages))), [totalPages]);
+  const nextPage = useCallback(() => setPage((prev) => Math.min(prev + 1, totalPages)), [totalPages]);
+  const prevPage = useCallback(() => setPage((prev) => Math.max(1, prev - 1)), []);
+  const resetPage = useCallback(() => setPage(1), []);
 
   return { page: safePage, totalPages, pagedData, goToPage, nextPage, prevPage, resetPage } as const;
 }

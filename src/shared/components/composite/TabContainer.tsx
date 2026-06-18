@@ -4,7 +4,6 @@ import { TabButton } from "./TabButton";
 export interface TabItem {
   id: string;
   label: string;
-  content: ReactNode;
 }
 
 interface TabContainerProps {
@@ -27,8 +26,6 @@ export function TabContainer({ tabs, defaultTabId, className = "", tabSize = "md
     onTabChange?.(tabId);
   };
 
-  const activeContent = children ?? tabs.find((t) => t.id === activeTab)?.content;
-
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
       <div className="flex flex-wrap gap-2" role="tablist">
@@ -38,7 +35,7 @@ export function TabContainer({ tabs, defaultTabId, className = "", tabSize = "md
           </TabButton>
         ))}
       </div>
-      <div role="tabpanel">{activeContent}</div>
+      <div role="tabpanel">{children}</div>
     </div>
   );
 }

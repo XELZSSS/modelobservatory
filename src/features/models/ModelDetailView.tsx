@@ -33,20 +33,23 @@ const SOURCE_LABELS: Record<ModelSource, string> = {
 function AADetail({ decodedId }: { decodedId: string }) {
   const { data: aaData } = useSuspenseArtificialRankings();
   const model = aaData.find((m) => m.id === decodedId || m.slug === decodedId);
-  return model ? <ModelDetailContent model={model} /> : null;
+  if (!model) return <NotFound />;
+  return <ModelDetailContent model={model} />;
 }
 
 function ORDetail({ decodedId }: { decodedId: string }) {
   const { data: orPayload } = useSuspenseOpenRouterRankings();
   const orData = orPayload?.tokenUsageRankings ?? [];
   const model = orData.find((m) => m.id === decodedId);
-  return model ? <OrDetailContent model={model} /> : null;
+  if (!model) return <NotFound />;
+  return <OrDetailContent model={model} />;
 }
 
 function OSDetail({ decodedId }: { decodedId: string }) {
   const { data: osData } = useSuspenseOpenSourceReleases();
   const model = osData.find((m) => m.id === decodedId);
-  return model ? <OsDetailContent model={model} /> : null;
+  if (!model) return <NotFound />;
+  return <OsDetailContent model={model} />;
 }
 
 function HallDetail({ decodedId }: { decodedId: string }) {
@@ -54,13 +57,15 @@ function HallDetail({ decodedId }: { decodedId: string }) {
   const hallucinationRankings = useHallucinationRankings(aaData);
   const entry = hallucinationRankings.find((m) => m.id === decodedId || m.slug === decodedId);
   const aaModel = aaData.find((m) => m.id === decodedId || m.slug === decodedId);
-  return entry ? <HallDetailContent model={entry} aaModel={aaModel} /> : null;
+  if (!entry) return <NotFound />;
+  return <HallDetailContent model={entry} aaModel={aaModel} />;
 }
 
 function TTSDetail({ decodedId }: { decodedId: string }) {
   const { data: ttsData } = useSuspenseTtsLeaderboard();
   const model = ttsData.find((m) => m.id === decodedId || m.name === decodedId);
-  return model ? <TtsDetailContent model={model} /> : null;
+  if (!model) return <NotFound />;
+  return <TtsDetailContent model={model} />;
 }
 
 function SourceContent({ src, decodedId }: { src: ModelSource; decodedId: string }) {

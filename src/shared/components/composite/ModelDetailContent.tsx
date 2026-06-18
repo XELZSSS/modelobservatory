@@ -10,14 +10,14 @@ export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }
   const { t } = useTranslation();
   const pricing = model.pricing;
   return (
-    <>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 mb-1.5">
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <StatCard label={t("intelligenceIndex")} value={formatScore(t, model.intelligence_index)} />
         <StatCard label={t("coding")} value={formatScore(t, model.coding_index)} />
         <StatCard label={t("agentic")} value={formatScore(t, model.agentic_index)} />
         <StatCard label={t("costToRun")} value={formatCost(t, pricing?.intelligence_index_cost?.total_cost)} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <InfoCard title={t("modelInfo")}>
           <InfoRow compact label={t("creator")} value={model.model_creators?.name || t("notAvailable")} />
           <InfoRow compact label={t("releaseDate")} value={model.release_date || t("notAvailable")} />
@@ -32,7 +32,7 @@ export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }
       </div>
       {model.benchmarks && Object.values(model.benchmarks).some(v => v != null) && (
         <InfoCard title={t("benchmarks")}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {Object.entries(model.benchmarks).map(([key, value]) => {
               if (value == null) return null;
               const camelKey = key.split("_").map((part, i) => i === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)).join("");
@@ -66,6 +66,6 @@ export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }
           </div>
         </div>
       </InfoCard>
-    </>
+    </div>
   );
 }

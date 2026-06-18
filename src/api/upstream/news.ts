@@ -11,12 +11,14 @@ function parseFeed(xml: string, sourceUrl: string): NewsItem[] {
   const feed = parser.parse(xml);
   const channel = feed?.rss?.channel || feed?.feed;
   if (!channel) return [];
-  const sourceName = channel.title || (() => { try { return new URL(sourceUrl).hostname; } catch { return "Unknown"; } })();
+  const rawTitle = channel.title;
+  const sourceName = (typeof rawTitle === "string" ? rawTitle : rawTitle?.["#text"]) || (() => { try { return new URL(sourceUrl).hostname; } catch { return "Unknown"; } })();
   let items = channel.item || channel.entry || [];
   if (!Array.isArray(items)) items = [items];
   return items.slice(0, 50).map((item: Record<string, unknown>) => {
     const title = item.title;
-    const link = (item.link as Record<string, unknown>)?.href || item.link;
+    const rawLink = item.link;
+    const link = typeof rawLink === "string" ? rawLink : (rawLink as Record<string, unknown>)?.href;
     if (!title || !link) return null;
     return {
       id: String((item.guid as Record<string, unknown>)?.["#text"] || item.guid || item.id || link),

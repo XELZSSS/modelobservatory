@@ -25,16 +25,6 @@ interface RankingsHubProps {
 const TAB_IDS = ["modelRankings", "openRouterRankings", "openSourceRankings", "hallucinationRankings", "tts", "benchmarkRankings", "providerCompare"] as const;
 type TabId = (typeof TAB_IDS)[number];
 
-const TAB_LABELS: Record<TabId, TranslationKey> = {
-  modelRankings: "modelRankings",
-  openRouterRankings: "openRouterRankings",
-  openSourceRankings: "openSourceRankings",
-  hallucinationRankings: "hallucinationRankings",
-  tts: "tts",
-  benchmarkRankings: "benchmarkRankings",
-  providerCompare: "providerCompare",
-};
-
 function ActiveTabContent({
   activeTabId,
   artificialRankings,
@@ -66,12 +56,10 @@ function ActiveTabContent({
         <Spinner />
       );
     case "hallucinationRankings":
-      return hallucinationRankings.length > 0 ? (
+      return (
         <Suspense fallback={null}>
           <HallucinationRankingsView rankings={hallucinationRankings} />
         </Suspense>
-      ) : (
-        <Spinner />
       );
     case "tts":
       return (
@@ -106,8 +94,7 @@ function RankingsContent({ defaultTab }: { defaultTab: number }) {
     () =>
       TAB_IDS.map((id) => ({
         id,
-        label: t(TAB_LABELS[id]),
-        content: null,
+        label: t(id as TranslationKey),
       })),
     [t],
   );

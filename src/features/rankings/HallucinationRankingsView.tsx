@@ -5,7 +5,7 @@ import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { RankBadge } from "../../shared/components/composite/RankBadge";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
-import { secondaryTextClass, modelCellClass, modelNameCellClass } from "../../shared/utils/cssConstants";
+import { secondaryTextClass, modelCellClass, modelNameCellClass, textSecondaryClass } from "../../shared/utils/cssConstants";
 import type { HallucinationRankingEntry } from "../../shared/types";
 
 interface TableRow {
@@ -14,7 +14,7 @@ interface TableRow {
 }
 
 function getRowId(row: TableRow) {
-  return row.entry.slug || row.entry.model;
+  return row.entry.id || row.entry.slug || row.entry.model;
 }
 
 function fmtRate(v: number) {
@@ -86,7 +86,11 @@ export function HallucinationRankingsView({ rankings }: { rankings: Hallucinatio
   return (
     <ViewLayout>
       <p className={secondaryTextClass}>{t("hallucinationSource")}</p>
-      <DataTable data={rows} columns={columns} getRowId={getRowId} />
+      {rows.length === 0 ? (
+        <p className={`${textSecondaryClass} py-8 text-center`}>{t("noResults")}</p>
+      ) : (
+        <DataTable data={rows} columns={columns} getRowId={getRowId} />
+      )}
     </ViewLayout>
   );
 }

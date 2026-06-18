@@ -26,14 +26,14 @@ function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
   const { t } = useTranslation();
 
   return (
-    <div className="p-2.5 flex flex-col gap-1.5 text-left">
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5">
+    <div className="p-4 flex flex-col gap-3 text-left">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
         <StatCard label={t("creatorOrVendor")} value={item.creator} />
         <StatCard label={t("inputTokens")} value={formatShortNumber(item.promptTokens || 0)} />
         <StatCard label={t("outputTokens")} value={formatShortNumber(item.completionTokens || 0)} />
         {item.reasoningTokens ? <StatCard label={t("reasoningTokens") || "Reasoning"} value={formatShortNumber(item.reasoningTokens)} /> : null}
       </div>
-      <div className="flex flex-col gap-1 p-2 rounded-md bg-bg-secondary">
+      <div className="flex flex-col gap-1.5 p-3 rounded-md bg-bg-secondary">
         <p className="text-xs font-bold text-text-primary">{t("techSelectionAdvice")}</p>
         <p className={`${secondaryTextClass} leading-relaxed`}>{getRecommendation(item.id, t)}</p>
       </div>
@@ -53,11 +53,11 @@ function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
 function AppExpandedDetail({ item }: { item: OpenRouterAppEntry }) {
   const { t } = useTranslation();
   return (
-    <div className="p-2.5 flex flex-col gap-1.5 text-left">
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5">
+    <div className="p-4 flex flex-col gap-3 text-left">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
         <StatCard label={t("totalTokens")} value={formatShortNumber(item.totalTokens)} />
         <StatCard label={t("requests")} value={formatShortNumber(item.requestCount)} />
-        <StatCard label={t("category")} value={item.categories.length ? item.categories.join(", ") : t("notAvailable")} />
+        <StatCard label={t("category")} value={item.categories?.length ? item.categories.join(", ") : t("notAvailable")} />
       </div>
       {item.description && <p className={`${secondaryTextClass} leading-relaxed p-2 rounded-md bg-bg-secondary`}>{item.description}</p>}
       <div className={`flex flex-row justify-between items-center ${secondaryTextClass}`}>
@@ -168,11 +168,11 @@ export function OpenRouterRankingsView({ data }: OpenRouterRankingsViewProps) {
       {
         id: "category",
         header: t("category"),
-        accessorFn: (row) => row.categories.join(", "),
+        accessorFn: (row) => row.categories?.join(", "),
         sortable: true,
         align: "right",
         hiddenMd: true,
-        cell: (item) => <p className={`text-xs ${ellipsisTextClasses} text-right`}>{item.categories.length ? item.categories.join(", ") : t("notAvailable")}</p>,
+        cell: (item) => <p className={`text-xs ${ellipsisTextClasses} text-right`}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>,
       },
     ],
     [t],
@@ -192,7 +192,7 @@ export function OpenRouterRankingsView({ data }: OpenRouterRankingsViewProps) {
       <p className={secondaryTextClass}>{t("openRouterSource")}</p>
       <div className="flex flex-col gap-2">
         <DataTable
-          data={data.tokenUsageRankings}
+          data={data.tokenUsageRankings ?? []}
           columns={modelColumns}
           getRowId={getRowId}
           expandedRowId={expandedRowId}
@@ -203,7 +203,7 @@ export function OpenRouterRankingsView({ data }: OpenRouterRankingsViewProps) {
       <div className="flex flex-col gap-2 mt-5">
         <h3 className="text-sm font-bold text-text-primary">{t("openRouterApps")}</h3>
         <DataTable
-          data={data.appUsageRankings}
+          data={data.appUsageRankings ?? []}
           columns={appColumns}
           getRowId={getAppRowId}
           expandedRowId={expandedAppRowId}

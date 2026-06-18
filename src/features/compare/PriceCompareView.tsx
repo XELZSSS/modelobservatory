@@ -10,6 +10,7 @@ import { BackButton } from "../../shared/components/composite/BackButton";
 import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
 import { secondaryTextClass, winnerPriceClass, chartTooltipStyle, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { formatDollar } from "../../shared/utils/format";
 import { useCompareStore } from "../../shared/stores/compareStore";
 import { getModelColor } from "../../shared/components/rankColor";
 import { calcModelCost } from "../../shared/utils/costCalc";
@@ -25,8 +26,8 @@ export function PriceCompareView() {
   const models = useCompareModels();
   const [chartRef, chartWidth] = useElementWidth();
 
-  const [promptTokens, setPromptTokens] = useState(10);
-  const [completionTokens, setCompletionTokens] = useState(5);
+  const [promptTokens, setPromptTokens] = useState("10");
+  const [completionTokens, setCompletionTokens] = useState("5");
 
   const priceRows = useMemo(() => buildPriceRows(t), [t]);
   const bestPrices = useMemo(() => getBestPrice(priceRows, models), [priceRows, models]);
@@ -45,9 +46,12 @@ export function PriceCompareView() {
     return valid.length > 0 ? Math.max(...valid) : null;
   }, [costEfficiency]);
 
+  const calcPrompt = Math.max(0, Number(promptTokens) || 0);
+  const calcCompletion = Math.max(0, Number(completionTokens) || 0);
+
   const monthlyCosts = useMemo(() => {
-    return models.map((model) => calcModelCost(model, promptTokens * 1_000_000, completionTokens * 1_000_000));
-  }, [models, promptTokens, completionTokens]);
+    return models.map((model) => calcModelCost(model, calcPrompt * 1_000_000, calcCompletion * 1_000_000));
+  }, [models, calcPrompt, calcCompletion]);
 
   const bestMonthlyCost = useMemo(() => {
     const valid = monthlyCosts.filter((v): v is number => v !== null);
@@ -142,12 +146,12 @@ export function PriceCompareView() {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
             <div className="flex items-center gap-2">
               <label className={`${secondaryTextClass} whitespace-nowrap`}>{t("monthlyPromptTokens")}</label>
-              <Input type="number" value={promptTokens} onChange={(e) => setPromptTokens(Math.max(0, Number(e.target.value) || 0))} className="w-20 h-7 text-xs" />
+              <Input type="number" value={promptTokens} onChange={(e) => setPromptTokens(e.target.value)} className="w-20 h-7 text-xs" />
               <span className={secondaryTextClass}>M</span>
             </div>
             <div className="flex items-center gap-2">
               <label className={`${secondaryTextClass} whitespace-nowrap`}>{t("monthlyCompletionTokens")}</label>
-              <Input type="number" value={completionTokens} onChange={(e) => setCompletionTokens(Math.max(0, Number(e.target.value) || 0))} className="w-20 h-7 text-xs" />
+              <Input type="number" value={completionTokens} onChange={(e) => setCompletionTokens(e.target.value)} className="w-20 h-7 text-xs" />
               <span className={secondaryTextClass}>M</span>
             </div>
           </div>
@@ -162,7 +166,7 @@ export function PriceCompareView() {
                   </span>
                   {cost != null ? (
                     <span className={`font-mono text-sm ${isBest ? winnerPriceClass : ""}`}>
-                      ${cost.toFixed(2)}
+                      {formatDollar(cost)}
                       {isBest && <WinnerMark />}
                     </span>
                   ) : (

@@ -21,7 +21,7 @@ const COMPANY_KEYWORDS: Record<string, string[]> = {
 };
 
 function parseArr(raw: string): string[] { try { const v = JSON.parse(raw); return Array.isArray(v) ? v.map(String) : []; } catch { return []; } }
-function parsePrices(raw: string): number[] { return parseArr(raw).map(Number); }
+function parsePrices(raw: string): number[] { return parseArr(raw).map((s) => Number(s) || 0); }
 function detectCompany(text: string): string | null {
   const lower = text.toLowerCase();
   for (const [company, kw] of Object.entries(COMPANY_KEYWORDS)) {
@@ -40,7 +40,7 @@ function classify(q: string): "model_ranking" | "release" | "provider" | "other"
 
 function yesProb(outcomes: string[], prices: number[]): number {
   for (let i = 0; i < outcomes.length; i++) {
-    if (outcomes[i]?.toLowerCase() === "yes") return prices[i] ?? 0;
+    if (outcomes[i]?.toLowerCase() === "yes") return prices[i] || 0;
   }
   return prices.length > 0 ? Math.max(...prices) : 0;
 }
@@ -93,7 +93,7 @@ function buildReleasePredictions(markets: Market[]): ReleasePrediction[] {
     const outcomes = parseArr(m.outcomes);
     const prices = parsePrices(m.outcomePrices);
     const modelMatch = m.question.match(/(?:GPT|Claude|Gemini|Llama|Grok)[\s-]?\d[\w.]*/i);
-    return { id: m.id, question: m.question, model: modelMatch?.[0] || m.question.split("?")[0]?.trim() || m.question, predictions: outcomes.map((label, i) => ({ window: label, probability: prices[i] ?? 0 })), volume: Number(m.volume) || 0, url: url(m.url) };
+    return { id: m.id, question: m.question, model: modelMatch?.[0] || m.question.split("?")[0]?.trim() || m.question, predictions: outcomes.map((label, i) => ({ window: label, probability: prices[i] || 0 })), volume: Number(m.volume) || 0, url: url(m.url) };
   }));
 }
 
@@ -104,7 +104,7 @@ function buildProviderPredictions(markets: Market[]): ProviderPrediction[] {
     const outcomes = parseArr(m.outcomes);
     const prices = parsePrices(m.outcomePrices);
     const q = m.question.toLowerCase();
-    return { id: m.id, question: m.question, provider, type: /ipo/.test(q) ? "ipo" : /market cap|largest/.test(q) ? "market_cap" : "valuation", options: outcomes.map((label, i) => ({ label, probability: prices[i] ?? 0 })), volume: Number(m.volume) || 0, deadline: deadline(m.endDate), url: url(m.url) };
+    return { id: m.id, question: m.question, provider, type: /ipo/.test(q) ? "ipo" : /market cap|largest/.test(q) ? "market_cap" : "valuation", options: outcomes.map((label, i) => ({ label, probability: prices[i] || 0 })), volume: Number(m.volume) || 0, deadline: deadline(m.endDate), url: url(m.url) };
   }).filter((x): x is ProviderPrediction => x !== null));
 }
 

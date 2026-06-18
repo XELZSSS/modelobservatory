@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
-import { FilterChip } from "../../shared/components/composite/TabButton";
+import { TabButton } from "../../shared/components/composite/TabButton";
 
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import type { TranslationKey } from "../../shared/i18n/useTranslation";
 import { useSuspenseArtificialRankings } from "../../shared/hooks/useQueries";
+import { useRankMap } from "../../shared/hooks/useRankMap";
 import { formatScore } from "../../shared/utils/format";
 import { secondaryTextClass } from "../../shared/utils/cssConstants";
 import type { ArtificialAnalysisModel } from "../../shared/types";
@@ -65,11 +66,7 @@ export function BenchmarkRankingsView() {
     [data, selectedBenchmark],
   );
 
-  const rankMap = useMemo(() => {
-    const map = new Map<string, number>();
-    filteredData.forEach((m, i) => map.set(m.id, i + 1));
-    return map;
-  }, [filteredData]);
+  const rankMap = useRankMap(filteredData, (m) => m.id);
 
 
   const columns = useMemo<DataTableColumn<ArtificialAnalysisModel>[]>(
@@ -112,9 +109,9 @@ export function BenchmarkRankingsView() {
       <p className={secondaryTextClass}>{t("artificialSource")}</p>
       <div className="flex flex-wrap gap-1">
         {BENCHMARK_KEYS.map((key) => (
-          <FilterChip key={key} active={selectedBenchmark === key} onClick={() => setSelectedBenchmark(key)}>
+          <TabButton key={key} active={selectedBenchmark === key} onClick={() => setSelectedBenchmark(key)}>
             {t(BENCHMARK_LABELS[key])}
-          </FilterChip>
+          </TabButton>
         ))}
       </div>
       <DataTable data={filteredData} columns={columns} getRowId={(row) => row.id} />

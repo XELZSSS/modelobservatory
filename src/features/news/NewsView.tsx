@@ -100,7 +100,6 @@ export function NewsView() {
       CATEGORIES.map((cat) => ({
         id: cat.id,
         label: t(cat.labelKey),
-        content: null,
       })),
     [t],
   );

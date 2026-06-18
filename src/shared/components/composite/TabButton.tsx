@@ -15,4 +15,3 @@ export function TabButton({ active, onClick, children, size = "md" }: { active: 
   );
 }
 
-export const FilterChip = TabButton;

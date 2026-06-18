@@ -3,6 +3,7 @@ import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useTtsLeaderboard } from "../../shared/hooks/useQueries";
+import { useRankMap } from "../../shared/hooks/useRankMap";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { ellipsisTextClasses, secondaryTextClass, modelCellClass, modelNameCellClass } from "../../shared/utils/cssConstants";
 import { RankBadge } from "../../shared/components/composite/RankBadge";
@@ -21,11 +22,7 @@ export function TtsView() {
   const { data } = useTtsLeaderboard();
   const filtered = useFilteredData(data ?? [], getSearchFields);
 
-  const rankMap = useMemo(() => {
-    const map = new Map<string, number>();
-    filtered.forEach((m, i) => map.set(m.id, i + 1));
-    return map;
-  }, [filtered]);
+  const rankMap = useRankMap(filtered, (m) => m.id);
 
   const columns = useMemo<DataTableColumn<TtsModel>[]>(
     () => [

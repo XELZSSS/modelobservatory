@@ -115,8 +115,8 @@ function mapApps(rows: AppRow[]): OpenRouterAppEntry[] {
 export async function getOpenRouterRankings(): Promise<OpenRouterRankingsPayload> {
   return withCache("openrouter-rankings", CACHE_TTL_MS, async () => {
     const [modelResult, appResult] = await Promise.allSettled([
-      fetchJSON<{ data: ModelRow[] }>(`${OPENROUTER}/api/frontend/rankings/models`),
-      fetchJSON<{ data: AppResponse }>(`${OPENROUTER}/api/frontend/rankings/apps`),
+      fetchJSON<{ data: ModelRow[] }>(`${OPENROUTER}/api/frontend/v1/rankings/models`),
+      fetchJSON<{ data: AppResponse }>(`${OPENROUTER}/api/frontend/v1/rankings/apps`),
     ]);
     const modelRows = modelResult.status === "fulfilled" ? (modelResult.value?.data ?? []) : [];
     const appRows = appResult.status === "fulfilled" ? (appResult.value?.data?.day ?? []) : [];

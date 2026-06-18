@@ -25,9 +25,11 @@ export const useCompareStore = create<CompareState>()(
           return { compareIds: [...state.compareIds, key] };
         }),
       removeCompareModel: (model) =>
-        set((state) => ({
-          compareIds: state.compareIds.filter((id) => id !== modelId(model)),
-        })),
+        set((state) => {
+          const key = modelId(model);
+          if (!key) return state;
+          return { compareIds: state.compareIds.filter((id) => id !== key) };
+        }),
       clearCompare: () => set({ compareIds: [] }),
     }),
     {
