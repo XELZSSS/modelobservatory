@@ -2,12 +2,9 @@ import { withCache } from "../cache";
 import { HEALTH_TIMEOUT_MS, USER_AGENT, upstreamConfig, HEALTH_TTL_MS } from "../../shared/config";
 import type { HealthEntry } from "../../shared/types";
 
-const HEALTH_TIMEOUT = HEALTH_TIMEOUT_MS;
-const UA = USER_AGENT;
-
 async function ping(url: string): Promise<{ responseTime: number; statusCode: number }> {
   const start = Date.now();
-  const res = await fetch(url, { method: "GET", headers: { "user-agent": UA }, signal: AbortSignal.timeout(HEALTH_TIMEOUT) });
+  const res = await fetch(url, { method: "GET", headers: { "user-agent": USER_AGENT }, signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS) });
   const responseTime = Date.now() - start;
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return { responseTime, statusCode: res.status };

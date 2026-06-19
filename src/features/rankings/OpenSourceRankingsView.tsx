@@ -13,7 +13,7 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
     {
       id: "model",
       header: t("modelNameOrId"),
-      cell: (row) => <RankingNameCell rank={row.rank} name={row.item.id.split("/").pop() || row.item.id} />,
+      cell: (row) => <RankingNameCell name={row.item.id.split("/").pop() || row.item.id} />,
     },
     {
       id: "downloads",

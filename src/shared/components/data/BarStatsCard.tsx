@@ -37,15 +37,17 @@ export function BarStatsCard({ title, source, rows, onOpen, className }: BarStat
               const base = COOL_COLORS[index % COOL_COLORS.length]!;
               return (
                 <Fragment key={`${row.label}-${index}`}>
-                  <div className="grid grid-cols-[1fr_auto] gap-2 items-center mb-0.5">
-                    <p className="text-sm truncate">{row.label}</p>
-                    <p className={`text-sm font-bold text-right ${numberTextClass}`}>{row.valueLabel}</p>
-                  </div>
-                  <div className="h-[14px] bg-bg-tertiary overflow-hidden rounded-full" role="progressbar" aria-valuenow={row.value} aria-valuemin={0} aria-valuemax={maxValue} aria-label={`${row.label}: ${row.valueLabel}`}>
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${width}%`, backgroundColor: base, transformOrigin: "left", animation: "bar-grow 250ms cubic-bezier(0.4, 0, 0.2, 1) both" }}
-                    />
+                  <div className="h-[26px] flex flex-col justify-between">
+                    <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
+                      <p className="text-sm truncate">{row.label}</p>
+                      <p className={`text-sm font-bold text-right ${numberTextClass}`}>{row.valueLabel}</p>
+                    </div>
+                    <div className="h-1 bg-bg-tertiary overflow-hidden rounded-full" role="progressbar" aria-valuenow={row.value} aria-valuemin={0} aria-valuemax={maxValue} aria-label={`${row.label}: ${row.valueLabel}`}>
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${width}%`, backgroundColor: base, transformOrigin: "left", animation: "bar-grow 250ms cubic-bezier(0.4, 0, 0.2, 1) both" }}
+                      />
+                    </div>
                   </div>
                 </Fragment>
               );

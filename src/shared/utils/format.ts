@@ -34,11 +34,6 @@ export function formatScore(t: TFunction, n?: number | null, opts?: { decimals?:
   return n.toFixed(opts?.decimals ?? 2);
 }
 
-export function formatPercent(value: number | null | undefined, decimals = 1): string {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "—";
-  return `${value.toFixed(decimals)}%`;
-}
-
 export function formatCompactDollar(n: number): string {
   if (!Number.isFinite(n)) return "—";
   const sign = n < 0 ? "-" : "";
@@ -47,11 +42,6 @@ export function formatCompactDollar(n: number): string {
   if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(1)}M`;
   if (abs >= 1e3) return `${sign}$${(abs / 1e3).toFixed(0)}K`;
   return `${sign}$${abs.toFixed(2)}`;
-}
-
-export function formatTokensPerSecond(n: number | null | undefined): string {
-  if (typeof n !== "number" || !Number.isFinite(n)) return "—";
-  return `${n.toFixed(1)} tok/s`;
 }
 
 export function formatCost(t: TFunction, n?: number | null) {

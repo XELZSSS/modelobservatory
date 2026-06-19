@@ -8,12 +8,7 @@ import { approxEq } from "../../utils/math";
 import { useTranslation } from "../../i18n/useTranslation";
 import type { ModelPrediction, ReleasePrediction, ProviderPrediction, PredictionsPayload } from "../../types";
 import { ExternalLinkButton } from "../composite/ExternalLinkButton";
-
-function formatVolume(v: number): string {
-  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
-  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
-  return `$${v}`;
-}
+import { formatCompactDollar } from "../../utils/format";
 
 function EmptyPredictions() {
   const { t } = useTranslation();
@@ -45,7 +40,7 @@ function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
                 {(item.probability * 100).toFixed(1)}%
               </span>
               <div className="text-right text-xs text-text-tertiary">
-                <div>{formatVolume(item.volume)}</div>
+                <div>{formatCompactDollar(item.volume)}</div>
                 {item.deadline && <div>{item.deadline}</div>}
               </div>
             </div>
@@ -87,7 +82,7 @@ function ReleasesTab({ items }: { items: ReleasePrediction[] }) {
                   </div>
                 ))}
               </div>
-              <div className="mt-2 text-xs text-text-tertiary">{formatVolume(item.volume)}</div>
+              <div className="mt-2 text-xs text-text-tertiary">{formatCompactDollar(item.volume)}</div>
             </CardContent>
           </Card>
         );
@@ -128,7 +123,7 @@ function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
                 ))}
               </div>
               <div className="flex items-center justify-between mt-2 text-xs text-text-tertiary">
-                <span>{formatVolume(item.volume)}</span>
+                <span>{formatCompactDollar(item.volume)}</span>
                 {item.deadline && <span>{item.deadline}</span>}
               </div>
             </CardContent>

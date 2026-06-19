@@ -1,23 +1,17 @@
 import { memo, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, Tooltip } from "recharts";
-import { Button } from "../../shared/components/ui/button";
 import { Card, CardContent } from "../../shared/components/ui/card";
-import { SectionHeader } from "../../shared/components/composite/SectionHeader";
-import { BackButton } from "../../shared/components/composite/BackButton";
-import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
-import { secondaryTextClass, numberTextClass, chartTooltipStyle, textSecondaryClass } from "../../shared/utils/cssConstants";
+import { numberTextClass, chartTooltipStyle } from "../../shared/utils/cssConstants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useCompareStore } from "../../shared/stores/compareStore";
 import { buildCompareMetrics, buildRadarData } from "../../shared/utils/compareMetrics";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
 import { getModelColor } from "../../shared/components/rankColor";
-import { useCompareModels } from "../../shared/hooks/useCompareModels";
 import { modelId } from "../../shared/utils/modelId";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { CompareMetric } from "../../shared/utils/compareMetrics";
 import { approxEq } from "../../shared/utils/math";
+import { ComparePageLayout } from "./ComparePageLayout";
 
 function computeMetricWinners(metric: CompareMetric, models: ArtificialAnalysisModel[]): Map<string, "win" | "loss"> {
   const values = models.map((m) => ({ id: modelId(m), val: metric.getNumericValue?.(m) })).filter((v): v is { id: string; val: number } => typeof v.val === "number" && Number.isFinite(v.val));
@@ -133,75 +127,52 @@ const MetricTable = memo(function MetricTable({ metrics, models }: { metrics: Co
 });
 
 export function CompareView() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const removeCompareModel = useCompareStore((s) => s.removeCompareModel);
-  const clearCompare = useCompareStore((s) => s.clearCompare);
-  const models = useCompareModels();
   const [radarRef, radarWidth] = useElementWidth();
   const radarSize = Math.max(100, Math.min(radarWidth - 16, 500));
 
+  return (
+    <ComparePageLayout backLabelKey="backToModelRankings" backTo="/models" title={t("modelComparison")}>
+      {(models) => <CompareContent models={models} radarRef={radarRef} radarSize={radarSize} />}
+    </ComparePageLayout>
+  );
+}
+
+function CompareContent({ models, radarRef, radarSize }: { models: ArtificialAnalysisModel[]; radarRef: React.RefObject<HTMLDivElement | null>; radarSize: number }) {
+  const { t } = useTranslation();
   const metrics = useMemo(() => buildCompareMetrics(t), [t]);
   const radarData = useMemo(() => buildRadarData(t, models), [models, t]);
 
-  if (models.length < 2) {
-    return (
-      <div className="flex flex-col gap-4 items-center py-8">
-        <p className={textSecondaryClass}>{t("compareNeedsTwo")}</p>
-        <Button size="sm" variant="outline" onClick={() => navigate("/models")}>
-          {t("backToList")}
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col gap-4 min-w-0">
-      <BackButton labelKey="backToModelRankings" to="/models" />
-      <SectionHeader title={t("modelComparison")} />
-      <p className={secondaryTextClass}>{t("artificialSource")}</p>
-
-      <CompareChipBar
-        models={models}
-        onRemove={removeCompareModel}
-        onAdd={() => navigate("/models")}
-        onClear={() => {
-          clearCompare();
-          navigate("/models");
-        }}
-        addLabel={t("addModel")}
-      />
-
-      <Card className="p-4">
-        <div className="flex flex-col md:flex-row gap-4 md:items-stretch">
-          <div ref={radarRef} className="hidden md:flex min-w-0 w-full md:w-1/2 items-center justify-center">
-            <RadarChart width={radarSize} height={320} data={radarData} outerRadius={140} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11 }} />
-              {models.map((model, index) => (
-                <Radar
-                  key={modelId(model) || index}
-                  name={model.short_name || model.name}
-                  dataKey={`model_${index}`}
-                  stroke={getModelColor(index)}
-                  fill={getModelColor(index)}
-                  fillOpacity={0.08}
-                  isAnimationActive={false}
-                />
-              ))}
-              <Tooltip contentStyle={chartTooltipStyle} />
-            </RadarChart>
+    <Card className="p-4">
+      <div className="flex flex-col md:flex-row gap-4 md:items-stretch">
+        <div ref={radarRef} className="hidden md:flex min-w-0 w-full md:w-1/2 items-center justify-center">
+          <RadarChart width={radarSize} height={320} data={radarData} outerRadius={140} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+            <PolarGrid />
+            <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11 }} />
+            {models.map((model, index) => (
+              <Radar
+                key={modelId(model) || index}
+                name={model.short_name || model.name}
+                dataKey={`model_${index}`}
+                stroke={getModelColor(index)}
+                fill={getModelColor(index)}
+                fillOpacity={0.08}
+                isAnimationActive={false}
+              />
+            ))}
+            <Tooltip contentStyle={chartTooltipStyle} />
+          </RadarChart>
+        </div>
+        <div className="min-w-0 w-full md:w-1/2 flex items-center">
+          <div className="md:hidden w-full">
+            <CompactMetricCards metrics={metrics.filter((m) => m.mobileKey)} models={models} />
           </div>
-          <div className="min-w-0 w-full md:w-1/2 flex items-center">
-            <div className="md:hidden w-full">
-              <CompactMetricCards metrics={metrics.filter((m) => m.mobileKey)} models={models} />
-            </div>
-            <div className="hidden md:block w-full">
-              <MetricTable metrics={metrics} models={models} />
-            </div>
+          <div className="hidden md:block w-full">
+            <MetricTable metrics={metrics} models={models} />
           </div>
         </div>
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 }

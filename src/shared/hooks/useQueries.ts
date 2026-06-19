@@ -3,7 +3,6 @@ export {
   useSuspenseArtificialRankings,
   useTtsLeaderboard,
   useSuspenseTtsLeaderboard,
-  useOpenSourceReleases,
   useSuspenseOpenSourceReleases,
   useSuspenseHealthStatus,
   useSystemStats,

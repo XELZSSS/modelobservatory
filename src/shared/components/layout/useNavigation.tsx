@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Home, Award, Megaphone, ShieldCheck, Newspaper } from "lucide-react";
 import { useTranslation } from "../../i18n/useTranslation";
 
-export interface NavItem {
+interface NavItem {
   path: string;
   label: string;
   icon: React.ReactNode;

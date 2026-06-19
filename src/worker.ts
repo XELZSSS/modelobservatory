@@ -1,5 +1,5 @@
 import app from "./api/router";
-import { initCache, KVCache, cache } from "./api/cache";
+import { initCache, KVCache, globalCache } from "./api/cache";
 import { setCloudflareInfo } from "./api/upstream/system";
 
 interface CfProperties {
@@ -19,7 +19,7 @@ interface Env {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const cacheBackend = env.METRICS ? new KVCache(env.METRICS) : cache;
+    const cacheBackend = env.METRICS ? new KVCache(env.METRICS) : globalCache;
     initCache(cacheBackend);
 
     const cf = (request as Request & { cf?: CfProperties }).cf;

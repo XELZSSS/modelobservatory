@@ -6,7 +6,7 @@ export type TranslationKey = keyof typeof en;
 export type TranslationParams = Record<string, string | number>;
 export type TFunction = (key: TranslationKey, params?: TranslationParams) => string;
 
-export interface I18nContextValue {
+interface I18nContextValue {
   lang: Lang;
   t: TFunction;
   setLang: (lang: Lang) => void;

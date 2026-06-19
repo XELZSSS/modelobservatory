@@ -6,6 +6,24 @@ import { useTranslation } from "../../i18n/useTranslation";
 import { formatBoolean, formatContext, formatCost, formatPricePerMillion, formatScore } from "../../utils/format";
 import { secondaryTextClass } from "../../utils/cssConstants";
 
+import type { TFunction } from "../../i18n";
+
+const MODALITY_STYLES = { text: "bg-green-100 text-green-800", image: "bg-blue-100 text-blue-800", speech: "bg-purple-100 text-purple-800", video: "bg-orange-100 text-orange-800" } as const;
+
+function ModalitySection({ label, prefix, model, t }: { label: string; prefix: "input" | "output"; model: ArtificialAnalysisModel; t: TFunction }) {
+  const key = (m: string) => `${prefix}_modality_${m}` as keyof ArtificialAnalysisModel;
+  return (
+    <div>
+      <div className={`text-xs font-medium mb-1 ${secondaryTextClass}`}>{label}</div>
+      <div className="flex gap-1.5">
+        {(["text", "image", "speech", "video"] as const).map((m) =>
+          model[key(m)] ? <span key={m} className={`px-2 py-0.5 text-xs rounded ${MODALITY_STYLES[m]}`}>{t(`modality${m.charAt(0).toUpperCase() + m.slice(1)}` as Parameters<TFunction>[0])}</span> : null,
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }) {
   const { t } = useTranslation();
   const pricing = model.pricing;
@@ -46,24 +64,8 @@ export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }
       )}
       <InfoCard title={t("modalities")}>
         <div className="grid grid-cols-2 gap-2">
-          <div>
-            <div className={`text-xs font-medium mb-1 ${secondaryTextClass}`}>{t("inputModality")}</div>
-            <div className="flex gap-1.5">
-              {model.input_modality_text && <span className="px-2 py-0.5 text-xs rounded bg-green-100 text-green-800">{t("modalityText")}</span>}
-              {model.input_modality_image && <span className="px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-800">{t("modalityImage")}</span>}
-              {model.input_modality_speech && <span className="px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800">{t("modalitySpeech")}</span>}
-              {model.input_modality_video && <span className="px-2 py-0.5 text-xs rounded bg-orange-100 text-orange-800">{t("modalityVideo")}</span>}
-            </div>
-          </div>
-          <div>
-            <div className={`text-xs font-medium mb-1 ${secondaryTextClass}`}>{t("outputModality")}</div>
-            <div className="flex gap-1.5">
-              {model.output_modality_text && <span className="px-2 py-0.5 text-xs rounded bg-green-100 text-green-800">{t("modalityText")}</span>}
-              {model.output_modality_image && <span className="px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-800">{t("modalityImage")}</span>}
-              {model.output_modality_speech && <span className="px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800">{t("modalitySpeech")}</span>}
-              {model.output_modality_video && <span className="px-2 py-0.5 text-xs rounded bg-orange-100 text-orange-800">{t("modalityVideo")}</span>}
-            </div>
-          </div>
+          <ModalitySection label={t("inputModality")} prefix="input" model={model} t={t} />
+          <ModalitySection label={t("outputModality")} prefix="output" model={model} t={t} />
         </div>
       </InfoCard>
     </div>

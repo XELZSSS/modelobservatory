@@ -1,30 +1,35 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
-import { Button } from "../../shared/components/ui/button";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import { Input } from "../../shared/components/ui/input";
-import { SectionHeader } from "../../shared/components/composite/SectionHeader";
-import { BackButton } from "../../shared/components/composite/BackButton";
-import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
-import { secondaryTextClass, winnerPriceClass, chartTooltipStyle, textSecondaryClass } from "../../shared/utils/cssConstants";
+import { secondaryTextClass, winnerPriceClass, chartTooltipStyle } from "../../shared/utils/cssConstants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { formatDollar } from "../../shared/utils/format";
-import { useCompareStore } from "../../shared/stores/compareStore";
 import { getModelColor } from "../../shared/components/rankColor";
 import { calcModelCost } from "../../shared/utils/costCalc";
 import { approxEq } from "../../shared/utils/math";
-import { useCompareModels } from "../../shared/hooks/useCompareModels";
+import type { ArtificialAnalysisModel } from "../../shared/types";
 import { buildPriceRows, getBestPrice, WinnerMark, PriceTableDesktop, PriceCardsMobile, EfficiencyTableDesktop, EfficiencyCardsMobile } from "./PriceComponents";
+import { ComparePageLayout } from "./ComparePageLayout";
 
 export function PriceCompareView() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const removeCompareModel = useCompareStore((s) => s.removeCompareModel);
-  const clearCompare = useCompareStore((s) => s.clearCompare);
-  const models = useCompareModels();
   const [chartRef, chartWidth] = useElementWidth();
+
+  return (
+    <ComparePageLayout
+      backLabelKey="backToPricing" backTo="/models"
+      backState={{ viewMode: "pricing" }}
+      title={t("priceComparison")}
+    >
+      {(models) => <PriceCompareContent models={models} chartRef={chartRef} chartWidth={chartWidth} />}
+    </ComparePageLayout>
+  );
+}
+
+function PriceCompareContent({ models, chartRef, chartWidth }: { models: ArtificialAnalysisModel[]; chartRef: React.RefObject<HTMLDivElement | null>; chartWidth: number }) {
+  const { t } = useTranslation();
 
   const [promptTokens, setPromptTokens] = useState("10");
   const [completionTokens, setCompletionTokens] = useState("5");
@@ -69,34 +74,8 @@ export function PriceCompareView() {
     });
   }, [priceRows, models]);
 
-  if (models.length < 2) {
-    return (
-      <div className="flex flex-col gap-4 items-center py-8">
-        <p className={textSecondaryClass}>{t("compareNeedsTwo")}</p>
-        <Button size="sm" variant="outline" onClick={() => navigate("/models", { state: { viewMode: "pricing" } })}>
-          {t("backToList")}
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col gap-4 min-w-0">
-      <BackButton labelKey="backToPricing" to="/models" state={{ viewMode: "pricing" }} />
-      <SectionHeader title={t("priceComparison")} />
-      <p className={secondaryTextClass}>{t("artificialSource")}</p>
-
-      <CompareChipBar
-        models={models}
-        onRemove={removeCompareModel}
-        onAdd={() => navigate("/models", { state: { viewMode: "pricing" } })}
-        onClear={() => {
-          clearCompare();
-          navigate("/models", { state: { viewMode: "pricing" } });
-        }}
-        addLabel={t("addModel")}
-      />
-
+    <>
       {/* Price breakdown */}
       <Card>
         <CardContent className="p-4">
@@ -178,6 +157,6 @@ export function PriceCompareView() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }

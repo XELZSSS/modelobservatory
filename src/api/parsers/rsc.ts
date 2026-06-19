@@ -12,10 +12,12 @@
  * failure is diagnosable from the rendered ErrorDetail alone.
  */
 
+import { fetchAARsc } from "../upstream/aaRsc";
+
 const SNIPPET_LEN = 200;
 const snippet = (s: string): string => s.slice(0, SNIPPET_LEN).replace(/\s+/g, " ").trim();
 
-export function rscParseError(marker: string, body: string, cause?: unknown): string {
+function rscParseError(marker: string, body: string, cause?: unknown): string {
   const causeMsg = cause instanceof Error ? cause.message : cause ? String(cause) : "";
   return `RSC marker "${marker}" not found or payload empty. body length=${body.length}, hasMarker=${body.includes(`"${marker}"`)}${causeMsg ? `, cause=${causeMsg}` : ""}`;
 }
@@ -25,7 +27,7 @@ export function rscParseError(marker: string, body: string, cause?: unknown): st
  * a JSON value is JSON.parsed; the first whose `extract` returns a non-empty
  * array wins. Throws a diagnostic error if no line yields data.
  */
-export function parseRscPayload<T>(body: string, marker: string, extract: (data: unknown) => T[] | null): T[] {
+function parseRscPayload<T>(body: string, marker: string, extract: (data: unknown) => T[] | null): T[] {
   for (const line of body.split("\n")) {
     // Require the marker to be a real JSON key boundary ("marker" followed by
     // `:` or `[`/`"`), not just a substring of some unrelated comment/field.
@@ -201,4 +203,29 @@ function isMarkerBoundary(line: string, marker: string): boolean {
     i = line.indexOf(quoted, i + 1);
   }
   return false;
+}
+
+/**
+ * Fetch an RSC page from Artificial Analysis and parse flight chunks.
+ * Wraps fetch + parse + diagnostic error into a single call.
+ */
+export async function fetchAndParseRsc<T>(
+  path: string,
+  marker: string,
+  extract: (data: unknown) => T[] | null,
+): Promise<T[]> {
+  let rsc: string;
+  try {
+    rsc = await fetchAARsc(path);
+  } catch (e) {
+    throw new Error(rscParseError(marker, "", e), { cause: e });
+  }
+  let entries: T[];
+  try {
+    entries = parseRscPayload<T>(rsc, marker, extract);
+  } catch (e) {
+    throw new Error(rscParseError(marker, rsc, e), { cause: e });
+  }
+  if (entries.length === 0) throw new Error(rscParseError(marker, rsc));
+  return entries;
 }

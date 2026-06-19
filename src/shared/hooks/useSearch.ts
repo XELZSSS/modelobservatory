@@ -6,12 +6,10 @@ import { apiFetch, api } from "../../api/client/httpClient";
 import type { SearchResult } from "../types/search";
 import { useArtificialRankings, useSuspenseHomeDashboard, useSuspenseTtsLeaderboard, useOpenRouterRankings, useHallucinationRankings } from "./useApiQuery";
 
-interface QueryCtx { signal?: AbortSignal }
-
 export function useNewsByCategory(category: string) {
   return useQuery<NewsItem[]>({
     queryKey: ["news", category],
-    queryFn: ({ signal }: QueryCtx) => apiFetch<NewsItem[]>(api.news(category), signal),
+    queryFn: ({ signal }: { signal?: AbortSignal }) => apiFetch<NewsItem[]>(api.news(category), signal),
     staleTime: FIVE_MINUTES,
     refetchInterval: FIVE_MINUTES,
   });

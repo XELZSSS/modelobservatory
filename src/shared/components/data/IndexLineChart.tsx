@@ -38,11 +38,11 @@ export function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }
               <YAxis
                 tick={{ fontSize: 10, fill: "var(--text-tertiary)" }}
                 stroke="var(--border)"
-                domain={['dataMin - 5', 'dataMax + 5']}
+                domain={[0, 100]}
                 tickCount={6}
-                tickFormatter={(v: number) => v.toFixed(1)}
+                tickFormatter={(v: number) => Math.round(v).toString()}
               />
-              <Tooltip contentStyle={chartTooltipStyle} />
+              <Tooltip contentStyle={chartTooltipStyle} formatter={(value) => Math.round(Number(value))} />
               <Legend wrapperStyle={{ fontSize: "12px" }} />
               <Line type="monotone" dataKey="intelligence" name={t("intelligence")} stroke={getModelColor(0)} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
               <Line type="monotone" dataKey="coding" name={t("coding")} stroke={getModelColor(1)} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />

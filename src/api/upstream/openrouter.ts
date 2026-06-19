@@ -1,7 +1,7 @@
 import { withCache, formatSettleErrors } from "../cache";
-import { fetchJSON, CACHE_TTL_MS } from "../http";
+import { fetchJSON } from "../http";
 import { numOr } from "../parsers/coerce";
-import { upstreamConfig } from "../../shared/config";
+import { upstreamConfig, DEFAULT_TTL_MS } from "../../shared/config";
 import type { OpenRouterAppEntry, OpenRouterRankingsPayload, OpenRouterRankEntry } from "../../shared/types";
 
 const OPENROUTER = upstreamConfig.openrouter;
@@ -111,7 +111,7 @@ function mapApps(rows: AppRow[]): OpenRouterAppEntry[] {
 }
 
 export async function getOpenRouterRankings(): Promise<OpenRouterRankingsPayload> {
-  return withCache("openrouter-rankings", CACHE_TTL_MS, async () => {
+  return withCache("openrouter-rankings", DEFAULT_TTL_MS, async () => {
     const [modelResult, appResult] = await Promise.allSettled([
       fetchJSON<{ data: ModelRow[] }>(`${OPENROUTER}/api/frontend/v1/rankings/models`),
       fetchJSON<{ data: AppResponse }>(`${OPENROUTER}/api/frontend/v1/rankings/apps`),

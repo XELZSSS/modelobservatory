@@ -39,7 +39,6 @@ export const useArtificialRankings = qArtificial.use;
 export const useSuspenseArtificialRankings = qArtificial.useSuspense;
 export const useTtsLeaderboard = qTts.use;
 export const useSuspenseTtsLeaderboard = qTts.useSuspense;
-export const useOpenSourceReleases = qOpenSourceReleases.use;
 export const useSuspenseOpenSourceReleases = qOpenSourceReleases.useSuspense;
 export const useSuspenseHealthStatus = qHealth.useSuspense;
 export const useSystemStats = qSystemStats.use;

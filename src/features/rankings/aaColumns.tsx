@@ -4,7 +4,6 @@ import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { Badge } from "../../shared/components/ui/badge";
 import { Button } from "../../shared/components/ui/button";
 import { ModelDetailContent } from "../../shared/components/composite/ModelDetailContent";
-import { RankBadge } from "../../shared/components/composite/RankBadge";
 import { ellipsisTextClasses, modelCellClass } from "../../shared/utils/cssConstants";
 import { formatContext, formatScore, formatDollar } from "../../shared/utils/format";
 import { calcModelCost } from "../../shared/utils/costCalc";
@@ -20,17 +19,13 @@ export function ModelExpandedDetail({ model }: { model: ArtificialAnalysisModel 
   );
 }
 
-export function RankingModelCell({
+function RankingModelCell({
   model,
-  rank,
   isCompared,
-  compareDisabled,
   onToggleCompare,
 }: {
   model: ArtificialAnalysisModel;
-  rank: number;
   isCompared: boolean;
-  compareDisabled: boolean;
   onToggleCompare: (m: ArtificialAnalysisModel) => void;
 }) {
   const { t } = useTranslation();
@@ -42,7 +37,6 @@ export function RankingModelCell({
   return (
     <>
       <div className={modelCellClass}>
-        <RankBadge rank={rank} />
         <p className="text-sm font-bold break-words min-w-0">{model.name}</p>
         {model.intelligence_index_is_estimated && (
           <Badge variant="outline" className="shrink-0">
@@ -56,7 +50,6 @@ export function RankingModelCell({
             e.stopPropagation();
             onToggleCompare(model);
           }}
-          disabled={compareDisabled}
           className="shrink-0"
         >
           {isCompared ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
@@ -74,11 +67,11 @@ export function RankingModelCell({
   );
 }
 
-export function priceCell(get: (m: ArtificialAnalysisModel) => number | null | undefined, t: TFunction) {
+function priceCell(get: (m: ArtificialAnalysisModel) => number | null | undefined, t: TFunction) {
   return (m: ArtificialAnalysisModel) => formatDollar(get(m), t);
 }
 
-export function scoreColumn(
+function scoreColumn(
   id: string,
   header: string,
   accessor: (m: ArtificialAnalysisModel) => number | null | undefined,
@@ -97,10 +90,8 @@ export function scoreColumn(
 
 export function buildRankingColumns(
   t: TFunction,
-  getModelState: (model: ArtificialAnalysisModel) => { isCompared: boolean; compareDisabled: boolean },
+  getModelState: (model: ArtificialAnalysisModel) => { isCompared: boolean },
   toggleCompareModel: (m: ArtificialAnalysisModel) => void,
-  rankMap: Map<string, number>,
-  getModelRowId: (m: ArtificialAnalysisModel) => string,
 ): DataTableColumn<ArtificialAnalysisModel>[] {
   return [
     {
@@ -108,13 +99,11 @@ export function buildRankingColumns(
       header: t("modelNameOrId"),
       width: "40%",
       cell: (model) => {
-        const { isCompared, compareDisabled } = getModelState(model);
+        const { isCompared } = getModelState(model);
         return (
           <RankingModelCell
             model={model}
-            rank={rankMap.get(getModelRowId(model)) ?? 0}
             isCompared={isCompared}
-            compareDisabled={compareDisabled}
             onToggleCompare={toggleCompareModel}
           />
         );
@@ -145,7 +134,7 @@ export function buildRankingColumns(
 
 export function buildPricingColumns(
   t: TFunction,
-  getModelState: (model: ArtificialAnalysisModel) => { isCompared: boolean; compareDisabled: boolean },
+  getModelState: (model: ArtificialAnalysisModel) => { isCompared: boolean },
   toggleCompareModel: (m: ArtificialAnalysisModel) => void,
   calcPrompt: number,
   calcCompletion: number,
@@ -156,7 +145,7 @@ export function buildPricingColumns(
       header: t("modelNameOrId"),
       width: "35%",
       cell: (model) => {
-        const { isCompared, compareDisabled } = getModelState(model);
+        const { isCompared } = getModelState(model);
         return (
           <div className="flex items-center gap-1 min-w-0">
             <p className="text-sm break-words min-w-0">{model.name || model.slug}</p>
@@ -167,7 +156,6 @@ export function buildPricingColumns(
                 e.stopPropagation();
                 toggleCompareModel(model);
               }}
-              disabled={compareDisabled}
               className="shrink-0"
             >
               {isCompared ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}

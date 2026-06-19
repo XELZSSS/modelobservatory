@@ -3,7 +3,7 @@ import type { HomeProviderStat } from "./useHomeDashboardData";
 
 export function ProviderSpeedCard({ providerStats }: { providerStats: HomeProviderStat[] }) {
   return (
-    <Card className="h-fit hidden md:block">
+    <Card className="h-fit">
       <CardContent className="p-4">
         <div className="flex flex-col gap-3">
           {providerStats.slice(0, 6).map((p) => (

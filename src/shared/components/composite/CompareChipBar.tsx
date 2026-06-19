@@ -1,5 +1,6 @@
-import { X, Gamepad2, Trash2 } from "lucide-react";
+import { X, Trash2, ArrowLeftRight } from "lucide-react";
 import { Button } from "../ui/button";
+import { secondaryTextClass } from "../../utils/cssConstants";
 import { useTranslation } from "../../i18n/useTranslation";
 import { modelId } from "../../utils/modelId";
 import type { ArtificialAnalysisModel } from "../../types";
@@ -7,17 +8,18 @@ import type { ArtificialAnalysisModel } from "../../types";
 export function CompareChipBar({
   models,
   onRemove,
-  onAdd,
   onClear,
-  addLabel,
+  onCompare,
+  compareLabel,
 }: {
   models: ArtificialAnalysisModel[];
   onRemove: (model: ArtificialAnalysisModel) => void;
-  onAdd: () => void;
   onClear: () => void;
-  addLabel: string;
+  onCompare?: () => void;
+  compareLabel?: string;
 }) {
   const { t } = useTranslation();
+  const canCompare = models.length >= 2;
   return (
     <div className="flex flex-wrap gap-2 items-center justify-between">
       <div className="flex flex-wrap gap-2 items-center">
@@ -31,13 +33,16 @@ export function CompareChipBar({
         ))}
       </div>
       <div className="flex gap-2">
-        <Button size="sm" variant="outline" onClick={onAdd}>
-          <Gamepad2 size={14} /> {addLabel}
-        </Button>
         <Button size="sm" variant="outline" onClick={onClear}>
           <Trash2 size={14} /> {t("clear")}
         </Button>
+        {onCompare && (
+          <Button size="sm" variant="outline" onClick={onCompare} disabled={!canCompare}>
+            <ArrowLeftRight size={14} /> {compareLabel ?? t("compareSelected")}
+          </Button>
+        )}
       </div>
+      {onCompare && !canCompare && models.length > 0 && <p className={secondaryTextClass}>{t("compareLimit")}</p>}
     </div>
   );
 }

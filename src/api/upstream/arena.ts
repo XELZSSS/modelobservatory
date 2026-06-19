@@ -1,6 +1,7 @@
 import { withCache } from "../cache";
-import { fetchText, CACHE_TTL_MS } from "../http";
+import { fetchText } from "../http";
 import { parseRscScriptArray } from "../parsers/rsc";
+import { DEFAULT_TTL_MS } from "../../shared/config";
 import type { ArenaModel } from "../../shared/types";
 
 const BASE = "https://arena.ai/leaderboard";
@@ -40,7 +41,7 @@ function mapEntry(e: RawEntry): ArenaModel | null {
 }
 
 export async function getLeaderboard(category: string): Promise<{ category: string; fetched_at: unknown; models: ArenaModel[] }> {
-  return withCache(`arena-leaderboard:${category}`, CACHE_TTL_MS, async () => {
+  return withCache(`arena-leaderboard:${category}`, DEFAULT_TTL_MS, async () => {
     const html = await fetchText(`${BASE}/${encodeURIComponent(category)}`);
     const raw = parseRscScriptArray<RawEntry>(html, "entries");
     const models = raw.map(mapEntry).filter((m): m is ArenaModel => m !== null);

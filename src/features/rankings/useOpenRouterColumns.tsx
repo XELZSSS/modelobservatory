@@ -5,12 +5,22 @@ import { ellipsisTextClasses } from "../../shared/utils/cssConstants";
 import { formatShortNumber, formatTrend } from "../../shared/utils/format";
 import type { OpenRouterRankEntry, OpenRouterAppEntry } from "../../shared/types";
 
-export function trendClass(change?: number | null) {
+function trendClass(change?: number | null) {
   if (change == null || change === 0) return "bg-bg-tertiary text-text-secondary border-border";
   return change > 0
     ? "bg-green-500/10 text-green-500 border-green-500/20"
     : "bg-rose-500/10 text-rose-500 border-rose-500/20";
 }
+
+const tokenColumn = <T extends { totalTokens?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({
+  id: "tokens", header: t("totalTokens"), accessorFn: (row) => row.totalTokens, sortable: true, align: "right",
+  cell: (item) => <span className="font-mono font-bold text-text-primary">{formatShortNumber(item.totalTokens || 0)}</span>,
+});
+
+const requestColumn = <T extends { requestCount?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({
+  id: "requests", header: t("requests"), accessorFn: (row) => row.requestCount, sortable: true, align: "right", hiddenMd: true,
+  cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.requestCount || 0)}</span>,
+});
 
 export function useOpenRouterColumns(
   t: (key: TranslationKey) => string,
@@ -20,25 +30,10 @@ export function useOpenRouterColumns(
       id: "model",
       header: t("modelNameOrId"),
       width: "45%",
-      cell: (item) => <RankingNameCell rank={item.rank} name={item.name} />,
+      cell: (item) => <RankingNameCell name={item.name} />,
     },
-    {
-      id: "tokens",
-      header: t("totalTokens"),
-      accessorFn: (row) => row.totalTokens,
-      sortable: true,
-      align: "right",
-      cell: (item) => <span className="font-mono font-bold text-text-primary">{formatShortNumber(item.totalTokens || 0)}</span>,
-    },
-    {
-      id: "requests",
-      header: t("requests"),
-      accessorFn: (row) => row.requestCount,
-      sortable: true,
-      align: "right",
-      hiddenMd: true,
-      cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.requestCount || 0)}</span>,
-    },
+    tokenColumn<OpenRouterRankEntry>(t),
+    requestColumn<OpenRouterRankEntry>(t),
     {
       id: "creator",
       header: t("provider"),
@@ -64,25 +59,10 @@ export function useOpenRouterColumns(
       id: "app",
       header: t("openRouterApps"),
       width: "45%",
-      cell: (item) => <RankingNameCell rank={item.rank} name={item.name} />,
+      cell: (item) => <RankingNameCell name={item.name} />,
     },
-    {
-      id: "tokens",
-      header: t("totalTokens"),
-      accessorFn: (row) => row.totalTokens,
-      sortable: true,
-      align: "right",
-      cell: (item) => <span className="font-mono font-bold text-text-primary">{formatShortNumber(item.totalTokens || 0)}</span>,
-    },
-    {
-      id: "requests",
-      header: t("requests"),
-      accessorFn: (row) => row.requestCount,
-      sortable: true,
-      align: "right",
-      hiddenMd: true,
-      cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.requestCount || 0)}</span>,
-    },
+    tokenColumn<OpenRouterAppEntry>(t),
+    requestColumn<OpenRouterAppEntry>(t),
     {
       id: "category",
       header: t("category"),

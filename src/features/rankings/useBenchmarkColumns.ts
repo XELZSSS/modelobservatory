@@ -7,15 +7,8 @@ import { formatScore } from "../../shared/utils/format";
 export function useBenchmarkColumns(
   t: (key: TranslationKey) => string,
   selectedBenchmark: string,
-  rankMap: Map<string, number>,
 ): DataTableColumn<ArtificialAnalysisModel>[] {
   return [
-    {
-      id: "rank",
-      header: "#",
-      cell: (row) => rankMap.get(row.id),
-      width: 50,
-    },
     {
       id: "name",
       header: t("modelName"),

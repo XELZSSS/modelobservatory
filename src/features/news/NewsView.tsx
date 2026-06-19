@@ -106,7 +106,7 @@ export function NewsView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <SectionHeader title={t("newsTitle")} />
+      <SectionHeader title={t("aiNews")} />
       <TabContainer tabs={tabs} defaultTabId="official" tabSize="sm" onTabChange={setActiveCategory}>
         <NewsCategoryContent categoryId={activeCategory} color={activeColor} />
       </TabContainer>

@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { DataTable } from "../../shared/components/data/DataTable";
-import { MAX_COMPARE_MODELS } from "../../shared/constants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useRankMap } from "../../shared/hooks/useRankMap";
 import { useCompareStore } from "../../shared/stores/compareStore";
 import { modelId } from "../../shared/utils/modelId";
 
@@ -16,7 +14,7 @@ import { useAARankingFilters } from "./aa/useAARankingFilters";
 import { useCostEstimator } from "./aa/useCostEstimator";
 import { FilterToolbar } from "./aa/FilterToolbar";
 import { PricingInputs } from "./aa/PricingInputs";
-import { CompareBar } from "./aa/CompareBar";
+import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
 
 export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnalysisModel[] }) {
   const navigate = useNavigate();
@@ -28,13 +26,11 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
 
   const { filtered, viewMode, setViewMode, reasoningFilter, setReasoningFilter, modalityFilter, setModalityFilter } = useAARankingFilters(rankings);
   const { promptTokens, setPromptTokens, completionTokens, setCompletionTokens, calcPrompt, calcCompletion, avgCost } = useCostEstimator(filtered);
-  const rankMap = useRankMap(filtered, modelId);
 
   const getModelState = useCallback(
     (model: ArtificialAnalysisModel) => {
       const key = model.id || model.slug;
-      const isCompared = compareIds.includes(key);
-      return { isCompared, compareDisabled: !isCompared && compareIds.length >= MAX_COMPARE_MODELS };
+      return { isCompared: compareIds.includes(key) };
     },
     [compareIds],
   );
@@ -42,8 +38,8 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
   const modelColumns = useMemo<DataTableColumn<ArtificialAnalysisModel>[]>(() => {
     return viewMode === "pricing"
       ? buildPricingColumns(t, getModelState, toggleCompareModel, calcPrompt, calcCompletion)
-      : buildRankingColumns(t, getModelState, toggleCompareModel, rankMap, modelId);
-  }, [getModelState, toggleCompareModel, t, viewMode, calcPrompt, calcCompletion, rankMap]);
+      : buildRankingColumns(t, getModelState, toggleCompareModel);
+  }, [getModelState, toggleCompareModel, t, viewMode, calcPrompt, calcCompletion]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -66,9 +62,8 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
         />
       )}
 
-      <CompareBar
-        compareIds={compareIds}
-        rankings={rankings}
+      <CompareChipBar
+        models={compareIds.map((id) => rankings.find((m) => (m.id || m.slug) === id)).filter((m): m is ArtificialAnalysisModel => !!m)}
         onRemove={toggleCompareModel}
         onClear={clearCompare}
         onCompare={() => navigate(viewMode === "pricing" ? "/price-compare" : "/compare")}

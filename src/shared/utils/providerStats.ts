@@ -1,7 +1,10 @@
 import type { ArtificialAnalysisModel } from "../types";
-import { getOutputSpeed } from "./modelAccessors";
 
-export interface ProviderAggregate {
+function getOutputSpeed(model: ArtificialAnalysisModel): number | null {
+  return model.speed?.median_output_speed ?? model.speed?.timescaleData?.median_output_speed ?? null;
+}
+
+interface ProviderAggregate {
   name: string;
   color: string;
   models: ArtificialAnalysisModel[];

@@ -49,11 +49,15 @@ export function useHomeDashboardData(
       valueLabel: formatShortNumber(model.downloads),
     }));
 
-    const hallucinationStats: HomeBarStat[] = hallucinationRankings.slice(0, 5).map((entry) => ({
-      label: entry.model,
-      value: entry.hallucinationRate,
-      valueLabel: `${entry.hallucinationRate.toFixed(1)}%`,
-    }));
+    const hallucinationStats: HomeBarStat[] = hallucinationRankings
+      .slice()
+      .sort((a, b) => b.accuracy - a.accuracy)
+      .slice(0, 5)
+      .map((entry) => ({
+        label: entry.model,
+        value: entry.accuracy,
+        valueLabel: `${entry.accuracy.toFixed(1)}%`,
+      }));
 
     const latestRelease = artificialData.reduce(
       (best, m) => {

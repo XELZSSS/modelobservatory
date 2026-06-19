@@ -2,7 +2,6 @@ import type { TFunction } from "../i18n";
 import type { ArtificialAnalysisModel } from "../types";
 import { formatBoolean, formatContext, formatCost, formatScore } from "./format";
 import { clampPercent, normalizePercent } from "./math";
-import { getOutputSpeed } from "./modelAccessors";
 
 export interface CompareMetric {
   label: string;
@@ -12,12 +11,17 @@ export interface CompareMetric {
   mobileKey?: boolean;
 }
 
-function scoreMetric(t: TFunction, labelKey: Parameters<TFunction>[0], getScore: (m: ArtificialAnalysisModel) => number | null | undefined): CompareMetric {
+function getOutputSpeed(model: ArtificialAnalysisModel): number | null {
+  return model.speed?.median_output_speed ?? model.speed?.timescaleData?.median_output_speed ?? null;
+}
+
+function scoreMetric(t: TFunction, labelKey: Parameters<TFunction>[0], getScore: (m: ArtificialAnalysisModel) => number | null | undefined, mobileKey?: boolean): CompareMetric {
   return {
     label: t(labelKey),
     getValue: (model) => formatScore(t, getScore(model)),
     getNumericValue: getScore,
     higherIsBetter: true,
+    mobileKey,
   };
 }
 
@@ -75,9 +79,9 @@ export function buildCompareMetrics(t: TFunction): CompareMetric[] {
       higherIsBetter: true,
       mobileKey: true,
     },
-    { ...scoreMetric(t, "intelligenceIndex", (m) => m.intelligence_index), mobileKey: true },
-    { ...scoreMetric(t, "coding", (m) => m.coding_index), mobileKey: true },
-    { ...scoreMetric(t, "agentic", (m) => m.agentic_index), mobileKey: true },
+    { ...scoreMetric(t, "intelligenceIndex", (m) => m.intelligence_index, true) },
+    { ...scoreMetric(t, "coding", (m) => m.coding_index, true) },
+    { ...scoreMetric(t, "agentic", (m) => m.agentic_index, true) },
     percentMetric(t, "gpqa", (m) => m.benchmarks?.gpqa),
     percentMetric(t, "hle", (m) => m.benchmarks?.hle),
     percentMetric(t, "scicode", (m) => m.benchmarks?.scicode),

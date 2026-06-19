@@ -20,7 +20,7 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
     {
       id: "model",
       header: t("modelNameOrId"),
-      cell: (row) => <RankingNameCell rank={row.rank} name={row.item.model} />,
+      cell: (row) => <RankingNameCell name={row.item.model} />,
     },
     {
       id: "hallucinationRate",

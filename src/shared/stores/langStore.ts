@@ -18,7 +18,6 @@ export const useLangStore = create<LangState>()(
     }),
     {
       name: STORAGE_KEYS.lang,
-      version: 1,
     },
   ),
 );

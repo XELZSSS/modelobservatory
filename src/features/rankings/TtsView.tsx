@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useTtsLeaderboard } from "../../shared/hooks/useQueries";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
-import { useRankMap } from "../../shared/hooks/useRankMap";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
@@ -17,14 +16,13 @@ export function TtsView() {
   const { t } = useTranslation();
   const { data } = useTtsLeaderboard();
   const filtered = useFilteredData(data ?? [], getSearchFields);
-  const rankMap = useRankMap(filtered, (m) => m.id);
 
   const columns = useMemo<DataTableColumn<TtsModel>[]>(
     () => [
       {
         id: "model",
         header: t("modelNameOrId"),
-        cell: (model) => <RankingNameCell rank={rankMap.get(model.id) ?? 0} name={model.name} />,
+        cell: (model) => <RankingNameCell name={model.name} />,
       },
       {
         id: "provider",
@@ -61,7 +59,7 @@ export function TtsView() {
         cell: (model) => <span className="text-sm">{formatDollar(model.price_per_1m_chars, t)}</span>,
       },
     ],
-    [t, rankMap],
+    [t],
   );
 
   return (

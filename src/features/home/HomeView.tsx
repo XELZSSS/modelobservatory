@@ -40,9 +40,14 @@ function HomeContent() {
 
       <KpiStrip kpis={kpiStrip} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4">
-        <IndexLineChart models={artificialData} />
+      <div className="hidden sm:grid grid-cols-4 gap-4">
+        <div className="col-span-3">
+          <IndexLineChart models={artificialData} />
+        </div>
         <ProviderSpeedCard providerStats={providerStats} />
+      </div>
+      <div className="sm:hidden">
+        <IndexLineChart models={artificialData} />
       </div>
 
       <StatisticsSection downloadStats={downloadStats} hallucinationStats={hallucinationStats} toolUsageShare={toolUsageShare} />

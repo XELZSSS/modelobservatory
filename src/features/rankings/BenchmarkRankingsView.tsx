@@ -3,7 +3,6 @@ import { TabButton } from "../../shared/components/composite/TabButton";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useSuspenseArtificialRankings } from "../../shared/hooks/useQueries";
-import { useRankMap } from "../../shared/hooks/useRankMap";
 import { secondaryTextClass } from "../../shared/utils/cssConstants";
 import { BENCHMARK_KEYS, BENCHMARK_LABELS, useBenchmarkColumns } from "./useBenchmarkColumns";
 
@@ -20,8 +19,7 @@ export function BenchmarkRankingsView() {
     [data, selectedBenchmark],
   );
 
-  const rankMap = useRankMap(filteredData, (m) => m.id);
-  const columns = useBenchmarkColumns(t, selectedBenchmark, rankMap);
+  const columns = useBenchmarkColumns(t, selectedBenchmark);
 
   return (
     <div className="flex flex-col gap-4">

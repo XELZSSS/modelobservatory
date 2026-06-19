@@ -1,8 +1,9 @@
 import { withCache, formatSettleErrors } from "../cache";
-import { CACHE_TTL_MS, fetchJSON } from "../http";
+import { fetchJSON } from "../http";
 import { errorMessage } from "../errors";
+import { deduplicateBy } from "../utils";
 import type { ModelPrediction, ReleasePrediction, ProviderPrediction, PredictionsPayload } from "../../shared/types";
-import { upstreamConfig } from "../../shared/config";
+import { upstreamConfig, DEFAULT_TTL_MS } from "../../shared/config";
 
 const API = upstreamConfig.polymarket;
 const AI_TAGS = ["537", "103303", "661"];
@@ -23,6 +24,7 @@ const COMPANY_KEYWORDS: Record<string, string[]> = {
 
 function parseArr(raw: string): string[] { try { const v = JSON.parse(raw); return Array.isArray(v) ? v.map(String) : []; } catch { return []; } }
 function parsePrices(raw: string): number[] { return parseArr(raw).map((s) => Number(s) || 0); }
+function parseOutcomes(m: Market) { return { outcomes: parseArr(m.outcomes), prices: parsePrices(m.outcomePrices) }; }
 function detectCompany(text: string): string | null {
   const lower = text.toLowerCase();
   for (const [company, kw] of Object.entries(COMPANY_KEYWORDS)) {
@@ -72,24 +74,21 @@ async function fetchMarkets(): Promise<Market[]> {
     AI_TAGS.map((tag) => fetchJSON<Market[]>(`${API}/markets?tag_id=${tag}&active=true&closed=false&limit=50&order=volume&ascending=false`)),
   );
   const markets = settleOrThrow(results, "Polymarket");
-  const seen = new Set<string>();
-  return markets.filter((m) => m.active && !m.closed && !seen.has(m.id) && (seen.add(m.id), true));
+  return deduplicateBy(markets.filter((m) => m.active && !m.closed), (m) => m.id);
 }
 
 function buildModelPredictions(markets: Market[]): ModelPrediction[] {
   return sortByVolume(markets.filter((m) => classify(m.question) === "model_ranking").map((m) => {
     const company = detectCompany(m.question);
     if (!company) return null;
-    const outcomes = parseArr(m.outcomes);
-    const prices = parsePrices(m.outcomePrices);
+    const { outcomes, prices } = parseOutcomes(m);
     return { id: m.id, question: m.question, company, metric: m.question, probability: yesProb(outcomes, prices), volume: Number(m.volume) || 0, deadline: deadline(m.endDate), url: url(m.url) };
   }).filter((x): x is ModelPrediction => x !== null));
 }
 
 function buildReleasePredictions(markets: Market[]): ReleasePrediction[] {
   return sortByVolume(markets.filter((m) => classify(m.question) === "release").map((m) => {
-    const outcomes = parseArr(m.outcomes);
-    const prices = parsePrices(m.outcomePrices);
+    const { outcomes, prices } = parseOutcomes(m);
     const modelMatch = m.question.match(/(?:GPT|Claude|Gemini|Llama|Grok)[\s-]?\d[\w.]*/i);
     return { id: m.id, question: m.question, model: modelMatch?.[0] || m.question.split("?")[0]?.trim() || m.question, predictions: outcomes.map((label, i) => ({ window: label, probability: prices[i] || 0 })), volume: Number(m.volume) || 0, url: url(m.url) };
   }));
@@ -99,8 +98,7 @@ function buildProviderPredictions(markets: Market[]): ProviderPrediction[] {
   return sortByVolume(markets.filter((m) => classify(m.question) === "provider").map((m) => {
     const provider = detectCompany(m.question);
     if (!provider) return null;
-    const outcomes = parseArr(m.outcomes);
-    const prices = parsePrices(m.outcomePrices);
+    const { outcomes, prices } = parseOutcomes(m);
     const q = m.question.toLowerCase();
     return { id: m.id, question: m.question, provider, type: /ipo/.test(q) ? "ipo" : /market cap|largest/.test(q) ? "market_cap" : "valuation", options: outcomes.map((label, i) => ({ label, probability: prices[i] || 0 })), volume: Number(m.volume) || 0, deadline: deadline(m.endDate), url: url(m.url) };
   }).filter((x): x is ProviderPrediction => x !== null));
@@ -111,7 +109,7 @@ function buildProviderPredictions(markets: Market[]): ProviderPrediction[] {
 // errors keep users seeing empty data long after the upstream recovers.
 export async function getPredictions(): Promise<PredictionsPayload> {
   try {
-    return await withCache("polymarket:predictions", CACHE_TTL_MS, async () => {
+    return await withCache("polymarket:predictions", DEFAULT_TTL_MS, async () => {
       const markets = await fetchMarkets();
       return {
         modelRankings: buildModelPredictions(markets),

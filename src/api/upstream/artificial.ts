@@ -1,9 +1,8 @@
-import { CACHE_TTL_MS } from "../http";
 import { withCache } from "../cache";
-import { findNextData, parseRscPayload, rscParseError } from "../parsers/rsc";
+import { DEFAULT_TTL_MS } from "../../shared/config";
+import { fetchAndParseRsc, findNextData } from "../parsers/rsc";
 import { num, str, strOr, bool, obj } from "../parsers/coerce";
 import type { ArtificialAnalysisModel } from "../../shared/types";
-import { fetchAARsc } from "./aaRsc";
 
 const BENCHMARK_KEYS = ["aime25", "gpqa", "hle", "scicode", "gdpval", "tau2", "terminalbench_hard", "ifbench", "lcr", "omniscience", "critpt", "livecodebench", "mmlu_pro", "math_500", "humaneval", "apex_agents", "terminalbench_v2_1", "tau_banking"] as const;
 
@@ -82,15 +81,8 @@ function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
 }
 
 export async function getIntelligenceIndex(): Promise<ArtificialAnalysisModel[]> {
-  return withCache("aa-defaultData", CACHE_TTL_MS, async () => {
-    const rsc = await fetchAARsc("/evaluations/artificial-analysis-intelligence-index");
-    let raw: Record<string, unknown>[];
-    try {
-      raw = parseRscPayload<Record<string, unknown>>(rsc, "defaultData", (tree) => findNextData(tree, "defaultData"));
-    } catch (e) {
-      throw new Error(rscParseError("defaultData", rsc, e), { cause: e });
-    }
-    if (raw.length === 0) throw new Error(rscParseError("defaultData", rsc));
+  return withCache("aa-defaultData", DEFAULT_TTL_MS, async () => {
+    const raw = await fetchAndParseRsc<Record<string, unknown>>("/evaluations/artificial-analysis-intelligence-index", "defaultData", (tree) => findNextData(tree, "defaultData"));
     const models = raw.map(compact).sort((a, b) => (b.intelligence_index ?? -Infinity) - (a.intelligence_index ?? -Infinity));
     const invalid = models.filter((m) => !m.id || !m.name);
     if (invalid.length > 0) console.warn(`[artificial] ${invalid.length} models with empty id/name after mapping`);

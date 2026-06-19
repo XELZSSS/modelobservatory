@@ -5,7 +5,6 @@ const MAX_NEG_KEYS = 100;
 export interface CacheBackend {
   get<T>(key: string): Promise<T | null>;
   set<T>(key: string, value: T, ttlMs: number): Promise<void>;
-  delete(key: string): Promise<void>;
 }
 
 class MemoryCache implements CacheBackend {
@@ -28,8 +27,6 @@ class MemoryCache implements CacheBackend {
     if (++this.writes >= 100) { this.writes = 0; this.evict(); }
   }
 
-  async delete(key: string): Promise<void> { this.store.delete(key); }
-
   private evict() {
     const now = Date.now();
     for (const [k, v] of this.store) { if (v.expires <= now) this.store.delete(k); }
@@ -41,8 +38,8 @@ class MemoryCache implements CacheBackend {
   }
 }
 
-export const cache: CacheBackend = new MemoryCache();
-export let globalCache: CacheBackend = cache;
+const memCache: CacheBackend = new MemoryCache();
+export let globalCache: CacheBackend = memCache;
 export function initCache(backend: CacheBackend) { globalCache = backend; }
 
 export class KVCache implements CacheBackend {
@@ -55,7 +52,6 @@ export class KVCache implements CacheBackend {
   async set<T>(key: string, value: T, ttlMs: number): Promise<void> {
     await this.kv.put(key, JSON.stringify(value), { expirationTtl: Math.max(60, Math.ceil(ttlMs / 1000)) });
   }
-  async delete(key: string): Promise<void> { await this.kv.delete(key); }
 }
 
 // Dedup concurrent requests for the same key

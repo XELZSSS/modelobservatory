@@ -24,5 +24,3 @@ export const COOL_COLORS = [
 export function getModelColor(index: number): string {
   return COOL_COLORS[index % COOL_COLORS.length]!;
 }
-
-export const getRankColor = (rank: number) => getModelColor(Math.max(1, rank) - 1);

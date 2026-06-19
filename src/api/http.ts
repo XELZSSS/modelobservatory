@@ -1,9 +1,6 @@
-import { USER_AGENT, DEFAULT_TTL_MS } from "../shared/config";
-
-export const CACHE_TTL_MS = DEFAULT_TTL_MS;
+import { USER_AGENT } from "../shared/config";
 
 const TIMEOUT_MS = 10_000;
-const MAX_RETRIES = 1;
 
 const BASE_HEADERS: Record<string, string> = {
   "user-agent": USER_AGENT,
@@ -11,25 +8,25 @@ const BASE_HEADERS: Record<string, string> = {
 };
 
 async function doFetch(url: string, init: RequestInit, accept: string): Promise<Response> {
-  let lastError: Error | null = null;
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    if (attempt > 0) await new Promise((r) => setTimeout(r, 2000));
-    try {
-      const response = await fetch(url, {
-        headers: { ...BASE_HEADERS, accept, ...init.headers },
-        signal: init.signal ?? AbortSignal.timeout(TIMEOUT_MS),
-      });
-      if (!response.ok) {
-        const body = accept.includes("json") ? await response.text().catch(() => "") : "";
-        throw new Error(`HTTP ${response.status} for ${url}${body ? `: ${body.slice(0, 200)}` : ""}`);
-      }
-      return response;
-    } catch (e) {
-      lastError = e instanceof Error ? e : new Error(String(e));
-      if (attempt === MAX_RETRIES) throw lastError;
+  const headers = { ...BASE_HEADERS, accept, ...init.headers };
+  const signal = init.signal ?? AbortSignal.timeout(TIMEOUT_MS);
+  try {
+    const res = await fetch(url, { headers, signal });
+    if (!res.ok) {
+      const body = accept.includes("json") ? await res.text().catch(() => "") : "";
+      throw new Error(`HTTP ${res.status} for ${url}${body ? `: ${body.slice(0, 200)}` : ""}`);
     }
+    return res;
+  } catch (e) {
+    const err = e instanceof Error ? e : new Error(String(e));
+    await new Promise((r) => setTimeout(r, 2000));
+    const res = await fetch(url, { headers, signal: init.signal ?? AbortSignal.timeout(TIMEOUT_MS) });
+    if (!res.ok) {
+      const body = accept.includes("json") ? await res.text().catch(() => "") : "";
+      throw new Error(`HTTP ${res.status} for ${url}${body ? `: ${body.slice(0, 200)}` : ""}`);
+    }
+    return res;
   }
-  throw lastError ?? new Error("Request failed");
 }
 
 export async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {

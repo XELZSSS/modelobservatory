@@ -10,7 +10,7 @@ import { secondaryTextClass, smallBoldClass, winnerPriceClass } from "../../shar
 import type { TFunction } from "../../shared/i18n";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 
-export interface PriceRow {
+interface PriceRow {
   label: string;
   getValue: (m: ArtificialAnalysisModel) => number | null | undefined;
   format: (v: number) => string;
