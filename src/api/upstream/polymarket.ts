@@ -1,15 +1,16 @@
-import { withCache } from "../cache";
+import { withCache, formatSettleErrors } from "../cache";
 import { CACHE_TTL_MS, fetchJSON } from "../http";
 import { errorMessage } from "../errors";
 import type { ModelPrediction, ReleasePrediction, ProviderPrediction, PredictionsPayload } from "../../shared/types";
+import { upstreamConfig } from "../../shared/config";
 
-const API = "https://gamma-api.polymarket.com";
+const API = upstreamConfig.polymarket;
 const AI_TAGS = ["537", "103303", "661"];
 const TOP_N = 6;
 
 interface Market {
   id: string; question: string; outcomes: string; outcomePrices: string;
-  volume: string; endDate: string; url: string; slug: string; active: boolean; closed: boolean;
+  volume: string; endDate: string; url: string; active: boolean; closed: boolean;
 }
 
 const COMPANY_KEYWORDS: Record<string, string[]> = {
@@ -60,10 +61,7 @@ function sortByVolume<T extends { volume: number }>(items: T[]): T[] {
 function settleOrThrow<T>(results: PromiseSettledResult<T[]>[], label: string): T[] {
   const valid = results.flatMap((r) => (r.status === "fulfilled" && Array.isArray(r.value) ? r.value : []));
   if (valid.length === 0) {
-    const reasons = results
-      .map((r, i) => (r.status === "rejected" ? `tag ${AI_TAGS[i]}: ${r.reason instanceof Error ? r.reason.message : r.reason}` : null))
-      .filter(Boolean)
-      .join("; ");
+    const reasons = formatSettleErrors(results, AI_TAGS.map((t) => `tag ${t}`));
     throw new Error(`${label}: all upstream requests failed${reasons ? ` (${reasons})` : ""}`);
   }
   return valid;

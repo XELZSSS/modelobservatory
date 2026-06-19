@@ -13,9 +13,8 @@ export function Card({ children, className, style, ...props }: CardProps) {
   );
 }
 
-export function CardContent({ className, children, style, ...props }: CardProps) {
-  const hasPaddingClass = className && /\bp-[\d.]+\b/.test(className);
-  const paddingClass = hasPaddingClass ? "" : "p-4";
+export function CardContent({ className, children, style, noPadding, ...props }: CardProps & { noPadding?: boolean }) {
+  const paddingClass = noPadding ? "" : "p-4";
   return (
     <div className={`${paddingClass} ${className ?? ""}`} style={style} {...props}>
       {children}

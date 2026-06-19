@@ -8,6 +8,7 @@ import { formatScore, formatDollar } from "../../shared/utils/format";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { secondaryTextClass, smallBoldClass, winnerPriceClass } from "../../shared/utils/cssConstants";
 import type { TFunction } from "../../shared/i18n";
+import { useTranslation } from "../../shared/i18n/useTranslation";
 
 export interface PriceRow {
   label: string;
@@ -45,13 +46,12 @@ export const PriceTableDesktop = React.memo(function PriceTableDesktop({
   priceRows,
   models,
   bestPrices,
-  t,
 }: {
   priceRows: PriceRow[];
   models: ArtificialAnalysisModel[];
   bestPrices: Map<string, number>;
-  t: TFunction;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="hidden md:block overflow-x-auto">
       <table className="w-full text-sm">
@@ -100,13 +100,12 @@ export const PriceCardsMobile = React.memo(function PriceCardsMobile({
   priceRows,
   models,
   bestPrices,
-  t,
 }: {
   priceRows: PriceRow[];
   models: ArtificialAnalysisModel[];
   bestPrices: Map<string, number>;
-  t: TFunction;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-2 md:hidden">
       {priceRows.map((row) => {
@@ -148,13 +147,12 @@ export const EfficiencyTableDesktop = React.memo(function EfficiencyTableDesktop
   models,
   costEfficiency,
   bestEfficiency,
-  t,
 }: {
   models: ArtificialAnalysisModel[];
   costEfficiency: (number | null)[];
   bestEfficiency: number | null;
-  t: TFunction;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="hidden md:block overflow-x-auto">
       <table className="w-full text-sm">
@@ -200,13 +198,12 @@ export const EfficiencyCardsMobile = React.memo(function EfficiencyCardsMobile({
   models,
   costEfficiency,
   bestEfficiency,
-  t,
 }: {
   models: ArtificialAnalysisModel[];
   costEfficiency: (number | null)[];
   bestEfficiency: number | null;
-  t: TFunction;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-2 md:hidden">
       {models.map((model, index) => {

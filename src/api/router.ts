@@ -2,11 +2,9 @@ import { cors } from "hono/cors";
 import { etag } from "hono/etag";
 import { timeout } from "hono/timeout";
 import { timing } from "hono/timing";
-import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { registerRoutes } from "./server/registerRoutes";
-import { ApiError } from "./errors";
 
 import { arenaRoutes } from "./server/routes/arena";
 import { artificialRoutes } from "./server/routes/artificial";
@@ -34,15 +32,6 @@ app.use(
     maxAge: 86400,
   }),
 );
-
-app.onError((err, c) => {
-  if (err instanceof ApiError) {
-    const status = (err.status >= 100 && err.status < 600 ? err.status : 500) as ContentfulStatusCode;
-    return c.json({ error: { code: status, message: err.message } }, status);
-  }
-  console.error("[unhandled]", err);
-  return c.json({ error: { code: 500, message: "Internal server error" } }, 500);
-});
 
 registerRoutes(app, [
   arenaRoutes,

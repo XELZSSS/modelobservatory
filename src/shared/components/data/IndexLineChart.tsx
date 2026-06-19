@@ -24,7 +24,6 @@ export function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }
       intelligence: m.intelligence_index ?? null,
       coding: m.coding_index ?? null,
       agentic: m.agentic_index ?? null,
-      math: m.math_index ?? null,
     }));
   }, [top10]);
 
@@ -48,7 +47,6 @@ export function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }
               <Line type="monotone" dataKey="intelligence" name={t("intelligence")} stroke={getModelColor(0)} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
               <Line type="monotone" dataKey="coding" name={t("coding")} stroke={getModelColor(1)} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
               <Line type="monotone" dataKey="agentic" name={t("agentic")} stroke={getModelColor(2)} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
-              <Line type="monotone" dataKey="math" name={t("math")} stroke={getModelColor(3)} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
             </LineChart>
           )}
         </div>

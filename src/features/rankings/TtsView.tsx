@@ -1,27 +1,22 @@
 import { useMemo } from "react";
-import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useTtsLeaderboard } from "../../shared/hooks/useQueries";
+import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useRankMap } from "../../shared/hooks/useRankMap";
-import { DataTable } from "../../shared/components/data/DataTable";
-import { ellipsisTextClasses, secondaryTextClass, modelCellClass, modelNameCellClass } from "../../shared/utils/cssConstants";
-import { RankBadge } from "../../shared/components/composite/RankBadge";
+import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
+import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
+import { secondaryTextClass, textSecondaryClass, ellipsisTextClasses } from "../../shared/utils/cssConstants";
 import { formatDollar } from "../../shared/utils/format";
 import type { TtsModel } from "../../shared/types";
 
-function getRowId(model: TtsModel) {
-  return model.id;
-}
-
+const getRowId = (model: TtsModel) => model.id;
 const getSearchFields = (m: TtsModel) => [m.name, m.provider || ""];
 
 export function TtsView() {
   const { t } = useTranslation();
   const { data } = useTtsLeaderboard();
   const filtered = useFilteredData(data ?? [], getSearchFields);
-
   const rankMap = useRankMap(filtered, (m) => m.id);
 
   const columns = useMemo<DataTableColumn<TtsModel>[]>(
@@ -29,12 +24,7 @@ export function TtsView() {
       {
         id: "model",
         header: t("modelNameOrId"),
-        cell: (model) => (
-          <div className={modelCellClass}>
-            <RankBadge rank={rankMap.get(model.id) ?? 0} />
-            <p className={modelNameCellClass}>{model.name}</p>
-          </div>
-        ),
+        cell: (model) => <RankingNameCell rank={rankMap.get(model.id) ?? 0} name={model.name} />,
       },
       {
         id: "provider",
@@ -77,7 +67,11 @@ export function TtsView() {
   return (
     <ViewLayout>
       <p className={secondaryTextClass}>{t("ttsSource")}</p>
-      <DataTable data={filtered} columns={columns} getRowId={getRowId} />
+      {filtered.length === 0 ? (
+        <p className={`${textSecondaryClass} py-8 text-center`}>{t("noResults")}</p>
+      ) : (
+        <DataTable data={filtered} columns={columns} getRowId={getRowId} />
+      )}
     </ViewLayout>
   );
 }

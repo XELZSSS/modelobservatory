@@ -1,7 +1,8 @@
 import type { Hono } from "hono";
 import { startTime, endTime } from "hono/timing";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type { RouteDef } from "../schema";
-import { ValidationError } from "../errors";
+import { ApiError, ValidationError } from "../errors";
 
 export function registerRoutes(app: Hono, routeArrays: RouteDef[][]): void {
   for (const routes of routeArrays) {
@@ -33,4 +34,13 @@ export function registerRoutes(app: Hono, routeArrays: RouteDef[][]): void {
       }
     }
   }
+
+  app.onError((err, c) => {
+    if (err instanceof ApiError) {
+      const status = (err.status >= 100 && err.status < 600 ? err.status : 500) as ContentfulStatusCode;
+      return c.json({ error: { code: status, message: err.message } }, status);
+    }
+    console.error("[unhandled]", err);
+    return c.json({ error: { code: 500, message: "Internal server error" } }, 500);
+  });
 }

@@ -10,6 +10,16 @@
     <link rel="manifest" href="/manifest.webmanifest" />
   </head>
   <body>
+    <script>
+      (function() {
+        try {
+          var theme = JSON.parse(localStorage.getItem('theme') || '{}');
+          if (theme.state && theme.state.themeMode === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch(e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

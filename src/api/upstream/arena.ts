@@ -33,7 +33,7 @@ function mapEntry(e: RawEntry): ArenaModel | null {
     vendor: e.modelOrganization ?? null, license: e.license ?? null,
     score: e.score ?? e.rating ?? null, ci: e.ci ?? null, votes: e.votes ?? null,
     rating: e.rating ?? null, ratingUpper: e.ratingUpper ?? null, ratingLower: e.ratingLower ?? null,
-    modelOrganization: e.modelOrganization ?? null, modelUrl: e.modelUrl ?? null,
+    modelUrl: e.modelUrl ?? null,
     pricePerImage: e.pricePerImage ?? null, pricePerSecond: e.pricePerSecond ?? null,
     releaseType: e.releaseType ?? null,
   };

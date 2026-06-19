@@ -24,7 +24,6 @@ export interface ArtificialAnalysisModel {
 
   coding_index?: number | null;
   agentic_index?: number | null;
-  math_index?: number | null;
 
   benchmarks?: Record<string, number | null>;
 

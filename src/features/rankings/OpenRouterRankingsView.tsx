@@ -1,30 +1,17 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ShieldAlert } from "lucide-react";
-import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { DataTable } from "../../shared/components/data/DataTable";
-import { ellipsisTextClasses, secondaryTextClass, modelCellClass, textSecondaryClass } from "../../shared/utils/cssConstants";
-import { RankBadge } from "../../shared/components/composite/RankBadge";
+import { secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { StatCard } from "../../shared/components/composite/StatCard";
 import { Card } from "../../shared/components/ui/card";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import type { OpenRouterAppEntry, OpenRouterRankingsPayload, OpenRouterRankEntry } from "../../shared/types";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { formatShortNumber, formatTrend, getRecommendation, categoryLabel } from "../../shared/utils/format";
-
-interface OpenRouterRankingsViewProps {
-  data?: OpenRouterRankingsPayload;
-}
-
-function trendClass(change?: number | null) {
-  if (change == null || change === 0) return "bg-bg-tertiary text-text-secondary border-border";
-  return change > 0
-    ? "bg-green-500/10 text-green-500 border-green-500/20"
-    : "bg-rose-500/10 text-rose-500 border-rose-500/20";
-}
+import { formatShortNumber, getRecommendation, categoryLabel } from "../../shared/utils/format";
+import { useOpenRouterColumns } from "./useOpenRouterColumns";
 
 function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
   const { t } = useTranslation();
-
   return (
     <div className="p-4 flex flex-col gap-3 text-left">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -38,13 +25,8 @@ function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
         <p className={`${secondaryTextClass} leading-relaxed`}>{getRecommendation(item.id, t)}</p>
       </div>
       <div className={`flex flex-row justify-between items-center ${secondaryTextClass}`}>
-        <span>
-          {t("apiModelId")}: <code className="font-mono bg-bg-secondary px-1">{item.id}</code>
-        </span>
-        <span>
-          {t("todayCategory")}:{" "}
-          <span className="font-bold uppercase">{categoryLabel(item.category, t)}</span>
-        </span>
+        <span>{t("apiModelId")}: <code className="font-mono bg-bg-secondary px-1">{item.id}</code></span>
+        <span>{t("todayCategory")}: <span className="font-bold uppercase">{categoryLabel(item.category, t)}</span></span>
       </div>
     </div>
   );
@@ -61,122 +43,18 @@ function AppExpandedDetail({ item }: { item: OpenRouterAppEntry }) {
       </div>
       {item.description && <p className={`${secondaryTextClass} leading-relaxed p-2 rounded-md bg-bg-secondary`}>{item.description}</p>}
       <div className={`flex flex-row justify-between items-center ${secondaryTextClass}`}>
-        <span>
-          ID: <code className="font-mono bg-bg-secondary px-1">{item.id}</code>
-        </span>
+        <span>ID: <code className="font-mono bg-bg-secondary px-1">{item.id}</code></span>
         {item.url && <span className="truncate max-w-[60%]">{item.url}</span>}
       </div>
     </div>
   );
 }
 
-function getRowId(row: OpenRouterRankEntry) {
-  return row.id;
-}
-
-function getAppRowId(row: OpenRouterAppEntry) {
-  return row.id;
-}
-
-export function OpenRouterRankingsView({ data }: OpenRouterRankingsViewProps) {
+export function OpenRouterRankingsView({ data }: { data?: OpenRouterRankingsPayload }) {
   const { t } = useTranslation();
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [expandedAppRowId, setExpandedAppRowId] = useState<string | null>(null);
-
-  const modelColumns = useMemo<DataTableColumn<OpenRouterRankEntry>[]>(
-    () => [
-      {
-        id: "model",
-        header: t("modelNameOrId"),
-        width: "45%",
-        cell: (item) => (
-          <div className={modelCellClass}>
-            <RankBadge rank={item.rank} />
-            <p className="text-sm font-bold break-words leading-tight text-left">{item.name}</p>
-          </div>
-        ),
-      },
-      {
-        id: "tokens",
-        header: t("totalTokens"),
-        accessorFn: (row) => row.totalTokens,
-        sortable: true,
-        align: "right",
-        cell: (item) => <span className="font-mono font-bold text-text-primary">{formatShortNumber(item.totalTokens || 0)}</span>,
-      },
-      {
-        id: "requests",
-        header: t("requests"),
-        accessorFn: (row) => row.requestCount,
-        sortable: true,
-        align: "right",
-        hiddenMd: true,
-        cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.requestCount || 0)}</span>,
-      },
-      {
-        id: "creator",
-        header: t("provider"),
-        accessorFn: (row) => row.creator,
-        sortable: true,
-        align: "right",
-        hiddenMd: true,
-        cell: (item) => <p className={`text-xs ${ellipsisTextClasses} text-right`}>{item.creator || t("unknown")}</p>,
-      },
-      {
-        id: "trend",
-        header: t("trend"),
-        accessorFn: (row) => row.change,
-        sortable: true,
-        align: "right",
-        hiddenMd: true,
-        cell: (item) => <span className={`${trendClass(item.change)} border rounded-[4px] text-xs py-0 px-1 font-mono inline-block`}>{formatTrend(item.change, t)}</span>,
-      },
-    ],
-    [t],
-  );
-
-  const appColumns = useMemo<DataTableColumn<OpenRouterAppEntry>[]>(
-    () => [
-      {
-        id: "app",
-        header: t("openRouterApps"),
-        width: "45%",
-        cell: (item) => (
-          <div className={modelCellClass}>
-            <RankBadge rank={item.rank} />
-            <p className="text-sm font-bold break-words leading-tight text-left">{item.name}</p>
-          </div>
-        ),
-      },
-      {
-        id: "tokens",
-        header: t("totalTokens"),
-        accessorFn: (row) => row.totalTokens,
-        sortable: true,
-        align: "right",
-        cell: (item) => <span className="font-mono font-bold text-text-primary">{formatShortNumber(item.totalTokens || 0)}</span>,
-      },
-      {
-        id: "requests",
-        header: t("requests"),
-        accessorFn: (row) => row.requestCount,
-        sortable: true,
-        align: "right",
-        hiddenMd: true,
-        cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.requestCount || 0)}</span>,
-      },
-      {
-        id: "category",
-        header: t("category"),
-        accessorFn: (row) => row.categories?.join(", "),
-        sortable: true,
-        align: "right",
-        hiddenMd: true,
-        cell: (item) => <p className={`text-xs ${ellipsisTextClasses} text-right`}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>,
-      },
-    ],
-    [t],
-  );
+  const { modelColumns, appColumns } = useOpenRouterColumns(t);
 
   if (!data) {
     return (
@@ -194,7 +72,7 @@ export function OpenRouterRankingsView({ data }: OpenRouterRankingsViewProps) {
         <DataTable
           data={data.tokenUsageRankings ?? []}
           columns={modelColumns}
-          getRowId={getRowId}
+          getRowId={(r) => r.id}
           expandedRowId={expandedRowId}
           onToggleExpand={setExpandedRowId}
           renderExpandedRow={(item) => <ModelExpandedDetail item={item} />}
@@ -205,7 +83,7 @@ export function OpenRouterRankingsView({ data }: OpenRouterRankingsViewProps) {
         <DataTable
           data={data.appUsageRankings ?? []}
           columns={appColumns}
-          getRowId={getAppRowId}
+          getRowId={(r) => r.id}
           expandedRowId={expandedAppRowId}
           onToggleExpand={setExpandedAppRowId}
           renderExpandedRow={(item) => <AppExpandedDetail item={item} />}

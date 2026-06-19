@@ -101,8 +101,8 @@ export function PriceCompareView() {
       <Card>
         <CardContent className="p-4">
           <p className="text-sm font-bold mb-3">{t("priceBreakdown")}</p>
-          <PriceTableDesktop priceRows={priceRows} models={models} bestPrices={bestPrices} t={t} />
-          <PriceCardsMobile priceRows={priceRows} models={models} bestPrices={bestPrices} t={t} />
+          <PriceTableDesktop priceRows={priceRows} models={models} bestPrices={bestPrices} />
+          <PriceCardsMobile priceRows={priceRows} models={models} bestPrices={bestPrices} />
         </CardContent>
       </Card>
 
@@ -134,8 +134,8 @@ export function PriceCompareView() {
       <Card>
         <CardContent className="p-4">
           <p className="text-sm font-bold mb-3">{t("costEfficiency")}</p>
-          <EfficiencyTableDesktop models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} t={t} />
-          <EfficiencyCardsMobile models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} t={t} />
+          <EfficiencyTableDesktop models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
+          <EfficiencyCardsMobile models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
         </CardContent>
       </Card>
 

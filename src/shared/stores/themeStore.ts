@@ -17,6 +17,6 @@ export const useThemeStore = create<ThemeState>()(
           themeMode: state.themeMode === "light" ? "dark" : "light",
         })),
     }),
-    { name: STORAGE_KEYS.theme },
+    { name: STORAGE_KEYS.theme, version: 1 },
   ),
 );

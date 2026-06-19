@@ -16,6 +16,7 @@ class MemoryCache implements CacheBackend {
     const entry = this.store.get(key);
     if (!entry) return null;
     if (entry.expires <= Date.now()) { this.store.delete(key); return null; }
+    // Touch entry to maintain LRU order in insertion-ordered Map
     this.store.delete(key);
     this.store.set(key, entry);
     return entry.data as T;
@@ -84,19 +85,7 @@ function addNegKey(key: string) {
 }
 
 export async function withCache<T>(key: string, ttlMs: number, fn: () => Promise<T>): Promise<T> {
-  const cached = await globalCache.get<T>(key);
-  if (cached !== null) return cached;
-  if (negKeys.has(key)) throw new Error("upstream temporarily unavailable");
-  return dedup(key, async () => {
-    try {
-      const data = await fn();
-      await globalCache.set(key, data, ttlMs);
-      return data;
-    } catch (err) {
-      addNegKey(key);
-      throw err;
-    }
-  });
+  return withCacheTtl(key, ttlMs, async () => ({ data: await fn(), ttl: ttlMs }));
 }
 
 export async function withCacheTtl<T>(key: string, defaultTtl: number, fn: () => Promise<{ data: T; ttl: number }>): Promise<T> {
@@ -117,4 +106,11 @@ export async function withCacheTtl<T>(key: string, defaultTtl: number, fn: () =>
 
 export function settled<T>(result: PromiseSettledResult<T>, fallback: T): T {
   return result.status === "fulfilled" ? result.value : fallback;
+}
+
+export function formatSettleErrors(results: PromiseSettledResult<unknown>[], labels: string[]): string {
+  return results
+    .map((r, i) => (r.status === "rejected" ? `${labels[i] ?? i}: ${r.reason instanceof Error ? r.reason.message : r.reason}` : null))
+    .filter(Boolean)
+    .join("; ");
 }

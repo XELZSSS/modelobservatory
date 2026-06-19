@@ -6,6 +6,9 @@ export const modelCellClass = "flex items-center gap-2 min-w-0";
 export const modelNameCellClass = "text-sm font-bold break-words min-w-0";
 export const textSecondaryClass = "text-sm text-text-secondary";
 
+/** @deprecated Use secondaryTextClass for xs, textSecondaryClass for sm */
+export const secondaryTextXsClass = secondaryTextClass;
+
 export const winnerPriceClass = "font-bold text-green-500";
 export const chartTooltipStyle = {
   background: "var(--bg-secondary)",

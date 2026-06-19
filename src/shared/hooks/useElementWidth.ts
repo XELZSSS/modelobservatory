@@ -12,7 +12,7 @@ export function useElementWidth(): [RefObject<HTMLDivElement | null>, number] {
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  });
+  }, []);
 
   return [ref, width];
 }

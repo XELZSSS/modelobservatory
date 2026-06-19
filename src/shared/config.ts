@@ -1,9 +1,12 @@
+import { FIVE_MINUTES, THIRTY_MINUTES } from "./constants";
+
 // ── upstream URLs ──────────────────────────────────────────────
 export const upstreamConfig = {
   arena: "https://arena.ai/leaderboard",
   artificialAnalysis: "https://artificialanalysis.ai",
   huggingface: "https://huggingface.co/api/models",
   openrouter: "https://openrouter.ai",
+  polymarket: "https://gamma-api.polymarket.com",
 } as const;
 
 // ── HTTP constants ─────────────────────────────────────────────
@@ -11,8 +14,8 @@ export const HEALTH_TIMEOUT_MS = 15_000;
 export const USER_AGENT = "ModelObservatory/1.0 (+https://github.com/model-observatory)";
 
 // ── cache TTLs ─────────────────────────────────────────────────
-export const DEFAULT_TTL_MS = 5 * 60 * 1_000;
-export const NEWS_TTL_MS = 30 * 60 * 1_000;
+export const DEFAULT_TTL_MS = FIVE_MINUTES;
+export const NEWS_TTL_MS = THIRTY_MINUTES;
 export const HEALTH_TTL_MS = 60 * 1_000;
 export const START_TTL_MS = 24 * 60 * 60 * 1_000;
 

@@ -1,9 +1,9 @@
-import { fetchRsc, CACHE_TTL_MS } from "../http";
+import { CACHE_TTL_MS } from "../http";
 import { withCache } from "../cache";
 import { parseRscPayload, dfsCollect, rscParseError } from "../parsers/rsc";
 import { num } from "../parsers/coerce";
-import { upstreamConfig } from "../../shared/config";
 import type { TtsModel } from "../../shared/types";
+import { fetchAARsc } from "./aaRsc";
 
 function extractTts(body: string): TtsModel[] {
   const entries = parseRscPayload<TtsModel>(body, "pricePer1mCharacters", (tree) =>
@@ -37,7 +37,7 @@ function extractTts(body: string): TtsModel[] {
 
 export async function getTtsLeaderboard(): Promise<TtsModel[]> {
   return withCache("tts-leaderboard", CACHE_TTL_MS, async () => {
-    const rsc = await fetchRsc(`${upstreamConfig.artificialAnalysis}/text-to-speech/models`, { headers: { RSC: "1", "Next-Router-State-Tree": "%5B%5D" } });
+    const rsc = await fetchAARsc("/text-to-speech/models");
     let entries: TtsModel[];
     try {
       entries = extractTts(rsc);

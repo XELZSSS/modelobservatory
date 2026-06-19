@@ -2,6 +2,7 @@ import type { TFunction } from "../i18n";
 import type { ArtificialAnalysisModel } from "../types";
 import { formatBoolean, formatContext, formatCost, formatScore } from "./format";
 import { clampPercent, normalizePercent } from "./math";
+import { getOutputSpeed } from "./modelAccessors";
 
 export interface CompareMetric {
   label: string;
@@ -31,10 +32,6 @@ function percentMetric(t: TFunction, labelKey: Parameters<TFunction>[0], getScor
     getNumericValue: (model) => normalizePercent(getScore(model)),
     higherIsBetter: true,
   };
-}
-
-function getOutputSpeed(model: ArtificialAnalysisModel) {
-  return model.speed?.median_output_speed ?? model.speed?.timescaleData?.median_output_speed;
 }
 
 function formatSpeed(t: TFunction, value?: number | null) {

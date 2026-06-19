@@ -1,37 +1,22 @@
 import { useCallback, useMemo, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { X, ArrowLeftRight } from "lucide-react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
-import { Badge } from "../../shared/components/ui/badge";
-import { Button } from "../../shared/components/ui/button";
-import { Card } from "../../shared/components/ui/card";
-import { TabButton } from "../../shared/components/composite/TabButton";
-import { Input } from "../../shared/components/ui/input";
+import { DataTable } from "../../shared/components/data/DataTable";
 import { MAX_COMPARE_MODELS } from "../../shared/constants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useRankMap } from "../../shared/hooks/useRankMap";
 import { useCompareStore } from "../../shared/stores/compareStore";
-import { DataTable } from "../../shared/components/data/DataTable";
-import { secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
-import { calcModelCost } from "../../shared/utils/costCalc";
 import { modelId } from "../../shared/utils/modelId";
-import { formatDollar } from "../../shared/utils/format";
 
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { buildRankingColumns, buildPricingColumns, ModelExpandedDetail } from "./aaColumns";
 
-type ViewMode = "rankings" | "pricing";
-
-const REASONING_KEYWORDS = /\b(reasoning|thinking)\b/i;
-const REASONING_PREFIXES = /^(o[134]|gpt-5)/i;
-
-function isReasoningModel(model: ArtificialAnalysisModel) {
-  return REASONING_KEYWORDS.test(model.name) || REASONING_PREFIXES.test(model.name);
-}
-
-const getSearchFields = (m: ArtificialAnalysisModel) => [m.name, m.slug, m.model_creators?.name || ""];
+import { useAARankingFilters } from "./aa/useAARankingFilters";
+import { useCostEstimator } from "./aa/useCostEstimator";
+import { FilterToolbar } from "./aa/FilterToolbar";
+import { PricingInputs } from "./aa/PricingInputs";
+import { CompareBar } from "./aa/CompareBar";
 
 export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnalysisModel[] }) {
   const navigate = useNavigate();
@@ -39,16 +24,11 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
   const compareIds = useCompareStore((s) => s.compareIds);
   const toggleCompareModel = useCompareStore((s) => s.toggleCompareModel);
   const clearCompare = useCompareStore((s) => s.clearCompare);
-  const [reasoningFilter, setReasoningFilter] = useState<"all" | "reasoning" | "non-reasoning">("all");
-  const [modalityFilter, setModalityFilter] = useState<string>("all");
-  const location = useLocation();
-  const [viewMode, setViewMode] = useState<ViewMode>((location.state as { viewMode?: ViewMode })?.viewMode ?? "rankings");
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
-  const [promptTokens, setPromptTokens] = useState("100000");
-  const [completionTokens, setCompletionTokens] = useState("30000");
 
-  const calcPrompt = Number(promptTokens) || 0;
-  const calcCompletion = Number(completionTokens) || 0;
+  const { filtered, viewMode, setViewMode, reasoningFilter, setReasoningFilter, modalityFilter, setModalityFilter } = useAARankingFilters(rankings);
+  const { promptTokens, setPromptTokens, completionTokens, setCompletionTokens, calcPrompt, calcCompletion, avgCost } = useCostEstimator(filtered);
+  const rankMap = useRankMap(filtered, modelId);
 
   const getModelState = useCallback(
     (model: ArtificialAnalysisModel) => {
@@ -59,48 +39,6 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
     [compareIds],
   );
 
-  const preFiltered = useMemo(() => {
-    let result = rankings.filter((model) => {
-      if (viewMode === "rankings") return typeof model.intelligence_index === "number" && Number.isFinite(model.intelligence_index);
-      return model.pricing?.input != null || model.pricing?.output != null || model.pricing?.cache_hit != null || model.pricing?.blended?.["7_2_1"] != null;
-    });
-    if (reasoningFilter === "reasoning") result = result.filter(isReasoningModel);
-    else if (reasoningFilter === "non-reasoning") result = result.filter((m) => !isReasoningModel(m));
-    return result;
-  }, [rankings, viewMode, reasoningFilter]);
-
-  const searchFiltered = useFilteredData(preFiltered, getSearchFields);
-
-  const filteredRankings = useMemo(() => {
-    if (modalityFilter === "all") return searchFiltered;
-    return searchFiltered.filter((m) => {
-      switch (modalityFilter) {
-        case "text": return m.input_modality_text || m.output_modality_text;
-        case "image": return m.input_modality_image || m.output_modality_image;
-        case "speech": return m.input_modality_speech || m.output_modality_speech;
-        case "video": return m.input_modality_video || m.output_modality_video;
-        default: return true;
-      }
-    });
-  }, [searchFiltered, modalityFilter]);
-
-  const rankMap = useRankMap(filteredRankings, modelId);
-
-  const canOpenCompare = compareIds.length >= 2;
-
-  const avgCost = useMemo(() => {
-    let total = 0;
-    let count = 0;
-    for (const m of filteredRankings) {
-      const cost = calcModelCost(m, calcPrompt, calcCompletion);
-      if (cost != null) {
-        total += cost;
-        count++;
-      }
-    }
-    return count > 0 ? total / count : 0;
-  }, [filteredRankings, calcPrompt, calcCompletion]);
-
   const modelColumns = useMemo<DataTableColumn<ArtificialAnalysisModel>[]>(() => {
     return viewMode === "pricing"
       ? buildPricingColumns(t, getModelState, toggleCompareModel, calcPrompt, calcCompletion)
@@ -109,113 +47,35 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-end min-w-0">
-        <div className="flex-1 min-w-0">
-          <p className={secondaryTextClass}>{t("artificialSource")}</p>
-          <div className="flex flex-row gap-1 mt-1 flex-wrap items-center">
-            <TabButton
-              active={viewMode === "rankings"}
-              onClick={() => {
-                setViewMode("rankings");
-                setExpandedRowId(null);
-              }}
-            >
-              {t("modelRankings")}
-            </TabButton>
-            <TabButton
-              active={viewMode === "pricing"}
-              onClick={() => {
-                setViewMode("pricing");
-                setExpandedRowId(null);
-              }}
-            >
-              {t("pricing")}
-            </TabButton>
-            <span className="w-[1px] h-4 bg-border mx-1" />
-            {[
-              { key: "all" as const, label: t("all") },
-              { key: "reasoning" as const, label: t("reasoning") },
-              { key: "non-reasoning" as const, label: t("nonReasoning") },
-            ].map((tab) => (
-              <TabButton key={tab.key} active={reasoningFilter === tab.key} onClick={() => setReasoningFilter(tab.key)}>
-                {tab.label}
-              </TabButton>
-            ))}
-            <span className="w-[1px] h-4 bg-border mx-1 hidden sm:block" />
-            <div className="hidden sm:flex flex-row gap-1 items-center">
-              {[
-                { key: "all" as const, label: t("allModalities") },
-                { key: "text" as const, label: t("textOnly") },
-                { key: "image" as const, label: t("imageInput") },
-                { key: "speech" as const, label: t("speechInput") },
-                { key: "video" as const, label: t("videoInput") },
-              ].map((tab) => (
-                <TabButton key={tab.key} active={modalityFilter === tab.key} onClick={() => setModalityFilter(tab.key)}>
-                  {tab.label}
-                </TabButton>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <FilterToolbar
+        viewMode={viewMode}
+        onViewModeChange={(mode) => { setViewMode(mode); setExpandedRowId(null); }}
+        reasoningFilter={reasoningFilter}
+        onReasoningFilterChange={setReasoningFilter}
+        modalityFilter={modalityFilter}
+        onModalityFilterChange={setModalityFilter}
+      />
 
       {viewMode === "pricing" && (
-        <div className="flex gap-2 flex-wrap items-center p-2 rounded-md border border-border">
-          <Input
-            type="number"
-            value={promptTokens}
-            onChange={(e) => setPromptTokens(e.target.value)}
-            className="w-full sm:w-44 border-border"
-            placeholder={t("monthlyPromptTokens")}
-          />
-          <Input
-            type="number"
-            value={completionTokens}
-            onChange={(e) => setCompletionTokens(e.target.value)}
-            className="w-full sm:w-44 border-border"
-            placeholder={t("monthlyCompletionTokens")}
-          />
-          <div className="flex items-center">
-            <span className={textSecondaryClass}>{t("estimatedMonthlyCost")}: </span>
-            <span className="text-base font-bold ml-1">{formatDollar(avgCost)}</span>
-            <span className={`${secondaryTextClass} ml-[2px]`}>{t("perModelAvg")}</span>
-          </div>
-        </div>
+        <PricingInputs
+          promptTokens={promptTokens}
+          onPromptTokensChange={setPromptTokens}
+          completionTokens={completionTokens}
+          onCompletionTokensChange={setCompletionTokens}
+          avgCost={avgCost}
+        />
       )}
 
-      {compareIds.length > 0 &&
-        (() => {
-          const compareModels = compareIds.map((id) => rankings.find((m) => (m.id || m.slug) === id)).filter((m): m is ArtificialAnalysisModel => !!m);
-          return (
-            <Card className="p-3">
-              <div className="flex flex-col md:flex-row gap-2.5 items-stretch md:items-center justify-between">
-                <div className="flex flex-row gap-1.5 items-center flex-wrap">
-                  <p className={textSecondaryClass}>{t("selectedCount", { count: compareIds.length })}</p>
-                  {compareModels.map((model) => (
-                    <Badge key={model.id || model.slug} variant="outline" className="cursor-pointer" onClick={() => toggleCompareModel(model)}>
-                      {model.short_name || model.name}
-                      <X className="size-3 ml-0.5" />
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex flex-row gap-2">
-                  <Button size="sm" variant="outline" onClick={clearCompare}>
-                    <X className="size-4" />
-                    {t("clear")}
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => navigate(viewMode === "pricing" ? "/price-compare" : "/compare")} disabled={!canOpenCompare}>
-                    <ArrowLeftRight className="size-4" />
-                    {t("compareSelected")}
-                  </Button>
-                </div>
-              </div>
-              {!canOpenCompare && <p className={secondaryTextClass}>{t("compareLimit")}</p>}
-            </Card>
-          );
-        })()}
+      <CompareBar
+        compareIds={compareIds}
+        rankings={rankings}
+        onRemove={toggleCompareModel}
+        onClear={clearCompare}
+        onCompare={() => navigate(viewMode === "pricing" ? "/price-compare" : "/compare")}
+      />
 
       <DataTable
-        data={filteredRankings}
+        data={filtered}
         columns={modelColumns}
         getRowId={modelId}
         expandedRowId={expandedRowId}

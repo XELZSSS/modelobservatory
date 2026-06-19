@@ -10,6 +10,7 @@ import { formatContext, formatScore, formatDollar } from "../../shared/utils/for
 import { calcModelCost } from "../../shared/utils/costCalc";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { TFunction } from "../../shared/i18n";
+import { useTranslation } from "../../shared/i18n/useTranslation";
 
 export function ModelExpandedDetail({ model }: { model: ArtificialAnalysisModel }) {
   return (
@@ -25,15 +26,14 @@ export function RankingModelCell({
   isCompared,
   compareDisabled,
   onToggleCompare,
-  t,
 }: {
   model: ArtificialAnalysisModel;
   rank: number;
   isCompared: boolean;
   compareDisabled: boolean;
   onToggleCompare: (m: ArtificialAnalysisModel) => void;
-  t: TFunction;
 }) {
+  const { t } = useTranslation();
   const metricItems: [string, string][] = [
     [t("intelligenceIndex"), formatScore(t, model.intelligence_index)],
     [t("coding"), formatScore(t, model.coding_index)],
@@ -116,7 +116,6 @@ export function buildRankingColumns(
             isCompared={isCompared}
             compareDisabled={compareDisabled}
             onToggleCompare={toggleCompareModel}
-            t={t}
           />
         );
       },

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { ArtificialAnalysisModel } from "../types";
-import { MAX_COMPARE_MODELS } from "../constants";
+import { MAX_COMPARE_MODELS, STORAGE_KEYS } from "../constants";
 import { modelId } from "../utils/modelId";
 
 interface CompareState {
@@ -33,7 +33,8 @@ export const useCompareStore = create<CompareState>()(
       clearCompare: () => set({ compareIds: [] }),
     }),
     {
-      name: "compare-store",
+      name: STORAGE_KEYS.compare,
+      version: 1,
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({ compareIds: state.compareIds }),
     },

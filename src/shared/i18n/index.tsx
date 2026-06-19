@@ -1,9 +1,8 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import { en } from "./locales/en";
 import { zh } from "./locales/zh";
-import { STORAGE_KEYS } from "../constants";
-import { readStorage, writeStorage } from "../utils/storage";
+import { useLangStore } from "../stores/langStore";
 import { I18nContext } from "./useTranslation";
 import type { Lang, TranslationKey, TranslationParams, TFunction } from "./useTranslation";
 import { interpolate } from "./interpolate";
@@ -31,10 +30,9 @@ function syncDocumentMeta(lang: Lang) {
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(() => {
-    const saved = readStorage(STORAGE_KEYS.lang);
-    return saved === "en" || saved === "zh" ? saved : "zh";
-  });
+  const lang = useLangStore((s) => s.lang);
+  const setLangState = useLangStore((s) => s.setLang);
+  const toggleLang = useLangStore((s) => s.toggleLang);
 
   useEffect(() => {
     syncDocumentMeta(lang);
@@ -42,16 +40,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((newLang: Lang) => {
     setLangState(newLang);
-    writeStorage(STORAGE_KEYS.lang, newLang);
-  }, []);
-
-  const toggleLang = useCallback(() => {
-    setLangState((prev) => {
-      const next = prev === "en" ? "zh" : "en";
-      writeStorage(STORAGE_KEYS.lang, next);
-      return next;
-    });
-  }, []);
+  }, [setLangState]);
 
   const t = useCallback(
     (key: TranslationKey, params?: TranslationParams): string => {

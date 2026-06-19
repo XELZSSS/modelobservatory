@@ -1,0 +1,43 @@
+import type { TranslationKey } from "../i18n";
+
+export const BENCHMARK_KEYS = [
+  "aime25",
+  "gpqa",
+  "hle",
+  "scicode",
+  "mmlu_pro",
+  "math_500",
+  "humaneval",
+  "livecodebench",
+  "gdpval",
+  "tau2",
+  "terminalbench_hard",
+  "ifbench",
+  "lcr",
+  "omniscience",
+  "critpt",
+  "apex_agents",
+  "terminalbench_v2_1",
+  "tau_banking",
+] as const;
+
+export const BENCHMARK_LABELS: Record<(typeof BENCHMARK_KEYS)[number], TranslationKey> = {
+  aime25: "benchmarkAime25",
+  gpqa: "benchmarkGpqa",
+  hle: "benchmarkHle",
+  scicode: "benchmarkScicode",
+  mmlu_pro: "benchmarkMmluPro",
+  math_500: "benchmarkMath500",
+  humaneval: "benchmarkHumaneval",
+  livecodebench: "benchmarkLivecodebench",
+  gdpval: "benchmarkGdpval",
+  tau2: "benchmarkTau2",
+  terminalbench_hard: "benchmarkTerminalbenchHard",
+  ifbench: "benchmarkIfbench",
+  lcr: "benchmarkLcr",
+  omniscience: "benchmarkOmniscience",
+  critpt: "benchmarkCritpt",
+  apex_agents: "benchmarkApexAgents",
+  terminalbench_v2_1: "benchmarkTerminalbenchV2_1",
+  tau_banking: "benchmarkTauBanking",
+};

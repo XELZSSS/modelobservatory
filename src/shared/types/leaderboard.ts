@@ -19,11 +19,9 @@ export interface ArenaModel {
   score: number | null;
   ci: number | null;
   votes: number | null;
-  category?: string | null;
   rating?: number | null;
   ratingUpper?: number | null;
   ratingLower?: number | null;
-  modelOrganization?: string | null;
   modelUrl?: string | null;
   pricePerImage?: number | null;
   pricePerSecond?: number | null;

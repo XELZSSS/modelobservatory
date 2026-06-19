@@ -9,7 +9,6 @@ import { BackButton } from "../../shared/components/composite/BackButton";
 import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
 import { secondaryTextClass, numberTextClass, chartTooltipStyle, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import type { TFunction } from "../../shared/i18n";
 import { useCompareStore } from "../../shared/stores/compareStore";
 import { buildCompareMetrics, buildRadarData } from "../../shared/utils/compareMetrics";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
@@ -98,7 +97,8 @@ const CompactMetricCards = memo(function CompactMetricCards({ metrics, models }:
   );
 });
 
-const MetricTable = memo(function MetricTable({ metrics, models, t }: { metrics: CompareMetric[]; models: ArtificialAnalysisModel[]; t: TFunction }) {
+const MetricTable = memo(function MetricTable({ metrics, models }: { metrics: CompareMetric[]; models: ArtificialAnalysisModel[] }) {
+  const { t } = useTranslation();
   return (
     <div className="min-w-0 w-full">
       <table className="w-full text-sm">
@@ -197,7 +197,7 @@ export function CompareView() {
               <CompactMetricCards metrics={metrics.filter((m) => m.mobileKey)} models={models} />
             </div>
             <div className="hidden md:block w-full">
-              <MetricTable metrics={metrics} models={models} t={t} />
+              <MetricTable metrics={metrics} models={models} />
             </div>
           </div>
         </div>

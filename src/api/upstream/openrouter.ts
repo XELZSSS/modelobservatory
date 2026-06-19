@@ -1,4 +1,4 @@
-import { withCache } from "../cache";
+import { withCache, formatSettleErrors } from "../cache";
 import { fetchJSON, CACHE_TTL_MS } from "../http";
 import { numOr } from "../parsers/coerce";
 import { upstreamConfig } from "../../shared/config";
@@ -26,7 +26,6 @@ interface ModelRow {
   num_media_prompt: number;
   num_media_completion: number;
   num_audio_prompt: number;
-  requests_with_tool_call_errors: number;
   change: number | null;
 }
 
@@ -34,8 +33,7 @@ interface AppRow {
   app_id: number;
   total_tokens: string;
   total_requests: number;
-  rank: number;
-  app: { id: number; title: string; description: string; slug: string; main_url: string | null; origin_url: string; favicon_url: string; categories: string[] };
+  app: { id: number; title: string; description: string; slug: string; main_url: string | null; origin_url: string; categories: string[] };
 }
 
 interface AppResponse { day: AppRow[]; week: AppRow[]; month: AppRow[] }
@@ -121,10 +119,7 @@ export async function getOpenRouterRankings(): Promise<OpenRouterRankingsPayload
     const modelRows = modelResult.status === "fulfilled" ? (modelResult.value?.data ?? []) : [];
     const appRows = appResult.status === "fulfilled" ? (appResult.value?.data?.day ?? []) : [];
     if (modelRows.length === 0 && appRows.length === 0) {
-      const reasons = [modelResult, appResult]
-        .map((r, i) => (r.status === "rejected" ? `${i === 0 ? "models" : "apps"}: ${r.reason instanceof Error ? r.reason.message : r.reason}` : null))
-        .filter(Boolean)
-        .join("; ");
+      const reasons = formatSettleErrors([modelResult, appResult], ["models", "apps"]);
       throw new Error(`OpenRouter: all upstream requests failed${reasons ? ` (${reasons})` : ""}`);
     }
     return { tokenUsageRankings: mapModels(modelRows), appUsageRankings: mapApps(appRows), fetchedAt: new Date().toISOString() };

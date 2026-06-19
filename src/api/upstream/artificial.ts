@@ -1,16 +1,17 @@
-import { fetchRsc, CACHE_TTL_MS } from "../http";
+import { CACHE_TTL_MS } from "../http";
 import { withCache } from "../cache";
 import { findNextData, parseRscPayload, rscParseError } from "../parsers/rsc";
 import { num, str, strOr, bool, obj } from "../parsers/coerce";
 import type { ArtificialAnalysisModel } from "../../shared/types";
-import { upstreamConfig } from "../../shared/config";
+import { fetchAARsc } from "./aaRsc";
 
 const BENCHMARK_KEYS = ["aime25", "gpqa", "hle", "scicode", "gdpval", "tau2", "terminalbench_hard", "ifbench", "lcr", "omniscience", "critpt", "livecodebench", "mmlu_pro", "math_500", "humaneval", "apex_agents", "terminalbench_v2_1", "tau_banking"] as const;
 
 function compactBenchmarks(m: Record<string, unknown>): Record<string, number | null> {
+  const nested = obj(m.benchmarks);
   const benchmarks: Record<string, number | null> = {};
   for (const key of BENCHMARK_KEYS) {
-    const val = num(m[key]);
+    const val = num(m[key]) ?? (nested ? num(nested[key]) : null);
     if (val !== undefined) benchmarks[key] = val;
   }
   return benchmarks;
@@ -56,7 +57,7 @@ function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
     model_creators: mc ? { name: str(mc.name), color: str(mc.color) } : undefined,
     intelligence_index: num(m.intelligence_index), intelligence_index_is_estimated: bool(m.intelligence_index_is_estimated),
     estimated_intelligence_index: num(m.estimated_intelligence_index),
-    coding_index: num(m.coding_index), agentic_index: num(m.agentic_index), math_index: num(m.math_index),
+    coding_index: num(m.coding_index), agentic_index: num(m.agentic_index),
     context_window_tokens: num(m.context_window_tokens), contextWindowFormatted: strOr(m.contextWindowFormatted),
     parameters: num(m.parameters), activeParams: num(m.activeParams), size_class: strOr(m.size_class),
     reasoning_model: bool(m.reasoning_model), commercial_allowed: bool(m.commercial_allowed),
@@ -82,7 +83,7 @@ function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
 
 export async function getIntelligenceIndex(): Promise<ArtificialAnalysisModel[]> {
   return withCache("aa-defaultData", CACHE_TTL_MS, async () => {
-    const rsc = await fetchRsc(`${upstreamConfig.artificialAnalysis}/evaluations/artificial-analysis-intelligence-index`, { headers: { RSC: "1", "Next-Router-State-Tree": "%5B%5D" } });
+    const rsc = await fetchAARsc("/evaluations/artificial-analysis-intelligence-index");
     let raw: Record<string, unknown>[];
     try {
       raw = parseRscPayload<Record<string, unknown>>(rsc, "defaultData", (tree) => findNextData(tree, "defaultData"));
@@ -90,6 +91,9 @@ export async function getIntelligenceIndex(): Promise<ArtificialAnalysisModel[]>
       throw new Error(rscParseError("defaultData", rsc, e), { cause: e });
     }
     if (raw.length === 0) throw new Error(rscParseError("defaultData", rsc));
-    return raw.map(compact).sort((a, b) => (b.intelligence_index ?? -Infinity) - (a.intelligence_index ?? -Infinity));
+    const models = raw.map(compact).sort((a, b) => (b.intelligence_index ?? -Infinity) - (a.intelligence_index ?? -Infinity));
+    const invalid = models.filter((m) => !m.id || !m.name);
+    if (invalid.length > 0) console.warn(`[artificial] ${invalid.length} models with empty id/name after mapping`);
+    return models;
   });
 }

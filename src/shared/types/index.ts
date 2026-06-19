@@ -4,3 +4,4 @@ export * from "./openrouter";
 export * from "./homeDashboard";
 export * from "./system";
 export * from "./predictions";
+export * from "./search";

@@ -1,4 +1,5 @@
 import type { ArtificialAnalysisModel } from "../types";
+import { getOutputSpeed } from "./modelAccessors";
 
 export interface ProviderAggregate {
   name: string;
@@ -25,10 +26,6 @@ function avg(values: number[]): number | null {
   return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : null;
 }
 
-function getSpeed(m: ArtificialAnalysisModel): number | null {
-  return m.speed?.median_output_speed ?? m.speed?.timescaleData?.median_output_speed ?? null;
-}
-
 export interface ProviderStats {
   name: string;
   color: string;
@@ -43,7 +40,7 @@ export function computeProviderStats(models: ArtificialAnalysisModel[]): Provide
     .map(({ name, color, models: group }) => {
       const count = group.length;
       const avgPrice = avg(group.map((m) => m.pricing?.input).filter((p): p is number => p != null));
-      const avgSpeed = avg(group.map(getSpeed).filter((s): s is number => s != null));
+      const avgSpeed = avg(group.map(getOutputSpeed).filter((s): s is number => s != null));
       const avgIntelligence = avg(group.map((m) => m.intelligence_index).filter((i): i is number => i != null));
       return { name, color, count, avgPrice, avgSpeed, avgIntelligence };
     })
