@@ -1,22 +1,17 @@
+import { cn } from "../../utils/cn";
 import type React from "react";
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-  className?: string;
-}
-
-export function Card({ children, className, style, ...props }: CardProps) {
+export function Card({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`rounded-md border border-border bg-[var(--bg-card)] ${className ?? ""}`} style={style} {...props}>
+    <div className={cn("rounded-md border border-border bg-bg-card", className)} {...props}>
       {children}
     </div>
   );
 }
 
-export function CardContent({ className, children, style, noPadding, ...props }: CardProps & { noPadding?: boolean }) {
-  const paddingClass = noPadding ? "" : "p-4";
+export function CardContent({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`${paddingClass} ${className ?? ""}`} style={style} {...props}>
+    <div className={cn("p-4", className)} {...props}>
       {children}
     </div>
   );

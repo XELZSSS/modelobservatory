@@ -3,6 +3,7 @@ import { Card, CardContent } from "../ui/card";
 import { COOL_COLORS } from "../rankColor";
 import { numberTextClass, secondaryTextClass, textSecondaryClass } from "../../utils/cssConstants";
 import { useTranslation } from "../../i18n/useTranslation";
+import { cn } from "../../utils/cn";
 
 interface BarStatRow {
   label: string;
@@ -22,7 +23,7 @@ export function BarStatsCard({ title, source, rows, onOpen, className }: BarStat
   const maxValue = Math.max(...rows.map((row) => row.value), 0);
   const { t } = useTranslation();
   return (
-    <Card className={`${onOpen ? "cursor-pointer" : ""} ${className || ""}`} onClick={onOpen}>
+    <Card className={cn(onOpen && "cursor-pointer", className)} onClick={onOpen}>
       <CardContent>
         <div className="flex flex-col gap-0.5 mb-2">
           <p className="text-sm font-bold">{title}</p>
@@ -40,7 +41,7 @@ export function BarStatsCard({ title, source, rows, onOpen, className }: BarStat
                   <div className="h-[26px] flex flex-col justify-between">
                     <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
                       <p className="text-sm truncate">{row.label}</p>
-                      <p className={`text-sm font-bold text-right ${numberTextClass}`}>{row.valueLabel}</p>
+                      <p className={cn("text-sm font-bold text-right", numberTextClass)}>{row.valueLabel}</p>
                     </div>
                     <div className="h-1 bg-bg-tertiary overflow-hidden rounded-full" role="progressbar" aria-valuenow={row.value} aria-valuemin={0} aria-valuemax={maxValue} aria-label={`${row.label}: ${row.valueLabel}`}>
                       <div

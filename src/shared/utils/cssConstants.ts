@@ -1,3 +1,5 @@
+import type { TFunction } from "../i18n";
+
 export const ellipsisTextClasses = "overflow-hidden text-ellipsis whitespace-nowrap";
 export const numberTextClass = "tabular-nums";
 export const secondaryTextClass = "text-xs text-text-secondary";
@@ -15,3 +17,6 @@ export const chartTooltipStyle = {
   borderRadius: "6px",
 } as const;
 
+export function orNA(value: string | null | undefined, t: TFunction): string {
+  return value || t("notAvailable");
+}

@@ -3,6 +3,7 @@ import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { ellipsisTextClasses, secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useSuspenseOpenSourceReleases, useSuspenseArtificialRankings } from "../../shared/hooks/useQueries";
@@ -34,7 +35,7 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
           <div className="min-w-0">
             <p className="text-sm break-words overflow-wrap-anywhere">{row.name}</p>
             <div className="flex md:hidden mt-[2px] items-center gap-1.5">
-              <span className={`text-xs font-semibold ${getTypeMeta(row.type).color}`}>{getTypeMeta(row.type).label}</span>
+              <span className={cn("text-xs font-semibold", getTypeMeta(row.type).color)}>{getTypeMeta(row.type).label}</span>
               <span className="text-xs text-text-tertiary">{row.date}</span>
             </div>
           </div>
@@ -46,7 +47,7 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
       },
       {
         id: "type", header: t("type"), sortable: true, align: "right", width: 140, hiddenMd: true,
-        cell: (row) => { const meta = getTypeMeta(row.type); return <span className={`text-xs font-semibold ${meta.color}`}>{meta.label}</span>; },
+        cell: (row) => { const meta = getTypeMeta(row.type); return <span className={cn("text-xs font-semibold", meta.color)}>{meta.label}</span>; },
       },
     ];
   }, [t]);
@@ -61,7 +62,7 @@ function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {
     () => [
       { id: "model", header: t("modelNameOrId"), cell: (row) => <span className="text-sm font-bold break-words min-w-0">{row.model.name}</span> },
       { id: "creator", header: t("creator"), sortable: true, align: "right", width: "24%", hiddenMd: true,
-        cell: (row) => <span className={`text-sm ${ellipsisTextClasses} text-right`}>{row.model.model_creators?.name || t("notAvailable")}</span>,
+        cell: (row) => <span className={cn("text-sm", ellipsisTextClasses, "text-right")}>{row.model.model_creators?.name || t("notAvailable")}</span>,
       },
       { id: "releaseDate", header: t("releaseDate"), accessorFn: (r) => r.time, sortable: true, align: "right", width: "18%",
         cell: (row) => new Date(row.time).toLocaleDateString(),

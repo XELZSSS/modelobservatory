@@ -1,3 +1,4 @@
+import { cn } from "../../utils/cn";
 import type React from "react";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -55,7 +56,7 @@ export function Sheet({ open, onClose, children, className }: SheetProps) {
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        className={`relative z-50 w-full max-w-md rounded-t-xl sm:rounded-xl border border-border bg-bg-primary backdrop-blur-xl shadow-lg ${className ?? ""}`}
+        className={cn("relative z-50 w-full max-w-md rounded-t-xl sm:rounded-xl border border-border bg-bg-primary backdrop-blur-xl shadow-lg", className)}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

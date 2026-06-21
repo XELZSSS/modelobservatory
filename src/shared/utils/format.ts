@@ -106,3 +106,9 @@ export function formatRelativeTime(isoString: string, t: TFunction): string {
   if (diffHours < 24) return t("timeHoursAgo", { value: diffHours });
   return t("timeDaysAgo", { value: diffDays });
 }
+
+export function benchmarkLabel(key: string, t: TFunction): string {
+  const camelKey = key.split("_").map((part, i) => i === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)).join("");
+  const labelKey = `benchmark${camelKey.charAt(0).toUpperCase() + camelKey.slice(1)}` as TranslationKey;
+  return t(labelKey);
+}

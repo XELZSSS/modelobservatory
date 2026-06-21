@@ -18,12 +18,11 @@ async function doFetch(url: string, init: RequestInit, accept: string): Promise<
     }
     return res;
   } catch (e) {
-    const err = e instanceof Error ? e : new Error(String(e));
     await new Promise((r) => setTimeout(r, 2000));
     const res = await fetch(url, { headers, signal: init.signal ?? AbortSignal.timeout(TIMEOUT_MS) });
     if (!res.ok) {
       const body = accept.includes("json") ? await res.text().catch(() => "") : "";
-      throw new Error(`HTTP ${res.status} for ${url}${body ? `: ${body.slice(0, 200)}` : ""}`);
+      throw new Error(`HTTP ${res.status} for ${url}${body ? `: ${body.slice(0, 200)}` : ""}`, { cause: e });
     }
     return res;
   }

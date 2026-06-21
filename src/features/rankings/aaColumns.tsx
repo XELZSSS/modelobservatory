@@ -5,6 +5,7 @@ import { Badge } from "../../shared/components/ui/badge";
 import { Button } from "../../shared/components/ui/button";
 import { ModelDetailContent } from "../../shared/components/composite/ModelDetailContent";
 import { ellipsisTextClasses, modelCellClass } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import { formatContext, formatScore, formatDollar } from "../../shared/utils/format";
 import { calcModelCost } from "../../shared/utils/costCalc";
 import type { ArtificialAnalysisModel } from "../../shared/types";
@@ -115,7 +116,7 @@ export function buildRankingColumns(
       accessorFn: (row) => row.model_creators?.name || null,
       hiddenMd: true,
       align: "right",
-      cell: (model) => <p className={`text-sm ${ellipsisTextClasses} text-right`}>{model.model_creators?.name || t("notAvailable")}</p>,
+      cell: (model) => <p className={cn("text-sm", ellipsisTextClasses, "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
     },
     scoreColumn("intelligence", t("intelligenceIndex"), (m) => m.intelligence_index, t),
     scoreColumn("coding", t("coding"), (m) => m.coding_index, t),
@@ -171,7 +172,7 @@ export function buildPricingColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (model) => <p className={`text-sm ${ellipsisTextClasses} text-right`}>{model.model_creators?.name || t("notAvailable")}</p>,
+      cell: (model) => <p className={cn("text-sm", ellipsisTextClasses, "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
     },
     {
       id: "context",

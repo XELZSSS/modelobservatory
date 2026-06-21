@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { Clock, Building2 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
-import { TabButton } from "../composite/TabButton";
+import { TabContainer, type TabItem } from "../composite/TabContainer";
+import { SectionHeader } from "../composite/SectionHeader";
 import { numberTextClass, secondaryTextClass } from "../../utils/cssConstants";
 import { COOL_COLORS } from "../rankColor";
 import { approxEq } from "../../utils/math";
@@ -134,39 +134,30 @@ function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
   );
 }
 
-type TabKey = "rankings" | "releases" | "providers";
-
 export function PredictionsSection({ data }: { data: PredictionsPayload }) {
   const { t } = useTranslation();
-  const [active, setActive] = useState<TabKey>("rankings");
 
   const hasData = data.modelRankings.length > 0 || data.releases.length > 0 || data.providers.length > 0;
   if (!hasData) return null;
 
-  const tabs: { key: TabKey; label: string }[] = [
-    { key: "rankings", label: t("modelRankingPredictions") },
-    { key: "releases", label: t("releasePredictions") },
-    { key: "providers", label: t("providerPredictions") },
+  const tabs: TabItem[] = [
+    { id: "rankings", label: t("modelRankingPredictions") },
+    { id: "releases", label: t("releasePredictions") },
+    { id: "providers", label: t("providerPredictions") },
   ];
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-base font-bold">{t("predictions")}</p>
-          <p className={`${secondaryTextClass} shrink-0`}>{t("predictionsSource")}</p>
-        </div>
-        <div className="flex gap-1 overflow-x-auto">
-          {tabs.map((tab) => (
-            <TabButton key={tab.key} size="sm" active={active === tab.key} onClick={() => setActive(tab.key)}>
-              <span className="whitespace-nowrap">{tab.label}</span>
-            </TabButton>
-          ))}
-        </div>
-      </div>
-      {active === "rankings" && <ModelRankingTab items={data.modelRankings} />}
-      {active === "releases" && <ReleasesTab items={data.releases} />}
-      {active === "providers" && <ProvidersTab items={data.providers} />}
+      <SectionHeader title={t("predictions")} meta={t("predictionsSource")} />
+      <TabContainer tabs={tabs} defaultTabId="rankings" tabSize="sm">
+        {(activeTab) => (
+          <>
+            {activeTab === "rankings" && <ModelRankingTab items={data.modelRankings} />}
+            {activeTab === "releases" && <ReleasesTab items={data.releases} />}
+            {activeTab === "providers" && <ProvidersTab items={data.providers} />}
+          </>
+        )}
+      </TabContainer>
     </div>
   );
 }

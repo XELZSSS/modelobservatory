@@ -7,6 +7,7 @@ import { approxEq } from "../../shared/utils/math";
 import { formatScore, formatDollar } from "../../shared/utils/format";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { secondaryTextClass, smallBoldClass, winnerPriceClass } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import type { TFunction } from "../../shared/i18n";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 
@@ -36,7 +37,7 @@ export function getBestPrice(rows: PriceRow[], models: ArtificialAnalysisModel[]
 
 export const WinnerMark = React.memo(function WinnerMark() {
   return (
-    <span className={`inline-flex items-center gap-0.5 ${smallBoldClass} text-green-500 ml-1`}>
+    <span className={cn("inline-flex items-center gap-0.5", smallBoldClass, "text-green-500 ml-1")}>
       <TrendingUp size={10} />
     </span>
   );
@@ -77,7 +78,7 @@ export const PriceTableDesktop = React.memo(function PriceTableDesktop({
                   return (
                     <td key={model.id ?? index} className="px-2 py-2 text-right font-mono">
                       {typeof v === "number" ? (
-                        <span className={isBest ? winnerPriceClass : ""}>
+                        <span className={cn(isBest && winnerPriceClass)}>
                           {row.format(v)}
                           {isBest && <WinnerMark />}
                         </span>
@@ -113,7 +114,7 @@ export const PriceCardsMobile = React.memo(function PriceCardsMobile({
         return (
           <Card key={row.label}>
             <CardContent className="p-3">
-              <p className={`${smallBoldClass} text-text-secondary mb-2`}>{row.label}</p>
+              <p className={cn(smallBoldClass, "text-text-secondary mb-2")}>{row.label}</p>
               <div className="flex flex-col gap-1">
                 {models.map((model, index) => {
                   const v = row.getValue(model);
@@ -124,7 +125,7 @@ export const PriceCardsMobile = React.memo(function PriceCardsMobile({
                         {model.short_name || model.name}
                       </span>
                       {typeof v === "number" ? (
-                        <span className={`font-mono text-xs ${isBest ? winnerPriceClass : ""}`}>
+                        <span className={cn("font-mono text-xs", isBest && winnerPriceClass)}>
                           {row.format(v)}
                           {isBest && <WinnerMark />}
                         </span>
@@ -177,7 +178,7 @@ export const EfficiencyTableDesktop = React.memo(function EfficiencyTableDesktop
                 <td className="px-2 py-2 text-right font-mono">{formatDollar(model.pricing?.blended?.["7_2_1"], t)}</td>
                 <td className="px-2 py-2 text-right font-mono">
                   {eff != null ? (
-                    <span className={isBest ? winnerPriceClass : ""}>
+                    <span className={cn(isBest && winnerPriceClass)}>
                       {eff.toFixed(2)}
                       {isBest && <WinnerMark />}
                     </span>
@@ -212,7 +213,7 @@ export const EfficiencyCardsMobile = React.memo(function EfficiencyCardsMobile({
         return (
           <Card key={model.id ?? index}>
             <CardContent className="p-3">
-              <p className={`${smallBoldClass} mb-2`} style={{ color: getModelColor(index) }}>
+              <p className={cn(smallBoldClass, "mb-2")} style={{ color: getModelColor(index) }}>
                 {model.short_name || model.name}
               </p>
               <div className="flex flex-col gap-1">
@@ -226,7 +227,7 @@ export const EfficiencyCardsMobile = React.memo(function EfficiencyCardsMobile({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className={secondaryTextClass}>{t("intelligencePerDollar")}</span>
-                  <span className={`text-xs font-mono ${isBest ? winnerPriceClass : ""}`}>{eff != null ? `${eff.toFixed(2)}${isBest ? " ★" : ""}` : t("notAvailable")}</span>
+                  <span className={cn("text-xs font-mono", isBest && winnerPriceClass)}>{eff != null ? `${eff.toFixed(2)}${isBest ? " ★" : ""}` : t("notAvailable")}</span>
                 </div>
               </div>
             </CardContent>

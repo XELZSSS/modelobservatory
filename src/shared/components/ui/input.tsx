@@ -1,3 +1,4 @@
+import { cn } from "../../utils/cn";
 import type React from "react";
 
 interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
@@ -10,7 +11,11 @@ export function Input({ className, type, ...props }: InputProps) {
   return (
     <input
       type={type}
-      className={`h-8 px-2.5 text-sm rounded-md border border-border bg-bg-primary text-text-primary placeholder:text-text-tertiary outline-none transition-colors focus:border-text-tertiary ${type === "number" ? noSpinners : ""} ${className ?? ""}`}
+      className={cn(
+        "h-8 px-2.5 text-sm rounded-md border border-border bg-bg-primary text-text-primary placeholder:text-text-tertiary outline-none transition-colors focus:border-text-tertiary",
+        type === "number" && noSpinners,
+        className,
+      )}
       {...props}
     />
   );

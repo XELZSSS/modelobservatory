@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./button";
+import { cn } from "../../utils/cn";
 import { textSecondaryClass } from "../../utils/cssConstants";
 
 interface PaginationProps {
@@ -13,11 +14,11 @@ export function Pagination({ page, totalPages, onChange, className }: Pagination
   if (totalPages <= 1) return null;
 
   return (
-    <div className={`flex items-center gap-2 ${className || ""}`}>
+    <div className={cn("flex items-center gap-2", className)}>
       <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => onChange(page - 1)}>
         <ChevronLeft size={16} />
       </Button>
-      <span className={`${textSecondaryClass} tabular-nums`} aria-live="polite">
+      <span className={cn(textSecondaryClass, "tabular-nums")} aria-live="polite">
         {page} / {totalPages}
       </span>
       <Button variant="outline" size="icon" disabled={page >= totalPages} onClick={() => onChange(page + 1)}>

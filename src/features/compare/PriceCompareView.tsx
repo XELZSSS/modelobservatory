@@ -4,6 +4,7 @@ import { useElementWidth } from "../../shared/hooks/useElementWidth";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import { Input } from "../../shared/components/ui/input";
 import { secondaryTextClass, winnerPriceClass, chartTooltipStyle } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { formatDollar } from "../../shared/utils/format";
 import { getModelColor } from "../../shared/components/rankColor";
@@ -124,12 +125,12 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
           <p className="text-sm font-bold mb-3">{t("estimatedMonthlyCost")}</p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
             <div className="flex items-center gap-2">
-              <label className={`${secondaryTextClass} whitespace-nowrap`}>{t("monthlyPromptTokens")}</label>
+              <label className={cn(secondaryTextClass, "whitespace-nowrap")}>{t("monthlyPromptTokens")}</label>
               <Input type="number" value={promptTokens} onChange={(e) => setPromptTokens(e.target.value)} className="w-20 h-7 text-xs" />
               <span className={secondaryTextClass}>M</span>
             </div>
             <div className="flex items-center gap-2">
-              <label className={`${secondaryTextClass} whitespace-nowrap`}>{t("monthlyCompletionTokens")}</label>
+              <label className={cn(secondaryTextClass, "whitespace-nowrap")}>{t("monthlyCompletionTokens")}</label>
               <Input type="number" value={completionTokens} onChange={(e) => setCompletionTokens(e.target.value)} className="w-20 h-7 text-xs" />
               <span className={secondaryTextClass}>M</span>
             </div>
@@ -144,7 +145,7 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
                     {model.short_name || model.name}
                   </span>
                   {cost != null ? (
-                    <span className={`font-mono text-sm ${isBest ? winnerPriceClass : ""}`}>
+                    <span className={cn("font-mono text-sm", isBest && winnerPriceClass)}>
                       {formatDollar(cost)}
                       {isBest && <WinnerMark />}
                     </span>

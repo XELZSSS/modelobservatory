@@ -5,6 +5,7 @@ import { useTranslation, type TranslationKey } from "../../shared/i18n/useTransl
 import { useSearchAllRankings } from "../../shared/hooks/useQueries";
 import { useSearchStore } from "../../shared/stores/searchStore";
 import { secondaryTextClass } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 
 export function SearchInput() {
   const { t } = useTranslation();
@@ -84,9 +85,9 @@ export function SearchInput() {
                   )}
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className={`text-xs ${secondaryTextClass}`}>{t(result.source as TranslationKey)}</span>
+                  <span className={cn("text-xs", secondaryTextClass)}>{t(result.source as TranslationKey)}</span>
                   {result.provider && (
-                    <span className={`text-xs ${secondaryTextClass}`}>{result.provider}</span>
+                    <span className={cn("text-xs", secondaryTextClass)}>{result.provider}</span>
                   )}
                 </div>
               </button>

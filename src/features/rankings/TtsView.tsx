@@ -6,6 +6,7 @@ import { DataTable, type DataTableColumn } from "../../shared/components/data/Da
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { secondaryTextClass, textSecondaryClass, ellipsisTextClasses } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import { formatDollar } from "../../shared/utils/format";
 import type { TtsModel } from "../../shared/types";
 
@@ -30,7 +31,7 @@ export function TtsView() {
         accessorFn: (row) => row.provider,
         hiddenMd: true,
         align: "right",
-        cell: (model) => <p className={`text-sm ${ellipsisTextClasses} text-right`}>{model.provider || t("notAvailable")}</p>,
+        cell: (model) => <p className={cn("text-sm", ellipsisTextClasses, "text-right")}>{model.provider || t("notAvailable")}</p>,
       },
       {
         id: "quality",
@@ -66,7 +67,7 @@ export function TtsView() {
     <ViewLayout>
       <p className={secondaryTextClass}>{t("ttsSource")}</p>
       {filtered.length === 0 ? (
-        <p className={`${textSecondaryClass} py-8 text-center`}>{t("noResults")}</p>
+        <p className={cn(textSecondaryClass, "py-8 text-center")}>{t("noResults")}</p>
       ) : (
         <DataTable data={filtered} columns={columns} getRowId={getRowId} />
       )}

@@ -2,11 +2,12 @@ import { memo, useState, useEffect, type ReactNode } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useSystemStats } from "../../shared/hooks/useQueries";
 import { textSecondaryClass } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 
 export const StatusBarPill = memo(function StatusBarPill({ children }: { children: ReactNode }) {
   return (
     <div className="flex items-center px-1.5 py-[3px] border border-border rounded-md bg-bg-primary">
-      <span className={`${textSecondaryClass} whitespace-nowrap tabular-nums`}>{children}</span>
+      <span className={cn(textSecondaryClass, "whitespace-nowrap tabular-nums")}>{children}</span>
     </div>
   );
 });

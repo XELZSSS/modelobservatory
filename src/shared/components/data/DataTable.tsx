@@ -1,5 +1,6 @@
 import { Fragment, useMemo, useCallback, type ReactNode } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { cn } from "../../utils/cn";
 import { useTranslation } from "../../i18n/useTranslation";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useTableSort, useTablePagination } from "./useTableState";
@@ -61,7 +62,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
   return (
     <div className="flex flex-col gap-2">
       {sortedData.length === 0 ? (
-        <div className={`py-8 text-center ${textSecondaryClass}`}>{t("noResults")}</div>
+        <div className={cn("py-8 text-center", textSecondaryClass)}>{t("noResults")}</div>
       ) : (
         <>
           <div className="rounded-md border border-border overflow-x-auto min-w-0">
@@ -71,7 +72,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                   {columns.map((col) => (
                     <th
                       key={col.id}
-                      className={`py-1.5 px-2 font-semibold text-text-secondary whitespace-nowrap border-b border-border ${col.hiddenMd ? "hidden md:table-cell" : ""}`}
+                      className={cn("py-1.5 px-2 font-semibold text-text-secondary whitespace-nowrap border-b border-border", col.hiddenMd && "hidden md:table-cell")}
                       style={{ width: col.width, textAlign: col.align || "left" }}
                       aria-sort={col.sortable ? (sortState.col === col.id ? (sortState.dir === "asc" ? "ascending" : "descending") : "none") : undefined}
                     >
@@ -85,7 +86,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                           {col.header}
                           <span className="inline-flex flex-col leading-none">
                             <ChevronUp size={10} className={sortState.col === col.id && sortState.dir === "asc" ? "text-text-primary" : "opacity-30"} />
-                            <ChevronDown size={10} className={`-mt-0.5 ${sortState.col === col.id && sortState.dir === "desc" ? "text-text-primary" : "opacity-30"}`} />
+                            <ChevronDown size={10} className={cn("-mt-0.5", sortState.col === col.id && sortState.dir === "desc" ? "text-text-primary" : "opacity-30")} />
                           </span>
                         </button>
                       ) : (
@@ -103,7 +104,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                   return (
                     <Fragment key={rowId}>
                       <tr
-                        className={`${isLast ? "" : "border-b border-border"} transition-[background-color] hover:bg-hover ${isExpandable ? "cursor-pointer" : ""}`}
+                        className={cn(!isLast && "border-b border-border", "transition-[background-color] hover:bg-hover", isExpandable && "cursor-pointer")}
                         tabIndex={isExpandable ? 0 : undefined}
                         aria-expanded={isExpandable ? isExpanded : undefined}
                         onClick={() => {
@@ -121,7 +122,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                         }}
                       >
                         {columns.map((col) => (
-                          <td key={col.id} className={`py-1.5 px-2 ${col.hiddenMd ? "hidden md:table-cell" : ""}`} style={{ width: col.width, textAlign: col.align || "left" }}>
+                          <td key={col.id} className={cn("py-1.5 px-2", col.hiddenMd && "hidden md:table-cell")} style={{ width: col.width, textAlign: col.align || "left" }}>
                             {col.cell(record)}
                           </td>
                         ))}

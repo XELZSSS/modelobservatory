@@ -10,6 +10,7 @@ import { Spinner } from "../../shared/components/feedback/SuspenseQuery";
 import { safeHref, formatRelativeTime } from "../../shared/utils/format";
 import { COOL_COLORS } from "../../shared/components/rankColor";
 import { secondaryTextClass } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import { TabContainer, type TabItem } from "../../shared/components/composite/TabContainer";
 import type { NewsItem } from "../../shared/types";
 import { useIsMobile } from "../../shared/hooks/useIsMobile";
@@ -63,11 +64,11 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
               <ExternalLink size={14} className="shrink-0 text-text-secondary mt-1" />
             </div>
             <div className="flex flex-row items-center gap-3 mt-2">
-              <div className={`flex items-center gap-1 ${secondaryTextClass}`}>
+              <div className={cn("flex items-center gap-1", secondaryTextClass)}>
                 <Newspaper size={12} />
                 <span>{item.source}</span>
               </div>
-              <div className={`flex items-center gap-1 ${secondaryTextClass}`}>
+              <div className={cn("flex items-center gap-1", secondaryTextClass)}>
                 <Clock size={12} />
                 <span>{formatRelativeTime(item.pubDate, t)}</span>
               </div>

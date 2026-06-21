@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ShieldAlert } from "lucide-react";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import { StatCard } from "../../shared/components/composite/StatCard";
 import { Card } from "../../shared/components/ui/card";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
@@ -22,9 +23,9 @@ function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
       </div>
       <div className="flex flex-col gap-1.5 p-3 rounded-md bg-bg-secondary">
         <p className="text-xs font-bold text-text-primary">{t("techSelectionAdvice")}</p>
-        <p className={`${secondaryTextClass} leading-relaxed`}>{getRecommendation(item.id, t)}</p>
+        <p className={cn(secondaryTextClass, "leading-relaxed")}>{getRecommendation(item.id, t)}</p>
       </div>
-      <div className={`flex flex-row justify-between items-center ${secondaryTextClass}`}>
+      <div className={cn("flex flex-row justify-between items-center", secondaryTextClass)}>
         <span>{t("apiModelId")}: <code className="font-mono bg-bg-secondary px-1">{item.id}</code></span>
         <span>{t("todayCategory")}: <span className="font-bold uppercase">{categoryLabel(item.category, t)}</span></span>
       </div>
@@ -41,8 +42,8 @@ function AppExpandedDetail({ item }: { item: OpenRouterAppEntry }) {
         <StatCard label={t("requests")} value={formatShortNumber(item.requestCount)} />
         <StatCard label={t("category")} value={item.categories?.length ? item.categories.join(", ") : t("notAvailable")} />
       </div>
-      {item.description && <p className={`${secondaryTextClass} leading-relaxed p-2 rounded-md bg-bg-secondary`}>{item.description}</p>}
-      <div className={`flex flex-row justify-between items-center ${secondaryTextClass}`}>
+      {item.description && <p className={cn(secondaryTextClass, "leading-relaxed p-2 rounded-md bg-bg-secondary")}>{item.description}</p>}
+      <div className={cn("flex flex-row justify-between items-center", secondaryTextClass)}>
         <span>ID: <code className="font-mono bg-bg-secondary px-1">{item.id}</code></span>
         {item.url && <span className="truncate max-w-[60%]">{item.url}</span>}
       </div>

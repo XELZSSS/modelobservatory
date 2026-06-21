@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, Tooltip } from "recharts";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import { numberTextClass, chartTooltipStyle } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { buildCompareMetrics, buildRadarData } from "../../shared/utils/compareMetrics";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
@@ -40,7 +41,7 @@ const MetricValueDisplay = memo(function MetricValueDisplay({
   const winnerColor = winner === "win" ? "#10b981" : winner === "loss" ? "var(--destructive)" : undefined;
 
   return (
-    <span className={`${numberTextClass} ${winner === "win" ? "font-bold" : ""} ${className}`} style={winnerColor ? { color: winnerColor } : undefined}>
+    <span className={cn(numberTextClass, winner === "win" && "font-bold", className)} style={winnerColor ? { color: winnerColor } : undefined}>
       {value}
       {winner === "win" && <TrendingUp size={iconSize} className="inline ml-1" style={{ color: "#10b981" }} />}
       {winner === "loss" && <TrendingDown size={iconSize} className="inline ml-1" style={{ color: "var(--destructive)" }} />}

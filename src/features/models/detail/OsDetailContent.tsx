@@ -4,21 +4,23 @@ import { InfoRow } from "../../../shared/components/composite/InfoRow";
 import { Badge } from "../../../shared/components/ui/badge";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
 import { formatShortNumber } from "../../../shared/utils/format";
+import { orNA } from "../../../shared/utils/cssConstants";
 import type { OpenSourceModelEntry } from "../../../shared/types";
+import { DetailLayout, StatGrid, InfoGrid } from "../../../shared/components/composite/DetailLayout";
 
 export function OsDetailContent({ model }: { model: OpenSourceModelEntry }) {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-2 gap-2">
+    <DetailLayout>
+      <StatGrid columns={2}>
         <StatCard label={t("downloads")} value={formatShortNumber(model.downloads)} />
         <StatCard label={t("likes")} value={formatShortNumber(model.likes)} />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      </StatGrid>
+      <InfoGrid>
         <InfoCard title={t("modelInfo")}>
-          <InfoRow compact label={t("creator")} value={model.author || t("notAvailable")} />
-          <InfoRow compact label={t("license")} value={model.license || t("notAvailable")} />
-          <InfoRow compact label={t("task")} value={model.task || t("notAvailable")} />
+          <InfoRow compact label={t("creator")} value={orNA(model.author, t)} />
+          <InfoRow compact label={t("license")} value={orNA(model.license, t)} />
+          <InfoRow compact label={t("task")} value={orNA(model.task, t)} />
           <InfoRow compact label={t("releaseDate")} value={model.createdAt ? new Date(model.createdAt).toLocaleDateString() : t("notAvailable")} />
           <InfoRow compact label={t("lastUpdated")} value={model.lastModified ? new Date(model.lastModified).toLocaleDateString() : t("notAvailable")} />
         </InfoCard>
@@ -27,7 +29,7 @@ export function OsDetailContent({ model }: { model: OpenSourceModelEntry }) {
             {model.id}
           </a>
         </InfoCard>
-      </div>
+      </InfoGrid>
       {model.tags.length > 0 && (
         <InfoCard title={t("tags")}>
           <div className="flex flex-wrap gap-1.5">
@@ -37,6 +39,6 @@ export function OsDetailContent({ model }: { model: OpenSourceModelEntry }) {
           </div>
         </InfoCard>
       )}
-    </div>
+    </DetailLayout>
   );
 }

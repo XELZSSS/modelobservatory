@@ -3,19 +3,16 @@ import { lazy, Suspense, useMemo, useState } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import type { TranslationKey } from "../../shared/i18n";
 import { useSuspenseArtificialRankings, useHallucinationRankings, useOpenSourceModels, useOpenRouterRankings } from "../../shared/hooks/useQueries";
-import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
-
+import { SuspenseQuery, Spinner } from "../../shared/components/feedback/SuspenseQuery";
 import { ArtificialAnalysisView } from "./ArtificialAnalysisView";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { TabContainer, type TabItem } from "../../shared/components/composite/TabContainer";
-import { Spinner } from "../../shared/components/feedback/SuspenseQuery";
 
 const HallucinationRankingsView = lazy(() => import("./HallucinationRankingsView").then((m) => ({ default: m.HallucinationRankingsView })));
 const OpenSourceRankingsView = lazy(() => import("./OpenSourceRankingsView").then((m) => ({ default: m.OpenSourceRankingsView })));
 const OpenRouterRankingsView = lazy(() => import("./OpenRouterRankingsView").then((m) => ({ default: m.OpenRouterRankingsView })));
 const TtsView = lazy(() => import("./TtsView").then((m) => ({ default: m.TtsView })));
 const BenchmarkRankingsView = lazy(() => import("./BenchmarkRankingsView").then((m) => ({ default: m.BenchmarkRankingsView })));
-
 const ProviderCompareView = lazy(() => import("../compare/ProviderCompareView").then((m) => ({ default: m.ProviderCompareView })));
 
 interface RankingsHubProps {
@@ -24,6 +21,10 @@ interface RankingsHubProps {
 
 const TAB_IDS = ["modelRankings", "openRouterRankings", "openSourceRankings", "hallucinationRankings", "tts", "benchmarkRankings", "providerCompare"] as const;
 type TabId = (typeof TAB_IDS)[number];
+
+function TabPanel({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<Spinner />}>{children}</Suspense>;
+}
 
 function ActiveTabContent({
   activeTabId,
@@ -40,45 +41,17 @@ function ActiveTabContent({
     case "modelRankings":
       return <ArtificialAnalysisView rankings={artificialRankings} />;
     case "openRouterRankings":
-      return orQ.data ? (
-        <Suspense fallback={null}>
-          <OpenRouterRankingsView data={orQ.data} />
-        </Suspense>
-      ) : (
-        <Spinner />
-      );
+      return orQ.data ? <TabPanel><OpenRouterRankingsView data={orQ.data} /></TabPanel> : <Spinner />;
     case "openSourceRankings":
-      return openSourceQ.data ? (
-        <Suspense fallback={null}>
-          <OpenSourceRankingsView rankings={openSourceQ.data ?? []} />
-        </Suspense>
-      ) : (
-        <Spinner />
-      );
+      return openSourceQ.data ? <TabPanel><OpenSourceRankingsView rankings={openSourceQ.data ?? []} /></TabPanel> : <Spinner />;
     case "hallucinationRankings":
-      return (
-        <Suspense fallback={null}>
-          <HallucinationRankingsView rankings={hallucinationRankings} />
-        </Suspense>
-      );
+      return <TabPanel><HallucinationRankingsView rankings={hallucinationRankings} /></TabPanel>;
     case "tts":
-      return (
-        <Suspense fallback={<Spinner />}>
-          <TtsView />
-        </Suspense>
-      );
+      return <TabPanel><TtsView /></TabPanel>;
     case "benchmarkRankings":
-      return (
-        <Suspense fallback={<Spinner />}>
-          <BenchmarkRankingsView />
-        </Suspense>
-      );
+      return <TabPanel><BenchmarkRankingsView /></TabPanel>;
     case "providerCompare":
-      return (
-        <Suspense fallback={<Spinner />}>
-          <ProviderCompareView />
-        </Suspense>
-      );
+      return <TabPanel><ProviderCompareView /></TabPanel>;
     default:
       return null;
   }
@@ -91,19 +64,15 @@ function RankingsContent({ defaultTab }: { defaultTab: number }) {
   const { data: artificialRankings } = useSuspenseArtificialRankings();
 
   const tabs: TabItem[] = useMemo(
-    () =>
-      TAB_IDS.map((id) => ({
-        id,
-        label: t(id as TranslationKey),
-      })),
+    () => TAB_IDS.map((id) => ({ id, label: t(id as TranslationKey) })),
     [t],
   );
 
   return (
     <>
       <SectionHeader title={t(activeTabId as TranslationKey)} />
-      <TabContainer tabs={tabs} defaultTabId={activeTabId} onTabChange={(tabId) => setActiveTabId(tabId as TabId)}>
-        <ActiveTabContent activeTabId={activeTabId} artificialRankings={artificialRankings} />
+      <TabContainer tabs={tabs} defaultTabId={activeTabId} tabSize="md" onTabChange={(tabId) => setActiveTabId(tabId as TabId)}>
+        {(activeTab) => <ActiveTabContent activeTabId={activeTab as TabId} artificialRankings={artificialRankings} />}
       </TabContainer>
     </>
   );

@@ -6,6 +6,7 @@ import { useTranslation } from "../../shared/i18n/useTranslation";
 import { COOL_COLORS } from "../../shared/components/rankColor";
 import { numberTextClass, secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
 import type { HomeBarStat, HomeToolUsage } from "./useHomeDashboardData";
+import { cn } from "../../shared/utils/cn";
 
 function RankedStatCard({ title, source, rows }: { title: string; source: string; rows: HomeBarStat[] }) {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ function RankedStatCard({ title, source, rows }: { title: string; source: string
               <div key={`${row.label}-${i}`} className="flex items-center gap-3 h-[26px]">
                 <span className="text-xs font-bold w-5 text-center shrink-0" style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>{i + 1}</span>
                 <span className="text-sm truncate min-w-0 flex-1">{row.label}</span>
-                <span className={`text-sm font-bold shrink-0 ${numberTextClass}`}>{row.valueLabel}</span>
+                <span className={cn("text-sm font-bold shrink-0", numberTextClass)}>{row.valueLabel}</span>
               </div>
             ))}
           </div>

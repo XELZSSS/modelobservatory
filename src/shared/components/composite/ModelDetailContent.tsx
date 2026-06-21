@@ -3,9 +3,8 @@ import { InfoRow } from "./InfoRow";
 import { StatCard } from "./StatCard";
 import { InfoCard } from "./InfoCard";
 import { useTranslation } from "../../i18n/useTranslation";
-import { formatBoolean, formatContext, formatCost, formatPricePerMillion, formatScore } from "../../utils/format";
-import { secondaryTextClass } from "../../utils/cssConstants";
-
+import { formatBoolean, formatContext, formatCost, formatPricePerMillion, formatScore, benchmarkLabel } from "../../utils/format";
+import { secondaryTextClass, orNA } from "../../utils/cssConstants";
 import type { TFunction } from "../../i18n";
 
 const MODALITY_STYLES = { text: "bg-green-100 text-green-800", image: "bg-blue-100 text-blue-800", speech: "bg-purple-100 text-purple-800", video: "bg-orange-100 text-orange-800" } as const;
@@ -37,8 +36,8 @@ export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <InfoCard title={t("modelInfo")}>
-          <InfoRow compact label={t("creator")} value={model.model_creators?.name || t("notAvailable")} />
-          <InfoRow compact label={t("releaseDate")} value={model.release_date || t("notAvailable")} />
+          <InfoRow compact label={t("creator")} value={orNA(model.model_creators?.name, t)} />
+          <InfoRow compact label={t("releaseDate")} value={orNA(model.release_date, t)} />
           <InfoRow compact label={t("contextWindow")} value={formatContext(t, model)} />
           <InfoRow compact label={t("openWeights")} value={formatBoolean(t, model.is_open_weights)} />
         </InfoCard>
@@ -51,14 +50,9 @@ export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }
       {model.benchmarks && Object.values(model.benchmarks).some(v => v != null) && (
         <InfoCard title={t("benchmarks")}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {Object.entries(model.benchmarks).map(([key, value]) => {
-              if (value == null) return null;
-              const camelKey = key.split("_").map((part, i) => i === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)).join("");
-              const labelKey = `benchmark${camelKey.charAt(0).toUpperCase() + camelKey.slice(1)}` as Parameters<typeof t>[0];
-              return (
-                <StatCard key={key} label={t(labelKey)} value={formatScore(t, value)} />
-              );
-            })}
+            {Object.entries(model.benchmarks).map(([key, value]) =>
+              value == null ? null : <StatCard key={key} label={benchmarkLabel(key, t)} value={formatScore(t, value)} />,
+            )}
           </div>
         </InfoCard>
       )}

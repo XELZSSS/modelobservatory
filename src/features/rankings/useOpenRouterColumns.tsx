@@ -2,6 +2,7 @@ import type { TranslationKey } from "../../shared/i18n";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
 import { ellipsisTextClasses } from "../../shared/utils/cssConstants";
+import { cn } from "../../shared/utils/cn";
 import { formatShortNumber, formatTrend } from "../../shared/utils/format";
 import type { OpenRouterRankEntry, OpenRouterAppEntry } from "../../shared/types";
 
@@ -41,7 +42,7 @@ export function useOpenRouterColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <p className={`text-xs ${ellipsisTextClasses} text-right`}>{item.creator || t("unknown")}</p>,
+      cell: (item) => <p className={cn("text-xs", ellipsisTextClasses, "text-right")}>{item.creator || t("unknown")}</p>,
     },
     {
       id: "trend",
@@ -50,7 +51,7 @@ export function useOpenRouterColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <span className={`${trendClass(item.change)} border rounded-[4px] text-xs py-0 px-1 font-mono inline-block`}>{formatTrend(item.change, t)}</span>,
+      cell: (item) => <span className={cn(trendClass(item.change), "border rounded-[4px] text-xs py-0 px-1 font-mono inline-block")}>{formatTrend(item.change, t)}</span>,
     },
   ];
 
@@ -70,7 +71,7 @@ export function useOpenRouterColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <p className={`text-xs ${ellipsisTextClasses} text-right`}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>,
+      cell: (item) => <p className={cn("text-xs", ellipsisTextClasses, "text-right")}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>,
     },
   ];
 

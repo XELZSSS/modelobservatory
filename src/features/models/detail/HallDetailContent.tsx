@@ -4,18 +4,18 @@ import { InfoRow } from "../../../shared/components/composite/InfoRow";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
 import { ModelDetailContent } from "../../../shared/components/composite/ModelDetailContent";
 import type { HallucinationRankingEntry, ArtificialAnalysisModel } from "../../../shared/types";
+import { DetailLayout, StatGrid } from "../../../shared/components/composite/DetailLayout";
 
 export function HallDetailContent({ model, aaModel }: { model: HallucinationRankingEntry; aaModel?: ArtificialAnalysisModel }) {
   const { t } = useTranslation();
-  // Values are already in percentage form (0-100) via normalizePercent in buildHallucinationRankings
   return (
-    <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+    <DetailLayout>
+      <StatGrid columns={4}>
         <StatCard label={t("omniscienceIndex")} value={model.omniscienceIndex.toFixed(1)} />
         <StatCard label={t("accuracy")} value={`${model.accuracy.toFixed(1)}%`} />
         <StatCard label={t("hallucinationRate")} value={`${model.hallucinationRate.toFixed(1)}%`} />
         <StatCard label={t("attemptRate")} value={`${model.attemptRate.toFixed(1)}%`} />
-      </div>
+      </StatGrid>
       <InfoCard title={t("modelInfo")}>
         <InfoRow compact label={t("modelNameOrId")} value={model.model} />
         <InfoRow compact label="Slug" value={model.slug} />
@@ -28,6 +28,6 @@ export function HallDetailContent({ model, aaModel }: { model: HallucinationRank
           <ModelDetailContent model={aaModel} />
         </>
       )}
-    </div>
+    </DetailLayout>
   );
 }

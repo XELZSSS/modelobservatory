@@ -4,6 +4,7 @@ import { useFilteredData } from "../../hooks/useFilteredData";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { ViewLayout } from "../composite/ViewLayout";
 import { secondaryTextClass, textSecondaryClass } from "../../utils/cssConstants";
+import { cn } from "../../utils/cn";
 import type { TranslationKey } from "../../i18n";
 
 export interface RankedRow<T> {
@@ -52,7 +53,7 @@ export function RankingTable<T>({
       <p className={secondaryTextClass}>{t(sourceKey)}</p>
       {extraHeader}
       {rows.length === 0 ? (
-        <p className={`${textSecondaryClass} py-8 text-center`}>{t(emptyMessageKey ?? "noResults")}</p>
+        <p className={cn(textSecondaryClass, "py-8 text-center")}>{t(emptyMessageKey ?? "noResults")}</p>
       ) : (
         <DataTable data={rows} columns={tableColumns} getRowId={(row) => getRowId(row.item)} />
       )}

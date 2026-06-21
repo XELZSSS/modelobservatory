@@ -4,6 +4,7 @@ import { useTranslation } from "../../shared/i18n/useTranslation";
 import { getModelColor } from "../../shared/components/rankColor";
 import { numberTextClass, secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { formatShortNumber } from "../../shared/utils/format";
+import { cn } from "../../shared/utils/cn";
 
 export function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ name: string; value: number; share: number }> }) {
   const { t, lang } = useTranslation();
@@ -47,14 +48,14 @@ export function ToolUsageShareDonut({ total, rows }: { total: number; rows: Arra
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               {center ? (
                 <>
-                  <span className={`text-sm font-bold leading-none text-center ${numberTextClass}`}>{center.name}</span>
-                  <span className={`text-base font-bold leading-none mt-1.5 ${numberTextClass}`}>{formatShortNumber(center.value)}</span>
-                  <span className={`${textSecondaryClass} leading-none mt-0.5`}>{(center.share * 100).toFixed(1)}%</span>
+                  <span className={cn("text-sm font-bold leading-none text-center", numberTextClass)}>{center.name}</span>
+                  <span className={cn("text-base font-bold leading-none mt-1.5", numberTextClass)}>{formatShortNumber(center.value)}</span>
+                  <span className={cn(textSecondaryClass, "leading-none mt-0.5")}>{(center.share * 100).toFixed(1)}%</span>
                 </>
               ) : (
                 <>
-                  <span className={`text-base font-bold leading-none ${numberTextClass}`}>{formatShortNumber(total)}</span>
-                  <span className={`${textSecondaryClass} leading-none mt-0.5`}>{t("tokens")}</span>
+                  <span className={cn("text-base font-bold leading-none", numberTextClass)}>{formatShortNumber(total)}</span>
+                  <span className={cn(textSecondaryClass, "leading-none mt-0.5")}>{t("tokens")}</span>
                 </>
               )}
             </div>
@@ -66,7 +67,7 @@ export function ToolUsageShareDonut({ total, rows }: { total: number; rows: Arra
                 <div key={row.name} className="grid grid-cols-[12px_1fr_auto] gap-2 items-center min-w-0">
                   <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: getModelColor(index) }} />
                   <span className="text-sm truncate text-text-primary">{row.name}</span>
-                  <span className={`text-sm font-bold text-right ${numberTextClass}`}>{percent}</span>
+                  <span className={cn("text-sm font-bold text-right", numberTextClass)}>{percent}</span>
                 </div>
               );
             })}
