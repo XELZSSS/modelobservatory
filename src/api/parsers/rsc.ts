@@ -12,7 +12,17 @@
  * failure is diagnosable from the rendered ErrorDetail alone.
  */
 
-import { fetchAARsc } from "../upstream/aaRsc";
+import { upstreamConfig } from "../../shared/config";
+
+const AA_BASE = upstreamConfig.artificialAnalysis;
+const AA_RSC_HEADERS = { RSC: "1", "Next-Router-State-Tree": "%5B%5D" } as const;
+
+async function fetchAARsc(path: string): Promise<string> {
+  const url = `${AA_BASE}${path}`;
+  const res = await fetch(url, { headers: AA_RSC_HEADERS });
+  if (!res.ok) throw new Error(`RSC fetch failed: ${res.status} ${res.statusText}`);
+  return res.text();
+}
 
 const SNIPPET_LEN = 200;
 const snippet = (s: string): string => s.slice(0, SNIPPET_LEN).replace(/\s+/g, " ").trim();

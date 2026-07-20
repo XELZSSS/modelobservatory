@@ -5,7 +5,7 @@ import type { TranslationKey } from "../../shared/i18n";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { Card } from "../../shared/components/ui/card";
 import { Pagination } from "../../shared/components/ui/pagination";
-import { useNewsByCategory } from "../../shared/hooks/useQueries";
+import { useNewsByCategory } from "../../shared/hooks/useSearch";
 import { Spinner } from "../../shared/components/feedback/SuspenseQuery";
 import { safeHref, formatRelativeTime } from "../../shared/utils/format";
 import { COOL_COLORS } from "../../shared/components/rankColor";
@@ -108,7 +108,7 @@ export function NewsView() {
   return (
     <div className="flex flex-col gap-4">
       <SectionHeader title={t("aiNews")} />
-      <TabContainer tabs={tabs} defaultTabId="official" tabSize="sm" onTabChange={setActiveCategory}>
+      <TabContainer tabs={tabs} activeTab={activeCategory} tabSize="sm" onTabChange={setActiveCategory}>
         <NewsCategoryContent categoryId={activeCategory} color={activeColor} />
       </TabContainer>
     </div>

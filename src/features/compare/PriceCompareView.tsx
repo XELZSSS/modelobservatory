@@ -11,7 +11,7 @@ import { getModelColor } from "../../shared/components/rankColor";
 import { calcModelCost } from "../../shared/utils/costCalc";
 import { approxEq } from "../../shared/utils/math";
 import type { ArtificialAnalysisModel } from "../../shared/types";
-import { buildPriceRows, getBestPrice, WinnerMark, PriceTableDesktop, PriceCardsMobile, EfficiencyTableDesktop, EfficiencyCardsMobile } from "./PriceComponents";
+import { buildPriceRows, getBestPrice, WinnerMark, PriceTable, EfficiencyTable } from "./PriceComponents";
 import { ComparePageLayout } from "./ComparePageLayout";
 
 export function PriceCompareView() {
@@ -81,8 +81,8 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
       <Card>
         <CardContent className="p-4">
           <p className="text-sm font-bold mb-3">{t("priceBreakdown")}</p>
-          <PriceTableDesktop priceRows={priceRows} models={models} bestPrices={bestPrices} />
-          <PriceCardsMobile priceRows={priceRows} models={models} bestPrices={bestPrices} />
+          <PriceTable priceRows={priceRows} models={models} bestPrices={bestPrices} variant="desktop" />
+          <PriceTable priceRows={priceRows} models={models} bestPrices={bestPrices} variant="mobile" />
         </CardContent>
       </Card>
 
@@ -114,8 +114,8 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
       <Card>
         <CardContent className="p-4">
           <p className="text-sm font-bold mb-3">{t("costEfficiency")}</p>
-          <EfficiencyTableDesktop models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
-          <EfficiencyCardsMobile models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
+          <EfficiencyTable models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} variant="desktop" />
+          <EfficiencyTable models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} variant="mobile" />
         </CardContent>
       </Card>
 

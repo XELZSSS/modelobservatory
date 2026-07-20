@@ -10,9 +10,9 @@ import type {
   TtsModel,
   HomeDashboardData,
 } from "../types";
-import { HEALTH_CHECK_INTERVAL, SYSTEM_STATS_INTERVAL, FIVE_MINUTES, THIRTY_MINUTES } from "../constants";
+import { HEALTH_CHECK_INTERVAL, SYSTEM_STATS_INTERVAL, FIVE_MINUTES, THIRTY_MINUTES } from "../config";
 import { apiFetch, api } from "../../api/client/httpClient";
-import { buildHallucinationRankings } from "../utils/artificial";
+import { normalizePercent } from "../utils/math";
 
 interface QueryCtx { signal?: AbortSignal }
 
@@ -53,6 +53,20 @@ export function useOpenSourceModels(enabled = true) {
     staleTime: FIVE_MINUTES,
     enabled,
   });
+}
+
+function buildHallucinationRankings(models: ArtificialAnalysisModel[]): HallucinationRankingEntry[] {
+  return models
+    .flatMap((model) => {
+      const total = model.omniscience_breakdown?.total;
+      const rate = normalizePercent(total?.hallucination_rate);
+      const acc = normalizePercent(total?.accuracy);
+      const attempt = normalizePercent(total?.attempt_rate);
+      const idx = normalizePercent(total?.omniscience);
+      if (rate == null || acc == null || attempt == null || idx == null) return [];
+      return [{ id: model.id, slug: model.slug, model: model.name, hallucinationRate: rate, accuracy: acc, attemptRate: attempt, omniscienceIndex: idx }];
+    })
+    .sort((a, b) => a.hallucinationRate - b.hallucinationRate);
 }
 
 export function useHallucinationRankings(data: ArtificialAnalysisModel[], enabled = true): HallucinationRankingEntry[] {

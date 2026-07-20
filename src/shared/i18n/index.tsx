@@ -5,7 +5,13 @@ import { zh } from "./locales/zh";
 import { useLangStore } from "../stores/langStore";
 import { I18nContext } from "./useTranslation";
 import type { Lang, TranslationKey, TranslationParams, TFunction } from "./useTranslation";
-import { interpolate } from "./interpolate";
+
+function interpolate(template: string, params: TranslationParams): string {
+  return template.replace(/\{(\w+)\}/g, (match, key) => {
+    const value = params[key];
+    return value !== undefined ? String(value) : match;
+  });
+}
 
 export type { Lang, TranslationKey, TranslationParams, TFunction };
 

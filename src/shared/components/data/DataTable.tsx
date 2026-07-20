@@ -57,7 +57,22 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
     [resetPage, toggleSort],
   );
 
-  const resolveRowId = useCallback((record: T, index: number): string => (getRowId ? getRowId(record) : String(index)), [getRowId]);
+  const rowIdMap = useMemo(() => {
+    if (!getRowId) return null;
+    const map = new Map<T, string>();
+    for (const record of sortedData) {
+      map.set(record, getRowId(record));
+    }
+    return map;
+  }, [sortedData, getRowId]);
+
+  const resolveRowId = useCallback((record: T, index: number): string => {
+    if (rowIdMap) {
+      const id = rowIdMap.get(record);
+      if (id) return id;
+    }
+    return String(index);
+  }, [rowIdMap]);
 
   return (
     <div className="flex flex-col gap-2">

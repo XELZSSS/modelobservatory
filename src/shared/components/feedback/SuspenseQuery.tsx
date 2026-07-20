@@ -1,7 +1,33 @@
-import { Suspense, type ReactNode } from "react";
+import { Suspense, Component, Fragment, type ReactNode, type ErrorInfo } from "react";
 import { useLocation } from "react-router-dom";
-import { ErrorBoundary } from "./ErrorBoundary";
 import { useTranslation } from "../../i18n/useTranslation";
+import { Button } from "../ui/button";
+import { secondaryTextClass } from "../../utils/cssConstants";
+
+interface ErrorBoundaryProps { fallback?: ReactNode; errorTitle?: string; retryLabel?: string; children: ReactNode; }
+interface ErrorBoundaryState { hasError: boolean; error: Error | null; resetKey: number; }
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  static displayName = "ErrorBoundary";
+  state: ErrorBoundaryState = { hasError: false, error: null, resetKey: 0 };
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> { return { hasError: true, error }; }
+  componentDidCatch(error: Error, info: ErrorInfo) { console.error("[ErrorBoundary]", error, info.componentStack); }
+  private handleRetry = () => { this.setState((s) => ({ hasError: false, error: null, resetKey: s.resetKey + 1 })); };
+  render() {
+    if (this.state.hasError) {
+      const title = this.props.errorTitle ?? "Error";
+      const retry = this.props.retryLabel ?? "Retry";
+      return this.props.fallback ?? (
+        <div className="flex flex-col items-center justify-center min-h-[200px] gap-2 p-4">
+          <p className="text-sm font-bold text-destructive">{title}</p>
+          <p className={secondaryTextClass}>{this.state.error?.message}</p>
+          <Button variant="link" size="sm" onClick={this.handleRetry}>{retry}</Button>
+        </div>
+      );
+    }
+    return <Fragment key={this.state.resetKey}>{this.props.children}</Fragment>;
+  }
+}
 
 export function Spinner() {
   return (

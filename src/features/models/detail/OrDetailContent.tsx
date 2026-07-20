@@ -3,7 +3,8 @@ import { InfoCard } from "../../../shared/components/composite/InfoCard";
 import { InfoRow } from "../../../shared/components/composite/InfoRow";
 import { Badge } from "../../../shared/components/ui/badge";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
-import { formatShortNumber, formatTrend, formatDollar, getRecommendation, categoryLabel } from "../../../shared/utils/format";
+import { formatShortNumber, formatTrend, formatDollar, categoryLabel } from "../../../shared/utils/format";
+import { getRecommendation } from "../../../shared/utils/recommendation";
 import type { OpenRouterRankEntry } from "../../../shared/types";
 import { DetailLayout, StatGrid, InfoGrid } from "../../../shared/components/composite/DetailLayout";
 

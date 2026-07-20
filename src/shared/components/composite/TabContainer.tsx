@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { TabButton } from "./TabButton";
 
@@ -9,22 +9,16 @@ export interface TabItem {
 
 interface TabContainerProps {
   tabs: TabItem[];
-  defaultTabId?: string;
+  activeTab: string;
   className?: string;
   tabSize?: "sm" | "md";
-  onTabChange?: (tabId: string) => void;
+  onTabChange: (tabId: string) => void;
   children: ((activeTab: string) => ReactNode) | ReactNode;
 }
 
-export function TabContainer({ tabs, defaultTabId, className, tabSize = "md", onTabChange, children }: TabContainerProps) {
-  const [activeTab, setActiveTab] = useState(() => {
-    if (defaultTabId && tabs.some((t) => t.id === defaultTabId)) return defaultTabId;
-    return tabs[0]?.id ?? "";
-  });
-
+export function TabContainer({ tabs, activeTab, className, tabSize = "md", onTabChange, children }: TabContainerProps) {
   const handleTabClick = (tabId: string) => {
-    setActiveTab(tabId);
-    onTabChange?.(tabId);
+    onTabChange(tabId);
   };
 
   const content = typeof children === "function" ? children(activeTab) : children;

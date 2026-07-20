@@ -1,4 +1,4 @@
-import { useSuspenseArtificialRankings, useHallucinationRankings } from "../../../shared/hooks/useQueries";
+import { useSuspenseArtificialRankings, useHallucinationRankings } from "../../../shared/hooks/useApiQuery";
 import { useModelLookup } from "../../../shared/hooks/useModelLookup";
 import { HallDetailContent } from "./HallDetailContent";
 import { NotFound } from "../../system/NotFound";

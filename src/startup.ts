@@ -1,6 +1,17 @@
 import { useEffect } from "react";
-import { STORAGE_KEYS } from "./shared/constants";
-import { readStorageJson, removeStorage, writeStorage } from "./shared/utils/storage";
+import { STORAGE_KEYS } from "./shared/config";
+
+function writeStorage(key: string, value: string) {
+  try { localStorage.setItem(key, value); } catch { /* ignore */ }
+}
+
+function removeStorage(key: string) {
+  try { localStorage.removeItem(key); } catch { /* ignore */ }
+}
+
+function readStorageJson<T>(key: string, fallback: T): T {
+  try { const raw = localStorage.getItem(key); return raw ? (JSON.parse(raw) as T) : fallback; } catch { return fallback; }
+}
 
 let cacheMigrated = false;
 

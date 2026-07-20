@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { ArtificialAnalysisModel } from "../types";
-import { STORAGE_KEYS } from "../constants";
+import { STORAGE_KEYS } from "../config";
 import { modelId } from "../utils/modelId";
 
 const MAX_COMPARE = 2;

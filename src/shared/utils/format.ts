@@ -72,20 +72,6 @@ export function formatTrend(change?: number | null, t?: TFunction): string {
   return `${change >= 0 ? "+" : ""}${(change * 100).toFixed(1)}%`;
 }
 
-const REC_RULES: [RegExp, TranslationKey][] = [
-  [/claude-3[.-]5-sonnet/, "recClaude"],
-  [/deepseek-[vr]/, "recDeepSeek"],
-  [/gpt-[45]/, "recGpt"],
-  [/gemini/, "recGemini"],
-  [/mimo/, "recMiMo"],
-];
-
-export function getRecommendation(id: string, t: TFunction): string {
-  const lower = id.toLowerCase();
-  const match = REC_RULES.find(([re]) => re.test(lower));
-  return t(match ? match[1] : "recDefault");
-}
-
 const CAT_MAP: Record<string, TranslationKey> = { coding: "catCoding", reasoning: "catReasoning" };
 
 export function categoryLabel(cat: string, t: TFunction): string {

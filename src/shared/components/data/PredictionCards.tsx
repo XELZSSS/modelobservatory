@@ -1,4 +1,5 @@
-import { Clock, Building2 } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Clock, Building2, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { TabContainer, type TabItem } from "../composite/TabContainer";
 import { SectionHeader } from "../composite/SectionHeader";
@@ -7,8 +8,16 @@ import { COOL_COLORS } from "../rankColor";
 import { approxEq } from "../../utils/math";
 import { useTranslation } from "../../i18n/useTranslation";
 import type { ModelPrediction, ReleasePrediction, ProviderPrediction, PredictionsPayload } from "../../types";
-import { ExternalLinkButton } from "../composite/ExternalLinkButton";
-import { formatCompactDollar } from "../../utils/format";
+import { formatCompactDollar, safeHref } from "../../utils/format";
+import { cn } from "../../utils/cn";
+
+function ExternalLinkButton({ href, children, showIcon = true, className, iconSize = 14 }: {
+  href: string | null | undefined; children?: ReactNode; showIcon?: boolean; className?: string; iconSize?: number;
+}) {
+  const safeUrl = safeHref(href);
+  if (!safeUrl) return null;
+  return <a href={safeUrl} target="_blank" rel="noopener noreferrer" className={cn("text-text-tertiary hover:text-text-primary transition-colors", className)}>{children || (showIcon && <ExternalLink size={iconSize} />)}</a>;
+}
 
 function EmptyPredictions() {
   const { t } = useTranslation();
@@ -137,6 +146,8 @@ function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
 export function PredictionsSection({ data }: { data: PredictionsPayload }) {
   const { t } = useTranslation();
 
+  const [activePredictionTab, setActivePredictionTab] = useState("rankings");
+
   const hasData = data.modelRankings.length > 0 || data.releases.length > 0 || data.providers.length > 0;
   if (!hasData) return null;
 
@@ -149,7 +160,7 @@ export function PredictionsSection({ data }: { data: PredictionsPayload }) {
   return (
     <div className="flex flex-col gap-3">
       <SectionHeader title={t("predictions")} meta={t("predictionsSource")} />
-      <TabContainer tabs={tabs} defaultTabId="rankings" tabSize="sm">
+      <TabContainer tabs={tabs} activeTab={activePredictionTab} tabSize="sm" onTabChange={setActivePredictionTab}>
         {(activeTab) => (
           <>
             {activeTab === "rankings" && <ModelRankingTab items={data.modelRankings} />}

@@ -6,14 +6,36 @@ import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 import { NotFound } from "../system/NotFound";
 import { secondaryTextClass } from "../../shared/utils/cssConstants";
-import { MODEL_SOURCES, type ModelSource } from "../../shared/constants";
+import { MODEL_SOURCES, type ModelSource } from "../../shared/config";
+import { useParams } from "react-router-dom";
+import { useModelLookup } from "../../shared/hooks/useModelLookup";
+import { useSuspenseArtificialRankings, useSuspenseOpenSourceReleases, useSuspenseTtsLeaderboard } from "../../shared/hooks/useApiQuery";
+import { ModelDetailContent } from "../../shared/components/composite/ModelDetailContent";
+import { OsDetailContent } from "./detail/OsDetailContent";
+import { TtsDetailContent } from "./detail/TtsDetailContent";
 
-import { AADetail } from "./detail/AADetail";
 import { ORDetail } from "./detail/ORDetail";
-import { OSDetail } from "./detail/OSDetail";
 import { HallDetail } from "./detail/HallDetail";
-import { TTSDetail } from "./detail/TTSDetail";
-import { useModelSourceParams } from "./useModelSourceParams";
+
+function useModelSourceParams(): { src: ModelSource | null; decodedId: string } {
+  const { source, "*": splat } = useParams<{ source: string; "*": string }>();
+  const src = (source && source in MODEL_SOURCES ? source : null) as ModelSource | null;
+  const decodedId = splat ? decodeURIComponent(splat) : "";
+  return { src, decodedId };
+}
+
+function createDetailView<T>(useQuery: () => { data: T[] }, Content: ComponentType<{ model: T }>, ...keys: (keyof T & string)[]): ComponentType<{ decodedId: string }> {
+  return function DetailView({ decodedId }: { decodedId: string }) {
+    const { data } = useQuery();
+    const model = useModelLookup(data, decodedId, ...keys);
+    if (!model) return <NotFound />;
+    return <Content model={model} />;
+  };
+}
+
+const AADetail = createDetailView(useSuspenseArtificialRankings, ModelDetailContent, "id", "slug");
+const OSDetail = createDetailView(useSuspenseOpenSourceReleases, OsDetailContent, "id");
+const TTSDetail = createDetailView(useSuspenseTtsLeaderboard, TtsDetailContent, "id", "name");
 
 const SOURCE_LABELS: Record<ModelSource, string> = {
   aa: "artificialSource",

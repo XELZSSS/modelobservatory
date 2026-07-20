@@ -44,7 +44,6 @@ export function RankingTable<T>({
 
   const tableColumns = useMemo<DataTableColumn<RankedRow<T>>[]>(
     () => columns(t, rows[0] ?? { rank: 0, item: data[0]! }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [t],
   );
 

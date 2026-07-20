@@ -6,15 +6,7 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { registerRoutes } from "./server/registerRoutes";
 
-import { arenaRoutes } from "./server/routes/arena";
-import { artificialRoutes } from "./server/routes/artificial";
-import { huggingfaceRoutes } from "./server/routes/huggingface";
-import { openrouterRoutes } from "./server/routes/openrouter";
-import { newsRoutes } from "./server/routes/news";
-import { predictionsRoutes } from "./server/routes/predictions";
-import { ttsRoutes } from "./server/routes/tts";
-import { homeRoutes } from "./server/routes/home";
-import { systemRoutes } from "./server/routes/system";
+import { routeDefs } from "./server/routes";
 
 export const app = new Hono();
 
@@ -33,17 +25,7 @@ app.use(
   }),
 );
 
-registerRoutes(app, [
-  arenaRoutes,
-  artificialRoutes,
-  huggingfaceRoutes,
-  openrouterRoutes,
-  newsRoutes,
-  predictionsRoutes,
-  ttsRoutes,
-  homeRoutes,
-  systemRoutes,
-]);
+registerRoutes(app, [routeDefs]);
 
 app.notFound((c) => c.json({ error: { code: 404, message: "API route not found" } }, 404));
 

@@ -1,10 +1,13 @@
 import { BrowserRouter } from "react-router-dom";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nProvider } from "./shared/i18n";
 import { AppShell } from "./shared/components/layout/AppShell";
-import { queryClient } from "./queryClient";
 import { AppRoutes } from "./routes";
 import { useAppStartup } from "./startup";
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: 2, refetchOnWindowFocus: false, staleTime: 5 * 60_000 } },
+});
 
 export function App() {
   useAppStartup();

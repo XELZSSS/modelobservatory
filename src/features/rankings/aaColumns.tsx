@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { Plus, Check } from "lucide-react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { Badge } from "../../shared/components/ui/badge";
@@ -11,6 +10,14 @@ import { calcModelCost } from "../../shared/utils/costCalc";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { TFunction } from "../../shared/i18n";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+
+function CompareButton({ isCompared, onToggle }: { isCompared: boolean; onToggle: () => void }) {
+  return (
+    <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onToggle(); }} className="shrink-0">
+      {isCompared ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
+    </Button>
+  );
+}
 
 export function ModelExpandedDetail({ model }: { model: ArtificialAnalysisModel }) {
   return (
@@ -44,17 +51,7 @@ function RankingModelCell({
             {t("estimated")}
           </Badge>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleCompare(model);
-          }}
-          className="shrink-0"
-        >
-          {isCompared ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
-        </Button>
+         <CompareButton isCompared={isCompared} onToggle={() => onToggleCompare(model)} />
       </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0 mt-1 md:hidden">
         {metricItems.map(([label, value]) => (
@@ -150,17 +147,7 @@ export function buildPricingColumns(
         return (
           <div className="flex items-center gap-1 min-w-0">
             <p className="text-sm break-words min-w-0">{model.name || model.slug}</p>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleCompareModel(model);
-              }}
-              className="shrink-0"
-            >
-              {isCompared ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
-            </Button>
+         <CompareButton isCompared={isCompared} onToggle={() => toggleCompareModel(model)} />
           </div>
         );
       },

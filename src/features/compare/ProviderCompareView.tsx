@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useSuspenseArtificialRankings } from "../../shared/hooks/useQueries";
+import { useSuspenseArtificialRankings } from "../../shared/hooks/useApiQuery";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { formatScore, formatPricePerMillion } from "../../shared/utils/format";
 import { secondaryTextClass } from "../../shared/utils/cssConstants";

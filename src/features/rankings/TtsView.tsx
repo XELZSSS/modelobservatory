@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useTtsLeaderboard } from "../../shared/hooks/useQueries";
+import { useTtsLeaderboard } from "../../shared/hooks/useApiQuery";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";

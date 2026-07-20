@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../shared/components/ui/button";
 import { BackButton } from "../../shared/components/composite/BackButton";
@@ -6,9 +7,19 @@ import { CompareChipBar } from "../../shared/components/composite/CompareChipBar
 import { secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useCompareStore } from "../../shared/stores/compareStore";
-import { useCompareModels } from "../../shared/hooks/useCompareModels";
+import { useArtificialRankings } from "../../shared/hooks/useApiQuery";
+import { modelId } from "../../shared/utils/modelId";
 import type { TranslationKey } from "../../shared/i18n";
 import type { ArtificialAnalysisModel } from "../../shared/types";
+
+function useCompareModels(): ArtificialAnalysisModel[] {
+  const compareIds = useCompareStore((s) => s.compareIds);
+  const rankingsQ = useArtificialRankings();
+  return useMemo(() => {
+    if (!rankingsQ.data) return [];
+    return compareIds.map((id) => rankingsQ.data!.find((m) => modelId(m) === id)).filter((m): m is ArtificialAnalysisModel => !!m);
+  }, [compareIds, rankingsQ.data]);
+}
 
 interface ComparePageLayoutProps {
   backLabelKey: TranslationKey;

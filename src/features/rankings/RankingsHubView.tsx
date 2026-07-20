@@ -2,7 +2,7 @@ import { lazy, Suspense, useMemo, useState } from "react";
 
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import type { TranslationKey } from "../../shared/i18n";
-import { useSuspenseArtificialRankings, useHallucinationRankings, useOpenSourceModels, useOpenRouterRankings } from "../../shared/hooks/useQueries";
+import { useSuspenseArtificialRankings, useHallucinationRankings, useOpenSourceModels, useOpenRouterRankings } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery, Spinner } from "../../shared/components/feedback/SuspenseQuery";
 import { ArtificialAnalysisView } from "./ArtificialAnalysisView";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
@@ -71,8 +71,8 @@ function RankingsContent({ defaultTab }: { defaultTab: number }) {
   return (
     <>
       <SectionHeader title={t(activeTabId as TranslationKey)} />
-      <TabContainer tabs={tabs} defaultTabId={activeTabId} tabSize="md" onTabChange={(tabId) => setActiveTabId(tabId as TabId)}>
-        {(activeTab) => <ActiveTabContent activeTabId={activeTab as TabId} artificialRankings={artificialRankings} />}
+      <TabContainer tabs={tabs} activeTab={activeTabId} tabSize="md" onTabChange={(tabId) => setActiveTabId(tabId as TabId)}>
+        <ActiveTabContent activeTabId={activeTabId} artificialRankings={artificialRankings} />
       </TabContainer>
     </>
   );

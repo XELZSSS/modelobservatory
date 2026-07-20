@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { TabButton } from "../../shared/components/composite/TabButton";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useSuspenseArtificialRankings } from "../../shared/hooks/useQueries";
+import { useSuspenseArtificialRankings } from "../../shared/hooks/useApiQuery";
 import { secondaryTextClass } from "../../shared/utils/cssConstants";
 import { BENCHMARK_KEYS, BENCHMARK_LABELS, useBenchmarkColumns } from "./useBenchmarkColumns";
 

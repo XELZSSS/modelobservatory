@@ -11,9 +11,7 @@ export interface CompareMetric {
   mobileKey?: boolean;
 }
 
-function getOutputSpeed(model: ArtificialAnalysisModel): number | null {
-  return model.speed?.median_output_speed ?? model.speed?.timescaleData?.median_output_speed ?? null;
-}
+import { getOutputSpeed } from "./providerStats";
 
 function scoreMetric(t: TFunction, labelKey: Parameters<TFunction>[0], getScore: (m: ArtificialAnalysisModel) => number | null | undefined, mobileKey?: boolean): CompareMetric {
   return {

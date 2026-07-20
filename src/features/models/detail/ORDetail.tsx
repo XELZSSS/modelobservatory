@@ -1,4 +1,4 @@
-import { useSuspenseOpenRouterRankings } from "../../../shared/hooks/useQueries";
+import { useSuspenseOpenRouterRankings } from "../../../shared/hooks/useApiQuery";
 import { useModelLookup } from "../../../shared/hooks/useModelLookup";
 import { OrDetailContent } from "./OrDetailContent";
 import { NotFound } from "../../system/NotFound";

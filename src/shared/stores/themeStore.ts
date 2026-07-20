@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ThemeMode } from "../types";
-import { STORAGE_KEYS } from "../constants";
+import { STORAGE_KEYS } from "../config";
 
 interface ThemeState {
   themeMode: ThemeMode;

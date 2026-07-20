@@ -1,7 +1,7 @@
 import { withCache, formatSettleErrors } from "../cache";
 import { fetchJSON } from "../http";
 import { errorMessage } from "../errors";
-import { deduplicateBy } from "../utils";
+import { deduplicateBy } from "../cache";
 import type { ModelPrediction, ReleasePrediction, ProviderPrediction, PredictionsPayload } from "../../shared/types";
 import { upstreamConfig, DEFAULT_TTL_MS } from "../../shared/config";
 

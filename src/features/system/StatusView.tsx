@@ -3,7 +3,7 @@ import { useTranslation } from "../../shared/i18n/useTranslation";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import type { HealthEntry } from "../../shared/types";
-import { useSuspenseHealthStatus } from "../../shared/hooks/useQueries";
+import { useSuspenseHealthStatus } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 
 function HealthStatusBadge({ status, label }: { status: HealthEntry["status"]; label?: string }) {

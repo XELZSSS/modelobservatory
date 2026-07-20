@@ -8,7 +8,8 @@ import { Card } from "../../shared/components/ui/card";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import type { OpenRouterAppEntry, OpenRouterRankingsPayload, OpenRouterRankEntry } from "../../shared/types";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { formatShortNumber, getRecommendation, categoryLabel } from "../../shared/utils/format";
+import { formatShortNumber, categoryLabel } from "../../shared/utils/format";
+import { getRecommendation } from "../../shared/utils/recommendation";
 import { useOpenRouterColumns } from "./useOpenRouterColumns";
 
 function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {

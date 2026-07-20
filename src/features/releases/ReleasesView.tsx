@@ -6,7 +6,7 @@ import { ellipsisTextClasses, secondaryTextClass, textSecondaryClass } from "../
 import { cn } from "../../shared/utils/cn";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
-import { useSuspenseOpenSourceReleases, useSuspenseArtificialRankings } from "../../shared/hooks/useQueries";
+import { useSuspenseOpenSourceReleases, useSuspenseArtificialRankings } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 import { TabContainer, type TabItem } from "../../shared/components/composite/TabContainer";
 import type { FeedEntry, DatedModel } from "./types";
@@ -100,7 +100,7 @@ function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "r
       {lockedMode ? (
         <ReleaseDatesTab releaseRows={releaseRows} />
       ) : (
-        <TabContainer tabs={tabs} defaultTabId={mode} onTabChange={(id) => setMode(id as "feed" | "release-dates")} tabSize="sm">
+        <TabContainer tabs={tabs} activeTab={mode} onTabChange={(id) => setMode(id as "feed" | "release-dates")} tabSize="sm">
           {mode === "feed" ? <FeedTab allEntries={allEntries} /> : <ReleaseDatesTab releaseRows={releaseRows} />}
         </TabContainer>
       )}

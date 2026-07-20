@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation, type TranslationKey } from "../../shared/i18n/useTranslation";
-import { useSearchAllRankings } from "../../shared/hooks/useQueries";
+import { useSearchAllRankings } from "../../shared/hooks/useSearch";
 import { useSearchStore } from "../../shared/stores/searchStore";
 import { secondaryTextClass } from "../../shared/utils/cssConstants";
 import { cn } from "../../shared/utils/cn";
