@@ -9,8 +9,8 @@ import type { OpenRouterRankEntry, OpenRouterAppEntry } from "../../shared/types
 function trendClass(change?: number | null) {
   if (change == null || change === 0) return "bg-bg-tertiary text-text-secondary border-border";
   return change > 0
-    ? "bg-green-500/10 text-green-500 border-green-500/20"
-    : "bg-rose-500/10 text-rose-500 border-rose-500/20";
+    ? "bg-success/10 text-success border-success/20"
+    : "bg-destructive/10 text-destructive border-destructive/20";
 }
 
 const tokenColumn = <T extends { totalTokens?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({

@@ -36,7 +36,7 @@ export function getBestPrice(rows: PriceRow[], models: ArtificialAnalysisModel[]
 
 export const WinnerMark = React.memo(function WinnerMark() {
   return (
-    <span className={cn("inline-flex items-center gap-0.5", smallBoldClass, "text-green-500 ml-1")}>
+    <span className={cn("inline-flex items-center gap-0.5", smallBoldClass, "text-success ml-1")}>
       <TrendingUp size={10} />
     </span>
   );

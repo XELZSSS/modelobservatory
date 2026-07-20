@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
 import { Card, CardContent } from "../../shared/components/ui/card";
@@ -16,6 +16,7 @@ import { ComparePageLayout } from "./ComparePageLayout";
 
 export function PriceCompareView() {
   const { t } = useTranslation();
+  useEffect(() => { document.title = t("priceComparison"); }, [t]);
   const [chartRef, chartWidth] = useElementWidth();
 
   return (
@@ -87,8 +88,9 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
       </Card>
 
       {/* Price comparison chart */}
-      <Card className="p-4">
-        <div ref={chartRef} className="w-full h-[220px]">
+      <Card>
+        <CardContent className="p-4">
+          <div ref={chartRef} className="w-full h-[220px]">
           {chartWidth > 0 && (
             <BarChart width={chartWidth} height={220} data={chartData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -108,6 +110,7 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
             </BarChart>
           )}
         </div>
+        </CardContent>
       </Card>
 
       {/* Cost efficiency */}
@@ -126,12 +129,12 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
             <div className="flex items-center gap-2">
               <label className={cn(secondaryTextClass, "whitespace-nowrap")}>{t("monthlyPromptTokens")}</label>
-              <Input type="number" value={promptTokens} onChange={(e) => setPromptTokens(e.target.value)} className="w-20 h-7 text-xs" />
+              <Input type="number" value={promptTokens} onChange={(e) => setPromptTokens(e.target.value)} className="w-24 h-9 text-sm" />
               <span className={secondaryTextClass}>M</span>
             </div>
             <div className="flex items-center gap-2">
               <label className={cn(secondaryTextClass, "whitespace-nowrap")}>{t("monthlyCompletionTokens")}</label>
-              <Input type="number" value={completionTokens} onChange={(e) => setCompletionTokens(e.target.value)} className="w-20 h-7 text-xs" />
+              <Input type="number" value={completionTokens} onChange={(e) => setCompletionTokens(e.target.value)} className="w-24 h-9 text-sm" />
               <span className={secondaryTextClass}>M</span>
             </div>
           </div>

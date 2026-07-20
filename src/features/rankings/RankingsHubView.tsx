@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState, useEffect } from "react";
 
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import type { TranslationKey } from "../../shared/i18n";
@@ -79,6 +79,8 @@ function RankingsContent({ defaultTab }: { defaultTab: number }) {
 }
 
 export function RankingsHubView({ defaultTab = 0 }: RankingsHubProps) {
+  const { t } = useTranslation();
+  useEffect(() => { document.title = t("modelRankings"); }, [t]);
   return (
     <SuspenseQuery>
       <RankingsContent defaultTab={defaultTab} />

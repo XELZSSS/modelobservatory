@@ -25,25 +25,23 @@ export function TabContainer({ tabs, activeTab, className, tabSize = "md", onTab
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <div className="flex flex-wrap gap-2" role="tablist">
+      <div className="flex gap-2 overflow-x-auto" role="tablist">
         {tabs.map((tab) => (
           <TabButton
             key={tab.id}
             active={activeTab === tab.id}
             onClick={() => handleTabClick(tab.id)}
             size={tabSize}
-            aria-controls={`panel-${tab.id}`}
+            aria-controls={activeTab === tab.id ? `panel-${tab.id}` : undefined}
             id={`tab-${tab.id}`}
           >
             {tab.label}
           </TabButton>
         ))}
       </div>
-      {activeTab && (
-        <div role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
-          {content}
-        </div>
-      )}
+      <div role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`} className="animate-[fade-in_200ms_ease-out]">
+        {content}
+      </div>
     </div>
   );
 }

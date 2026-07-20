@@ -77,6 +77,7 @@ export const en = {
   monthlyPromptTokens: "Monthly Prompt Tokens",
   monthlyCompletionTokens: "Monthly Completion Tokens",
   estimatedMonthlyCost: "Estimated Monthly Cost",
+  notFoundTitle: "404",
   notFound: "Page not found",
   settings: "Settings",
   language: "Language",

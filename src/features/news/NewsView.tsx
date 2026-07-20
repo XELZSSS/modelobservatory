@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ExternalLink, Clock, Newspaper, Search } from "lucide-react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import type { TranslationKey } from "../../shared/i18n";
@@ -55,7 +55,7 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
   }
 
   return (
-    <div className="flex flex-col gap-[6px]">
+    <div className="flex flex-col gap-2">
       {currentNews.map((item) => (
         <a key={item.id} href={safeHref(item.link) ?? undefined} target="_blank" rel="noopener noreferrer" className="group block hover:border-text-primary" aria-label={`${item.title} - ${item.source}`}>
           <Card className="p-3" style={{ borderLeft: `3px solid ${color}` }}>
@@ -87,11 +87,12 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
 
 function NewsCategoryContent({ categoryId, color }: { categoryId: string; color: string }) {
   const result = useNewsByCategory(categoryId);
-  return <NewsList news={result.data || []} color={color} isLoading={result.isLoading} isError={result.isError} />;
+  return <NewsList key={categoryId} news={result.data || []} color={color} isLoading={result.isLoading} isError={result.isError} />;
 }
 
 export function NewsView() {
   const { t } = useTranslation();
+  useEffect(() => { document.title = t("aiNews"); }, [t]);
   const [activeCategory, setActiveCategory] = useState("official");
 
   const activeColor = CATEGORIES.find((c) => c.id === activeCategory)?.color ?? COOL_COLORS[0]!;

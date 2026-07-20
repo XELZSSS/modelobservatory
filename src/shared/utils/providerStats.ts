@@ -14,7 +14,7 @@ export function groupByProvider(models: ArtificialAnalysisModel[]): ProviderAggr
   const providers = new Map<string, ProviderAggregate>();
   for (const m of models) {
     const name = m.model_creators?.name || "Unknown";
-    const color = m.model_creators?.color || "#6b7280";
+    const color = m.model_creators?.color || "#78716c";
     let bucket = providers.get(name);
     if (!bucket) {
       bucket = { name, color, models: [] };

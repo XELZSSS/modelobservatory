@@ -35,7 +35,7 @@ export function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
       </InfoCard>
       <div className="flex flex-wrap gap-1.5">
         <Badge variant="outline">{model.variant || model.category}</Badge>
-        {model.isFree && <Badge variant="outline" className="text-green-500">Free</Badge>}
+        {model.isFree && <Badge variant="outline" className="text-success">Free</Badge>}
       </div>
     </DetailLayout>
   );

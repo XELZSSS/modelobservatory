@@ -25,7 +25,7 @@ export function OsDetailContent({ model }: { model: OpenSourceModelEntry }) {
           <InfoRow compact label={t("lastUpdated")} value={model.lastModified ? new Date(model.lastModified).toLocaleDateString() : t("notAvailable")} />
         </InfoCard>
         <InfoCard title={t("repository")}>
-          <a href={`https://huggingface.co/${model.id.replace(/^\//, "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline break-all">
+          <a href={`https://huggingface.co/${model.id.replace(/^\//, "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-info hover:underline break-all">
             {model.id}
           </a>
         </InfoCard>

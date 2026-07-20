@@ -77,6 +77,7 @@ export const zh = {
   monthlyPromptTokens: "月输入 Token 数",
   monthlyCompletionTokens: "月输出 Token 数",
   estimatedMonthlyCost: "预估月成本",
+  notFoundTitle: "404",
   notFound: "页面未找到",
   settings: "设置",
   language: "语言",

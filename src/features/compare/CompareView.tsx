@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useEffect } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, Tooltip } from "recharts";
 import { Card, CardContent } from "../../shared/components/ui/card";
@@ -38,12 +38,12 @@ const MetricValueDisplay = memo(function MetricValueDisplay({
   iconSize?: number;
   className?: string;
 }) {
-  const winnerColor = winner === "win" ? "#10b981" : winner === "loss" ? "var(--destructive)" : undefined;
+  const winnerColor = winner === "win" ? "var(--success)" : winner === "loss" ? "var(--destructive)" : undefined;
 
   return (
     <span className={cn(numberTextClass, winner === "win" && "font-bold", className)} style={winnerColor ? { color: winnerColor } : undefined}>
       {value}
-      {winner === "win" && <TrendingUp size={iconSize} className="inline ml-1" style={{ color: "#10b981" }} />}
+      {winner === "win" && <TrendingUp size={iconSize} className="inline ml-1" style={{ color: "var(--success)" }} />}
       {winner === "loss" && <TrendingDown size={iconSize} className="inline ml-1" style={{ color: "var(--destructive)" }} />}
     </span>
   );
@@ -129,6 +129,7 @@ const MetricTable = memo(function MetricTable({ metrics, models }: { metrics: Co
 
 export function CompareView() {
   const { t } = useTranslation();
+  useEffect(() => { document.title = t("modelComparison"); }, [t]);
   const [radarRef, radarWidth] = useElementWidth();
   const radarSize = Math.max(100, Math.min(radarWidth - 16, 500));
 

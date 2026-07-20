@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { CheckCircle, XCircle, Clock, Zap } from "lucide-react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
@@ -10,7 +11,7 @@ function HealthStatusBadge({ status, label }: { status: HealthEntry["status"]; l
   const { t } = useTranslation();
   const text = label ?? (status === "ok" ? t("statusOk") : t("statusError"));
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${status === "ok" ? "text-green-500" : "text-destructive"}`}>
+    <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${status === "ok" ? "text-success" : "text-destructive"}`}>
       {status === "ok" ? <CheckCircle size={12} /> : <XCircle size={12} />}
       {text}
     </span>
@@ -22,11 +23,11 @@ function DataSourceCard({ entry }: { entry: HealthEntry }) {
   const ok = entry.status === "ok";
 
   return (
-    <Card style={ok ? undefined : { borderColor: "rgba(252,83,58,0.4)", backgroundColor: "rgba(252,83,58,0.05)" }}>
+    <Card className={ok ? "" : "border-destructive/40 bg-destructive/5"}>
       <CardContent className="p-3">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-bold truncate">{entry.name}</p>
-          {ok ? <CheckCircle size={14} className="shrink-0 text-green-500" /> : <XCircle size={14} className="shrink-0 text-destructive" />}
+          {ok ? <CheckCircle size={14} className="shrink-0 text-success" /> : <XCircle size={14} className="shrink-0 text-destructive" />}
         </div>
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2 text-xs text-text-secondary">
@@ -87,6 +88,8 @@ function StatusContent() {
 }
 
 export function StatusView() {
+  const { t } = useTranslation();
+  useEffect(() => { document.title = t("systemStatus"); }, [t]);
   return (
     <SuspenseQuery>
       <StatusContent />

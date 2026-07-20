@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
@@ -21,8 +21,8 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
   const feedColumns = useMemo<DataTableColumn<FeedEntry>[]>(() => {
     const getTypeMeta = (type: FeedEntry["type"]) => {
       switch (type) {
-        case "update": return { label: t("releaseUpdate"), color: "text-blue-600 dark:text-blue-400" };
-        case "opensource": return { label: t("releaseOpenSource"), color: "text-amber-600 dark:text-amber-400" };
+        case "update": return { label: t("releaseUpdate"), color: "text-info" };
+        case "opensource": return { label: t("releaseOpenSource"), color: "text-warning" };
         default: return { label: type, color: "text-text-secondary" };
       }
     };
@@ -109,6 +109,8 @@ function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "r
 }
 
 export function ReleasesView({ defaultMode, lockedMode = false }: { defaultMode?: "feed" | "release-dates"; lockedMode?: boolean }) {
+  const { t } = useTranslation();
+  useEffect(() => { document.title = t("releases"); }, [t]);
   return (
     <SuspenseQuery>
       <ReleasesContent defaultMode={defaultMode || "feed"} lockedMode={lockedMode} />

@@ -14,6 +14,9 @@
   --color-primary: var(--primary);
   --color-accent: var(--accent);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-nav-bg: var(--nav-bg);
 
   --font-sans: "Source Han Sans CN", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
@@ -21,37 +24,43 @@
 }
 
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f2f2f4;
-  --bg-tertiary: #e4e4e8;
-  --bg-card: #fafafc;
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-tertiary: #8a8a8a;
+  --bg-primary: #fcfcfd;
+  --bg-secondary: #f4f4f5;
+  --bg-tertiary: #e4e4e7;
+  --bg-card: #ffffff;
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-tertiary: #a1a1aa;
   --border: rgba(0, 0, 0, 0.07);
-  --hover: rgba(142, 139, 139, 0.08);
-  --selected: rgba(142, 139, 139, 0.12);
-  --primary: #1a1a1a;
-  --accent: #1a1a1a;
-  --destructive: #fc533a;
-  --nav-bg: rgba(255, 255, 255, 0.82);
+  --hover: rgba(0, 0, 0, 0.05);
+  --selected: rgba(0, 0, 0, 0.08);
+  --primary: #18181b;
+  --accent: #6366f1;
+  --destructive: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --info: #0ea5e9;
+  --nav-bg: #ffffff;
 }
 
 .dark {
   --bg-primary: #09090b;
-  --bg-secondary: #111114;
+  --bg-secondary: #141417;
   --bg-tertiary: #1e1e22;
-  --bg-card: #141417;
-  --text-primary: #ededed;
-  --text-secondary: #b0b0b0;
-  --text-tertiary: #808080;
+  --bg-card: #18181b;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
   --border: rgba(255, 255, 255, 0.07);
-  --hover: rgba(255, 255, 255, 0.06);
-  --selected: rgba(255, 255, 255, 0.1);
-  --primary: #ededed;
-  --accent: #ededed;
-  --destructive: #fc533a;
-  --nav-bg: rgba(9, 9, 11, 0.82);
+  --hover: rgba(255, 255, 255, 0.05);
+  --selected: rgba(255, 255, 255, 0.08);
+  --primary: #fafafa;
+  --accent: #818cf8;
+  --destructive: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --info: #38bdf8;
+  --nav-bg: #18181b;
 }
 
 html,
@@ -154,13 +163,9 @@ table {
   fill: transparent !important;
 }
 
-@keyframes bar-grow {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

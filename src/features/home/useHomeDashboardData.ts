@@ -43,7 +43,7 @@ export function useHomeDashboardData(
     const ttsData = dashboardData.tts ?? [];
     const bestTtsModel = ttsData[0] ?? null;
 
-    const downloadStats: HomeBarStat[] = openSourceRankings.slice(0, 5).map((model) => ({
+    const downloadStats: HomeBarStat[] = openSourceRankings.slice(0, 7).map((model) => ({
       label: model.id.split("/").pop() || model.id,
       value: model.downloads,
       valueLabel: formatShortNumber(model.downloads),
@@ -52,7 +52,7 @@ export function useHomeDashboardData(
     const hallucinationStats: HomeBarStat[] = hallucinationRankings
       .slice()
       .sort((a, b) => b.accuracy - a.accuracy)
-      .slice(0, 5)
+      .slice(0, 7)
       .map((entry) => ({
         label: entry.model,
         value: entry.accuracy,
@@ -75,7 +75,7 @@ export function useHomeDashboardData(
     } else {
       const topRows = [...openRouterApps]
         .sort((a, b) => b.totalTokens - a.totalTokens)
-        .slice(0, 4)
+        .slice(0, 5)
         .map((app) => ({ name: app.name, value: app.totalTokens, share: app.totalTokens / total }));
       const topTotal = topRows.reduce((sum, row) => sum + row.value, 0);
       const otherValue = total - topTotal;

@@ -1,4 +1,4 @@
-import { memo, useMemo, useState, useEffect, Fragment, type ReactNode } from "react";
+import { memo, useMemo, useState, useEffect, type ReactNode } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useSuspenseArtificialRankings, useSuspenseHomeDashboard, useHallucinationRankings, useSuspenseHealthStatus, useSystemStats } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
@@ -65,47 +65,12 @@ function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ nam
   const { t, lang } = useTranslation();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const center = hoveredIndex != null ? rows[hoveredIndex] : null;
-  return <div className="flex flex-col gap-2"><div className="flex flex-col gap-[1px]"><p className="text-sm font-bold">{t("toolUsageShare")}</p><p className={secondaryTextClass}>{t("openRouterSource")}</p></div>{rows.length === 0 ? (<p className={textSecondaryClass}>{t("notAvailable")}</p>) : (<div className="flex flex-col md:flex-row gap-4 items-center"><div className="relative size-40 shrink-0"><ResponsiveContainer width={160} height={160}><PieChart onMouseLeave={() => setHoveredIndex(null)} aria-label={t("toolUsageShare")}><Pie data={rows} dataKey="value" nameKey="name" innerRadius={40} outerRadius={72} paddingAngle={0} stroke="var(--bg-secondary)" strokeWidth={1} isAnimationActive={false}>{rows.map((row, index) => <Cell key={row.name} fill={getModelColor(index)} onMouseEnter={() => setHoveredIndex(index)} onClick={() => setHoveredIndex(hoveredIndex === index ? null : index)} />)}</Pie></PieChart></ResponsiveContainer><div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">{center ? (<><span className={cn("text-sm font-bold leading-none text-center", numberTextClass)}>{center.name}</span><span className={cn("text-base font-bold leading-none mt-1.5", numberTextClass)}>{formatShortNumber(center.value)}</span><span className={cn(textSecondaryClass, "leading-none mt-0.5")}>{(center.share * 100).toFixed(1)}%</span></>) : (<><span className={cn("text-base font-bold leading-none", numberTextClass)}>{formatShortNumber(total)}</span><span className={cn(textSecondaryClass, "leading-none mt-0.5")}>{t("tokens")}</span></>)}</div></div><div className="hidden md:flex flex-col gap-2 min-w-0 flex-1">{rows.map((row, index) => {const percent = row.share.toLocaleString(lang === "zh" ? "zh-CN" : "en-US", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 });return <div key={row.name} className="grid grid-cols-[12px_1fr_auto] gap-2 items-center min-w-0"><span className="size-3 rounded-full shrink-0" style={{ backgroundColor: getModelColor(index) }} /><span className="text-sm truncate text-text-primary">{row.name}</span><span className={cn("text-sm font-bold text-right", numberTextClass)}>{percent}</span></div>;})}</div></div>)}</div>;
+  return <div className="flex flex-col gap-2"><div className="flex flex-col gap-[1px]"><p className="text-sm font-bold">{t("toolUsageShare")}</p><p className={secondaryTextClass}>{t("openRouterSource")}</p></div>{rows.length === 0 ? (<p className={textSecondaryClass}>{t("notAvailable")}</p>) : (<div className="flex flex-col md:flex-row gap-4 items-center"><div className="relative w-full max-w-[240px] aspect-square shrink-0"><ResponsiveContainer width="100%" height="100%"><PieChart onMouseLeave={() => setHoveredIndex(null)} aria-label={t("toolUsageShare")}><Pie data={rows} dataKey="value" nameKey="name" innerRadius={40} outerRadius={72} paddingAngle={0} stroke="var(--bg-secondary)" strokeWidth={1} isAnimationActive={false}>{rows.map((row, index) => <Cell key={row.name} fill={getModelColor(index)} onMouseEnter={() => setHoveredIndex(index)} onClick={() => setHoveredIndex(hoveredIndex === index ? null : index)} />)}</Pie></PieChart></ResponsiveContainer><div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">{center ? (<><span className={cn("text-sm font-bold leading-none text-center", numberTextClass)}>{center.name}</span><span className={cn("text-base font-bold leading-none mt-1.5", numberTextClass)}>{formatShortNumber(center.value)}</span><span className={cn(textSecondaryClass, "leading-none mt-0.5")}>{(center.share * 100).toFixed(1)}%</span></>) : (<><span className={cn("text-base font-bold leading-none", numberTextClass)}>{formatShortNumber(total)}</span><span className={cn(textSecondaryClass, "leading-none mt-0.5")}>{t("tokens")}</span></>)}</div></div><div className="hidden md:flex flex-col gap-2 min-w-0 flex-1">{rows.map((row, index) => {const percent = row.share.toLocaleString(lang === "zh" ? "zh-CN" : "en-US", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 });return <div key={row.name} className="grid grid-cols-[12px_1fr_auto] gap-2 items-center min-w-0"><span className="size-3 rounded-full shrink-0" style={{ backgroundColor: getModelColor(index) }} /><span className="text-sm truncate text-text-primary">{row.name}</span><span className={cn("text-sm font-bold text-right", numberTextClass)}>{percent}</span></div>;})}</div></div>)}</div>;
 }
 
 function RankedStatCard({ title, source, rows }: { title: string; source: string; rows: HomeBarStat[] }) {
   const { t } = useTranslation();
   return <Card><CardContent><div className="flex flex-col gap-0.5 mb-2"><p className="text-sm font-bold">{title}</p><p className={secondaryTextClass}>{source}</p></div>{rows.length === 0 ? <p className={textSecondaryClass}>{t("notAvailable")}</p> : <div className="flex flex-col gap-2">{rows.map((row, i) => <div key={`${row.label}-${i}`} className="flex items-center gap-3 h-[26px]"><span className="text-xs font-bold w-5 text-center shrink-0" style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>{i + 1}</span><span className="text-sm truncate min-w-0 flex-1">{row.label}</span><span className={cn("text-sm font-bold shrink-0", numberTextClass)}>{row.valueLabel}</span></div>)}</div>}</CardContent></Card>;
-}
-
-function BarStatsCard({ title, source, rows }: { title: string; source: string; rows: HomeBarStat[] }) {
-  const maxValue = Math.max(...rows.map((row) => row.value), 0);
-  const { t } = useTranslation();
-  if (rows.length === 0) {
-    return <Card><CardContent><div className="flex flex-col gap-0.5 mb-2"><p className="text-sm font-bold">{title}</p><p className={secondaryTextClass}>{source}</p></div><p className={textSecondaryClass}>{t("notAvailable")}</p></CardContent></Card>;
-  }
-  return (
-    <Card>
-      <CardContent>
-        <div className="flex flex-col gap-0.5 mb-2">
-          <p className="text-sm font-bold">{title}</p>
-          <p className={secondaryTextClass}>{source}</p>
-        </div>
-        {rows.map((row, index) => {
-          const width = maxValue > 0 ? Math.max(4, (row.value / maxValue) * 100) : 0;
-          const base = COOL_COLORS[index % COOL_COLORS.length]!;
-          return (
-            <Fragment key={`${row.label}-${index}`}>
-              <div className="h-[26px] flex flex-col justify-between">
-                <div className="grid grid-cols-[1fr_auto] gap-2 items-center">
-                  <p className="text-sm truncate">{row.label}</p>
-                  <p className={cn("text-sm font-bold text-right", numberTextClass)}>{row.valueLabel}</p>
-                </div>
-                <div className="h-1 bg-bg-tertiary overflow-hidden rounded-full" role="progressbar" aria-valuenow={row.value} aria-valuemin={0} aria-valuemax={maxValue} aria-label={`${row.label}: ${row.valueLabel}`}>
-                  <div className="h-full rounded-full" style={{ width: `${width}%`, backgroundColor: base, transformOrigin: "left", animation: "bar-grow 250ms cubic-bezier(0.4, 0, 0.2, 1) both" }} />
-                </div>
-              </div>
-            </Fragment>
-          );
-        })}
-      </CardContent>
-    </Card>
-  );
 }
 
 function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }) {
@@ -118,7 +83,7 @@ function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }) {
 
 function StatisticsSection({ downloadStats, hallucinationStats, toolUsageShare }: { downloadStats: HomeBarStat[]; hallucinationStats: HomeBarStat[]; toolUsageShare: HomeToolUsage }) {
   const { t } = useTranslation();
-  return <><SectionHeader title={t("statistics")} /><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><RankedStatCard title={t("openSourceDownloadsStats")} source={t("huggingFaceSource")} rows={downloadStats} /><BarStatsCard title={t("hallucinationStats")} source={t("hallucinationSource")} rows={hallucinationStats} /><Card className="hidden md:block"><CardContent><ToolUsageShareDonut total={toolUsageShare.total} rows={toolUsageShare.rows} /></CardContent></Card></div></>;
+  return <><SectionHeader title={t("statistics")} /><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><RankedStatCard title={t("openSourceDownloadsStats")} source={t("huggingFaceSource")} rows={downloadStats} /><RankedStatCard title={t("hallucinationStats")} source={t("hallucinationSource")} rows={hallucinationStats} /><Card className="hidden sm:block"><CardContent><ToolUsageShareDonut total={toolUsageShare.total} rows={toolUsageShare.rows} /></CardContent></Card></div></>;
 }
 
 function HomeContent() {
@@ -141,7 +106,7 @@ function HomeContent() {
         <ClockDisplay />
         <UptimeDisplay />
         <StatusBarPill>
-          <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${healthyCount === totalCount ? "bg-green-500" : "bg-red-500"}`} />
+          <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${healthyCount === totalCount ? "bg-success" : "bg-destructive"}`} />
           {t("dataSources")}: {healthyCount}/{totalCount}
         </StatusBarPill>
         <SearchInput />
@@ -169,6 +134,8 @@ function HomeContent() {
 }
 
 export function HomeView() {
+  const { t } = useTranslation();
+  useEffect(() => { document.title = "Model Observatory"; }, []);
   return (
     <SuspenseQuery>
       <HomeContent />

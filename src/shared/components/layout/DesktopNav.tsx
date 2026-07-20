@@ -9,7 +9,7 @@ export function DesktopNav({ onSettingsOpen }: { onSettingsOpen: () => void }) {
   const { t } = useTranslation();
 
   return (
-    <nav className="hidden md:flex fixed bottom-4 left-0 right-0 mx-auto w-fit z-50 items-center gap-1 px-2 py-1.5 bg-nav-bg backdrop-blur-xl border border-border rounded-md">
+    <nav className="hidden md:flex fixed bottom-4 left-0 right-0 mx-auto w-fit z-50 items-center gap-1 px-2 py-1.5 bg-nav-bg border border-border rounded-md">
       {all.map((item) => (
         <button
           type="button"
