@@ -4,7 +4,7 @@ import { Button } from "../../shared/components/ui/button";
 import { BackButton } from "../../shared/components/composite/BackButton";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
-import { secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
+
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useCompareStore } from "../../shared/stores/compareStore";
 import { useArtificialRankings } from "../../shared/hooks/useApiQuery";
@@ -39,7 +39,7 @@ export function ComparePageLayout({ backLabelKey, backTo, backState, title, chil
   if (models.length < 2) {
     return (
       <div className="flex flex-col gap-4 items-center py-8">
-        <p className={textSecondaryClass}>{t("compareNeedsTwo")}</p>
+        <p className="text-sm text-text-secondary">{t("compareNeedsTwo")}</p>
         <Button size="sm" variant="outline" onClick={() => navigate(backTo)}>
           {t("backToList")}
         </Button>
@@ -51,7 +51,7 @@ export function ComparePageLayout({ backLabelKey, backTo, backState, title, chil
     <div className="flex flex-col gap-4 min-w-0">
       <BackButton labelKey={backLabelKey} to={backTo} state={backState} />
       <SectionHeader title={title} />
-      <p className={secondaryTextClass}>{t("artificialSource")}</p>
+      <p className="text-xs text-text-secondary">{t("artificialSource")}</p>
       <CompareChipBar
         models={models}
         onRemove={removeCompareModel}

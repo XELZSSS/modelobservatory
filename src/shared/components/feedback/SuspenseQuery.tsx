@@ -2,7 +2,7 @@ import { Suspense, Component, Fragment, type ReactNode, type ErrorInfo } from "r
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "../../i18n/useTranslation";
 import { Button } from "../ui/button";
-import { secondaryTextClass } from "../../utils/cssConstants";
+
 
 interface ErrorBoundaryProps { fallback?: ReactNode; errorTitle?: string; retryLabel?: string; children: ReactNode; }
 interface ErrorBoundaryState { hasError: boolean; error: Error | null; resetKey: number; }
@@ -20,7 +20,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       return this.props.fallback ?? (
         <div className="flex flex-col items-center justify-center min-h-[200px] gap-2 p-4">
           <p className="text-sm font-bold text-destructive">{title}</p>
-          <p className={secondaryTextClass}>{this.state.error?.message}</p>
+          <p className="text-xs text-text-secondary">{this.state.error?.message}</p>
           <Button variant="link" size="sm" onClick={this.handleRetry}>{retry}</Button>
         </div>
       );

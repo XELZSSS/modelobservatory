@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation, type TranslationKey } from "../../shared/i18n/useTranslation";
 import { useSearchAllRankings } from "../../shared/hooks/useSearch";
 import { useSearchStore } from "../../shared/stores/searchStore";
-import { secondaryTextClass } from "../../shared/utils/cssConstants";
+
 import { cn } from "../../shared/utils/cn";
 
 export function SearchInput() {
@@ -37,7 +37,7 @@ export function SearchInput() {
   return (
     <div ref={containerRef} className="relative w-48 sm:w-56">
       <div className="flex items-center gap-1 border border-border rounded-md bg-bg-primary px-1.5 py-[3px]">
-        <Search size={14} className={secondaryTextClass} />
+        <Search size={14} className="text-xs text-text-secondary" />
         <input
           ref={inputRef}
           type="text"
@@ -61,7 +61,7 @@ export function SearchInput() {
               setIsOpen(false);
             }}
           >
-            <X size={14} className={secondaryTextClass} />
+            <X size={14} className="text-xs text-text-secondary" />
           </button>
         )}
       </div>
@@ -85,9 +85,9 @@ export function SearchInput() {
                   )}
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className={cn("text-xs", secondaryTextClass)}>{t(result.source as TranslationKey)}</span>
+                  <span className={cn("text-xs", "text-xs text-text-secondary")}>{t(result.source as TranslationKey)}</span>
                   {result.provider && (
-                    <span className={cn("text-xs", secondaryTextClass)}>{result.provider}</span>
+                    <span className={cn("text-xs", "text-xs text-text-secondary")}>{result.provider}</span>
                   )}
                 </div>
               </button>

@@ -31,9 +31,6 @@ export default defineConfig(() => ({
           if (id.includes("node_modules/recharts/")) {
             return "charts";
           }
-          if (id.includes("node_modules/d3-") || id.includes("node_modules/victory-vendor/")) {
-            return "charts-deps";
-          }
           if (id.includes("node_modules/@tanstack/react-query/")) {
             return "query";
           }

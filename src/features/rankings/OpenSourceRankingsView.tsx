@@ -9,11 +9,20 @@ const getRowId = (model: OpenSourceModelEntry) => model.id;
 const getSearchFields = (model: OpenSourceModelEntry) => [model.id];
 
 function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<RankedRow<OpenSourceModelEntry>>[] {
+  const tagClass = "inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary";
   return [
     {
       id: "model",
       header: t("modelNameOrId"),
-      cell: (row) => <RankingNameCell name={row.item.id.split("/").pop() || row.item.id} />,
+      cell: (row) => (
+        <>
+          <RankingNameCell name={row.item.id.split("/").pop() || row.item.id} />
+          <div className="flex flex-wrap gap-1 mt-1 md:hidden">
+            <span className={tagClass}>{t("likes")}: {formatShortNumber(row.item.likes)}</span>
+            {row.item.license && <span className={tagClass}>{row.item.license}</span>}
+          </div>
+        </>
+      ),
     },
     {
       id: "downloads",

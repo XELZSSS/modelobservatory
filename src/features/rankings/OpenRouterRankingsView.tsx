@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ShieldAlert } from "lucide-react";
 import { DataTable } from "../../shared/components/data/DataTable";
-import { secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
+
 import { cn } from "../../shared/utils/cn";
 import { StatCard } from "../../shared/components/composite/StatCard";
 import { Card } from "../../shared/components/ui/card";
@@ -24,9 +24,9 @@ function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
       </div>
       <div className="flex flex-col gap-1.5 p-3 rounded-md bg-bg-secondary">
         <p className="text-xs font-bold text-text-primary">{t("techSelectionAdvice")}</p>
-        <p className={cn(secondaryTextClass, "leading-relaxed")}>{getRecommendation(item.id, t)}</p>
+        <p className={cn("text-xs text-text-secondary", "leading-relaxed")}>{getRecommendation(item.id, t)}</p>
       </div>
-      <div className={cn("flex flex-row justify-between items-center", secondaryTextClass)}>
+      <div className={cn("flex flex-row justify-between items-center", "text-xs text-text-secondary")}>
         <span>{t("apiModelId")}: <code className="font-mono bg-bg-secondary px-1">{item.id}</code></span>
         <span>{t("todayCategory")}: <span className="font-bold uppercase">{categoryLabel(item.category, t)}</span></span>
       </div>
@@ -43,8 +43,8 @@ function AppExpandedDetail({ item }: { item: OpenRouterAppEntry }) {
         <StatCard label={t("requests")} value={formatShortNumber(item.requestCount)} />
         <StatCard label={t("category")} value={item.categories?.length ? item.categories.join(", ") : t("notAvailable")} />
       </div>
-      {item.description && <p className={cn(secondaryTextClass, "leading-relaxed p-2 rounded-md bg-bg-secondary")}>{item.description}</p>}
-      <div className={cn("flex flex-row justify-between items-center", secondaryTextClass)}>
+      {item.description && <p className={cn("text-xs text-text-secondary", "leading-relaxed p-2 rounded-md bg-bg-secondary")}>{item.description}</p>}
+      <div className={cn("flex flex-row justify-between items-center", "text-xs text-text-secondary")}>
         <span>ID: <code className="font-mono bg-bg-secondary px-1">{item.id}</code></span>
         {item.url && <span className="truncate max-w-[60%]">{item.url}</span>}
       </div>
@@ -62,15 +62,15 @@ export function OpenRouterRankingsView({ data }: { data?: OpenRouterRankingsPayl
     return (
       <Card className="text-center border-dashed p-4">
         <ShieldAlert className="size-10 mx-auto text-text-secondary mb-2" />
-        <p className={textSecondaryClass}>{t("noRankingsData")}</p>
+        <p className="text-sm text-text-secondary">{t("noRankingsData")}</p>
       </Card>
     );
   }
 
   return (
     <ViewLayout>
-      <p className={secondaryTextClass}>{t("openRouterSource")}</p>
-      <div className="flex flex-col gap-2">
+      <p className="text-xs text-text-secondary">{t("openRouterSource")}</p>
+      <div className="flex flex-col gap-3">
         <DataTable
           data={data.tokenUsageRankings ?? []}
           columns={modelColumns}
@@ -80,7 +80,7 @@ export function OpenRouterRankingsView({ data }: { data?: OpenRouterRankingsPayl
           renderExpandedRow={(item) => <ModelExpandedDetail item={item} />}
         />
       </div>
-      <div className="flex flex-col gap-2 mt-5">
+      <div className="flex flex-col gap-3">
         <h3 className="text-sm font-bold text-text-primary">{t("openRouterApps")}</h3>
         <DataTable
           data={data.appUsageRankings ?? []}

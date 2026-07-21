@@ -3,7 +3,7 @@ import { useTranslation } from "../../i18n/useTranslation";
 import { useFilteredData } from "../../hooks/useFilteredData";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { ViewLayout } from "../composite/ViewLayout";
-import { secondaryTextClass, textSecondaryClass } from "../../utils/cssConstants";
+
 import { cn } from "../../utils/cn";
 import type { TranslationKey } from "../../i18n";
 
@@ -54,10 +54,10 @@ export function RankingTable<T>({
 
   return (
     <ViewLayout>
-      <p className={secondaryTextClass}>{t(sourceKey)}</p>
+      <p className="text-xs text-text-secondary">{t(sourceKey)}</p>
       {extraHeader}
       {rows.length === 0 ? (
-        <p className={cn(textSecondaryClass, "py-8 text-center")}>{t(emptyMessageKey ?? "noResults")}</p>
+        <p className={cn("text-sm text-text-secondary", "py-8 text-center")}>{t(emptyMessageKey ?? "noResults")}</p>
       ) : (
         <DataTable data={rows} columns={tableColumns} getRowId={(row) => getRowId(row.item)} />
       )}

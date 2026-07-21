@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
 @import "tailwindcss";
 
 @theme {
@@ -19,8 +21,8 @@
   --color-info: var(--info);
   --color-nav-bg: var(--nav-bg);
 
-  --font-sans: "Source Han Sans CN", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
-  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, "Courier New", monospace;
+  --font-sans: "Inter", "Source Han Sans CN", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, "Courier New", monospace;
 }
 
 :root {
@@ -77,6 +79,9 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-variant-numeric: tabular-nums;
@@ -138,6 +143,19 @@ pre {
 
 table {
   max-width: 100%;
+}
+
+p, li, th, td {
+  overflow-wrap: break-word;
+}
+
+th, td {
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.4;
+  letter-spacing: 0.005em;
 }
 
 .recharts-wrapper,

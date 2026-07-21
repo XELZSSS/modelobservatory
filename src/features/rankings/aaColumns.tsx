@@ -1,12 +1,13 @@
+import { type ReactNode } from "react";
 import { Plus, Check } from "lucide-react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { Badge } from "../../shared/components/ui/badge";
 import { Button } from "../../shared/components/ui/button";
 import { ModelDetailContent } from "../../shared/components/composite/ModelDetailContent";
-import { ellipsisTextClasses, modelCellClass } from "../../shared/utils/cssConstants";
+
 import { cn } from "../../shared/utils/cn";
 import { formatContext, formatScore, formatDollar } from "../../shared/utils/format";
-import { calcModelCost } from "../../shared/utils/costCalc";
+import { calcModelCost } from "../../shared/utils/math";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { TFunction } from "../../shared/i18n";
 import { useTranslation } from "../../shared/i18n/useTranslation";
@@ -27,6 +28,10 @@ export function ModelExpandedDetail({ model }: { model: ArtificialAnalysisModel 
   );
 }
 
+function MobileTag({ children }: { children: ReactNode }) {
+  return <span className="inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary">{children}</span>;
+}
+
 function RankingModelCell({
   model,
   isCompared,
@@ -44,7 +49,7 @@ function RankingModelCell({
   ];
   return (
     <>
-      <div className={modelCellClass}>
+      <div className="flex items-center gap-2 min-w-0">
         <p className="text-sm font-bold break-words min-w-0">{model.name}</p>
         {model.intelligence_index_is_estimated && (
           <Badge variant="outline" className="shrink-0">
@@ -60,6 +65,10 @@ function RankingModelCell({
             <span className="text-xs font-semibold truncate">{value}</span>
           </div>
         ))}
+      </div>
+      <div className="flex flex-wrap gap-1 mt-1 md:hidden">
+        {model.model_creators?.name && <MobileTag>{model.model_creators.name}</MobileTag>}
+        <MobileTag>{t("contextWindow")}: {formatContext(t, model)}</MobileTag>
       </div>
     </>
   );
@@ -113,7 +122,7 @@ export function buildRankingColumns(
       accessorFn: (row) => row.model_creators?.name || null,
       hiddenMd: true,
       align: "right",
-      cell: (model) => <p className={cn("text-sm", ellipsisTextClasses, "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
+      cell: (model) => <p className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
     },
     scoreColumn("intelligence", t("intelligenceIndex"), (m) => m.intelligence_index, t),
     scoreColumn("coding", t("coding"), (m) => m.coding_index, t),
@@ -145,10 +154,17 @@ export function buildPricingColumns(
       cell: (model) => {
         const { isCompared } = getModelState(model);
         return (
-          <div className="flex items-center gap-1 min-w-0">
-            <p className="text-sm break-words min-w-0">{model.name || model.slug}</p>
-         <CompareButton isCompared={isCompared} onToggle={() => toggleCompareModel(model)} />
-          </div>
+          <>
+            <div className="flex items-center gap-1 min-w-0">
+              <p className="text-sm break-words min-w-0">{model.name || model.slug}</p>
+            <CompareButton isCompared={isCompared} onToggle={() => toggleCompareModel(model)} />
+            </div>
+            <div className="flex flex-wrap gap-1 mt-1 md:hidden">
+              {model.model_creators?.name && <MobileTag>{model.model_creators.name}</MobileTag>}
+              {model.pricing?.cache_hit != null && <MobileTag>{t("cacheHitPrice")}: {formatDollar(model.pricing.cache_hit, t)}</MobileTag>}
+              <MobileTag>{t("monthlyCost")}: {formatDollar(calcModelCost(model, calcPrompt, calcCompletion), t)}</MobileTag>
+            </div>
+          </>
         );
       },
     },
@@ -159,7 +175,7 @@ export function buildPricingColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (model) => <p className={cn("text-sm", ellipsisTextClasses, "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
+      cell: (model) => <p className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
     },
     {
       id: "context",

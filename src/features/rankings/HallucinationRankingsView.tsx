@@ -16,11 +16,21 @@ const getRowId = (entry: HallucinationRankingEntry) => entry.id || entry.slug ||
 const getSearchFields = (entry: HallucinationRankingEntry) => [entry.model];
 
 function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<RankedRow<HallucinationRankingEntry>>[] {
+  const tagClass = "inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary";
   return [
     {
       id: "model",
       header: t("modelNameOrId"),
-      cell: (row) => <RankingNameCell name={row.item.model} />,
+      cell: (row) => (
+        <>
+          <RankingNameCell name={row.item.model} />
+          <div className="flex flex-wrap gap-1 mt-1 md:hidden">
+            <span className={tagClass}>{t("accuracy")}: {fmtRate(row.item.accuracy)}</span>
+            <span className={tagClass}>{t("attemptRate")}: {fmtRate(row.item.attemptRate)}</span>
+            <span className={tagClass}>{t("omniscienceIndex")}: {fmtScore(row.item.omniscienceIndex)}</span>
+          </div>
+        </>
+      ),
     },
     {
       id: "hallucinationRate",

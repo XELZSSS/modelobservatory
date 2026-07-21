@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { ellipsisTextClasses, secondaryTextClass, textSecondaryClass } from "../../shared/utils/cssConstants";
+
 import { cn } from "../../shared/utils/cn";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
@@ -62,7 +62,7 @@ function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {
     () => [
       { id: "model", header: t("modelNameOrId"), cell: (row) => <span className="text-sm font-bold break-words min-w-0">{row.model.name}</span> },
       { id: "creator", header: t("creator"), sortable: true, align: "right", width: "24%", hiddenMd: true,
-        cell: (row) => <span className={cn("text-sm", ellipsisTextClasses, "text-right")}>{row.model.model_creators?.name || t("notAvailable")}</span>,
+        cell: (row) => <span className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{row.model.model_creators?.name || t("notAvailable")}</span>,
       },
       { id: "releaseDate", header: t("releaseDate"), accessorFn: (r) => r.time, sortable: true, align: "right", width: "18%",
         cell: (row) => new Date(row.time).toLocaleDateString(),
@@ -94,9 +94,9 @@ function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "r
   return (
     <ViewLayout>
       <div className="flex items-center justify-between mb-1">
-        <p className={textSecondaryClass}>{mode === "feed" ? t("events", { count: allEntries.length }) : t("modelsTotal", { count: releaseRows.length })}</p>
+        <p className="text-sm text-text-secondary">{mode === "feed" ? t("events", { count: allEntries.length }) : t("modelsTotal", { count: releaseRows.length })}</p>
       </div>
-      <p className={secondaryTextClass}>{mode === "feed" ? t("releaseDataSource") : t("artificialSource")}</p>
+      <p className="text-xs text-text-secondary">{mode === "feed" ? t("releaseDataSource") : t("artificialSource")}</p>
       {lockedMode ? (
         <ReleaseDatesTab releaseRows={releaseRows} />
       ) : (

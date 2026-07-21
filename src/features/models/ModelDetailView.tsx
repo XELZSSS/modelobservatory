@@ -5,7 +5,7 @@ import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 import { NotFound } from "../system/NotFound";
-import { secondaryTextClass } from "../../shared/utils/cssConstants";
+
 import { MODEL_SOURCES, type ModelSource } from "../../shared/config";
 import { useParams } from "react-router-dom";
 import { useModelLookup } from "../../shared/hooks/useModelLookup";
@@ -67,7 +67,7 @@ function ModelDetailContentInner() {
     <ViewLayout>
       <BackButton labelKey={config.backLabelKey} to={config.backTo} />
       <SectionHeader title={decodedId.split("/").pop() || decodedId} />
-      <p className={secondaryTextClass}>{sourceLabel}</p>
+      <p className="text-xs text-text-secondary">{sourceLabel}</p>
       <SourceComponent decodedId={decodedId} />
     </ViewLayout>
   );

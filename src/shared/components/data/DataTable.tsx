@@ -4,7 +4,7 @@ import { cn } from "../../utils/cn";
 import { useTranslation } from "../../i18n/useTranslation";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useTableSort, useTablePagination } from "./useTableState";
-import { textSecondaryClass } from "../../utils/cssConstants";
+
 import { Pagination } from "../ui/pagination";
 
 export interface DataTableColumn<T> {
@@ -77,7 +77,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
   return (
     <div className="flex flex-col gap-2">
       {sortedData.length === 0 ? (
-        <div className={cn("py-8 text-center", textSecondaryClass)}>{t("noResults")}</div>
+        <div className={cn("py-8 text-center", "text-sm text-text-secondary")}>{t("noResults")}</div>
       ) : (
         <>
           <div className="rounded-md border border-border overflow-x-auto min-w-0">
@@ -87,7 +87,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                   {columns.map((col) => (
                     <th
                       key={col.id}
-                      className={cn("py-1.5 px-2 font-semibold text-text-secondary whitespace-nowrap border-b border-border", col.hiddenMd && "hidden md:table-cell")}
+                      className={cn("py-2 px-2.5 font-semibold text-text-secondary whitespace-nowrap border-b border-border", col.hiddenMd && "hidden md:table-cell")}
                       style={{ width: col.width, textAlign: col.align || "left" }}
                       aria-sort={col.sortable ? (sortState.col === col.id ? (sortState.dir === "asc" ? "ascending" : "descending") : "none") : undefined}
                     >
@@ -137,7 +137,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                         }}
                       >
                         {columns.map((col) => (
-                          <td key={col.id} className={cn("py-1.5 px-2", col.hiddenMd && "hidden md:table-cell")} style={{ width: col.width, textAlign: col.align || "left" }}>
+                          <td key={col.id} className={cn("py-2 px-2.5 break-words min-w-0", col.align === "right" && "tabular-nums font-mono", col.hiddenMd && "hidden md:table-cell")} style={{ width: col.width, textAlign: col.align || "left" }}>
                             {col.cell(record)}
                           </td>
                         ))}

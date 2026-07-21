@@ -1,6 +1,5 @@
 import { X, Trash2, ArrowLeftRight } from "lucide-react";
 import { Button } from "../ui/button";
-import { secondaryTextClass } from "../../utils/cssConstants";
 import { useTranslation } from "../../i18n/useTranslation";
 import { modelId } from "../../utils/modelId";
 import type { ArtificialAnalysisModel } from "../../types";
@@ -42,7 +41,7 @@ export function CompareChipBar({
           </Button>
         )}
       </div>
-      {onCompare && !canCompare && models.length > 0 && <p className={secondaryTextClass}>{t("compareLimit")}</p>}
+      {onCompare && !canCompare && models.length > 0 && <p className="text-xs text-text-secondary">{t("compareLimit")}</p>}
     </div>
   );
 }

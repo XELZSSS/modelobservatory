@@ -93,6 +93,18 @@ export function formatRelativeTime(isoString: string, t: TFunction): string {
   return t("timeDaysAgo", { value: diffDays });
 }
 
+export function orNA(value: string | null | undefined, t: TFunction): string {
+  return value || t("notAvailable");
+}
+
+export const chartTooltipStyle = {
+  background: "var(--bg-secondary)",
+  border: "1px solid var(--border)",
+  color: "var(--text-primary)",
+  fontSize: "12px",
+  borderRadius: "6px",
+} as const;
+
 export function benchmarkLabel(key: string, t: TFunction): string {
   const camelKey = key.split("_").map((part, i) => i === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)).join("");
   const labelKey = `benchmark${camelKey.charAt(0).toUpperCase() + camelKey.slice(1)}` as TranslationKey;

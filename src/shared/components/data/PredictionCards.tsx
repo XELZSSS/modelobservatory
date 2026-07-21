@@ -3,7 +3,7 @@ import { Clock, Building2, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { TabContainer, type TabItem } from "../composite/TabContainer";
 import { SectionHeader } from "../composite/SectionHeader";
-import { numberTextClass, secondaryTextClass } from "../../utils/cssConstants";
+
 import { COOL_COLORS } from "../rankColor";
 import { approxEq } from "../../utils/math";
 import { useTranslation } from "../../i18n/useTranslation";
@@ -21,7 +21,7 @@ function ExternalLinkButton({ href, children, showIcon = true, className, iconSi
 
 function EmptyPredictions() {
   const { t } = useTranslation();
-  return <p className={`${secondaryTextClass} py-4 text-center`}>{t("noPredictions")}</p>;
+  return <p className="text-xs text-text-secondary py-4 text-center">{t("noPredictions")}</p>;
 }
 
 function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
@@ -32,7 +32,7 @@ function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
       {sorted.map((item, i) => (
-        <Card key={item.id} className={i >= 2 ? "hidden sm:block" : ""}>
+        <Card key={item.id}>
           <CardContent className="p-3">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex items-center gap-1.5 min-w-0">
@@ -43,9 +43,9 @@ function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
               </div>
               <ExternalLinkButton href={item.url} iconSize={12} />
             </div>
-            <p className={`${secondaryTextClass} mb-2 line-clamp-1 sm:line-clamp-2`}>{item.question}</p>
+            <p className="text-xs text-text-secondary mb-2 line-clamp-1 sm:line-clamp-2">{item.question}</p>
             <div className="flex items-center justify-between">
-              <span className={`text-lg font-extrabold ${numberTextClass}`} style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>
+              <span className="text-lg font-extrabold tabular-nums font-mono" style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>
                 {(item.probability * 100).toFixed(1)}%
               </span>
               <div className="text-right text-xs text-text-tertiary">
@@ -68,7 +68,7 @@ function ReleasesTab({ items }: { items: ReleasePrediction[] }) {
       {items.map((item, i) => {
         const topProb = item.predictions.reduce((max, p) => Math.max(max, p.probability), 0);
         return (
-          <Card key={item.id} className={i >= 2 ? "hidden sm:block" : ""}>
+          <Card key={item.id}>
             <CardContent className="p-3">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-1.5 min-w-0">
@@ -77,13 +77,13 @@ function ReleasesTab({ items }: { items: ReleasePrediction[] }) {
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
-              <p className={`${secondaryTextClass} mb-2 line-clamp-1 sm:line-clamp-2`}>{item.question}</p>
+              <p className="text-xs text-text-secondary mb-2 line-clamp-1 sm:line-clamp-2">{item.question}</p>
               <div className="flex flex-col gap-1">
                 {item.predictions.map((p, j) => (
                   <div key={j} className="flex items-center justify-between gap-2">
-                    <span className={`${secondaryTextClass} truncate`}>{p.window}</span>
+                    <span className="text-xs text-text-secondary truncate">{p.window}</span>
                     <span
-                      className={`text-sm font-bold shrink-0 ${numberTextClass}`}
+                      className="text-sm font-bold shrink-0 tabular-nums font-mono"
                       style={{ color: p.probability === topProb || (topProb > 0 && approxEq(p.probability, topProb)) ? COOL_COLORS[(i + 3) % COOL_COLORS.length] : "var(--text-tertiary)" }}
                     >
                       {(p.probability * 100).toFixed(0)}%
@@ -108,7 +108,7 @@ function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
       {items.map((item, i) => {
         const topProb = item.options.reduce((max, o) => Math.max(max, o.probability), 0);
         return (
-          <Card key={item.id} className={i >= 2 ? "hidden sm:block" : ""}>
+          <Card key={item.id}>
             <CardContent className="p-3">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-1.5 min-w-0">
@@ -117,13 +117,13 @@ function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
-              <p className={`${secondaryTextClass} mb-2 line-clamp-1 sm:line-clamp-2`}>{item.question}</p>
+              <p className="text-xs text-text-secondary mb-2 line-clamp-1 sm:line-clamp-2">{item.question}</p>
               <div className="flex flex-col gap-1">
                 {item.options.slice(0, 3).map((opt, j) => (
                   <div key={j} className="flex items-center justify-between gap-2">
-                    <span className={`${secondaryTextClass} truncate`}>{opt.label}</span>
+                    <span className="text-xs text-text-secondary truncate">{opt.label}</span>
                     <span
-                      className={`text-sm font-bold shrink-0 ${numberTextClass}`}
+                      className="text-sm font-bold shrink-0 tabular-nums font-mono"
                       style={{ color: opt.probability === topProb || (topProb > 0 && approxEq(opt.probability, topProb)) ? COOL_COLORS[(i + 6) % COOL_COLORS.length] : "var(--text-tertiary)" }}
                     >
                       {(opt.probability * 100).toFixed(0)}%

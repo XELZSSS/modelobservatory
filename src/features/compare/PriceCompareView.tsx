@@ -3,12 +3,12 @@ import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import { Input } from "../../shared/components/ui/input";
-import { secondaryTextClass, winnerPriceClass, chartTooltipStyle } from "../../shared/utils/cssConstants";
+import { chartTooltipStyle } from "../../shared/utils/format";
 import { cn } from "../../shared/utils/cn";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { formatDollar } from "../../shared/utils/format";
 import { getModelColor } from "../../shared/components/rankColor";
-import { calcModelCost } from "../../shared/utils/costCalc";
+import { calcModelCost } from "../../shared/utils/math";
 import { approxEq } from "../../shared/utils/math";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { buildPriceRows, getBestPrice, WinnerMark, PriceTable, EfficiencyTable } from "./PriceComponents";
@@ -128,14 +128,14 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
           <p className="text-sm font-bold mb-3">{t("estimatedMonthlyCost")}</p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
             <div className="flex items-center gap-2">
-              <label className={cn(secondaryTextClass, "whitespace-nowrap")}>{t("monthlyPromptTokens")}</label>
+              <label className={cn("text-xs text-text-secondary", "whitespace-nowrap")}>{t("monthlyPromptTokens")}</label>
               <Input type="number" value={promptTokens} onChange={(e) => setPromptTokens(e.target.value)} className="w-24 h-9 text-sm" />
-              <span className={secondaryTextClass}>M</span>
+              <span className="text-xs text-text-secondary">M</span>
             </div>
             <div className="flex items-center gap-2">
-              <label className={cn(secondaryTextClass, "whitespace-nowrap")}>{t("monthlyCompletionTokens")}</label>
+              <label className={cn("text-xs text-text-secondary", "whitespace-nowrap")}>{t("monthlyCompletionTokens")}</label>
               <Input type="number" value={completionTokens} onChange={(e) => setCompletionTokens(e.target.value)} className="w-24 h-9 text-sm" />
-              <span className={secondaryTextClass}>M</span>
+              <span className="text-xs text-text-secondary">M</span>
             </div>
           </div>
           <div className="flex flex-col gap-2">
@@ -148,7 +148,7 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
                     {model.short_name || model.name}
                   </span>
                   {cost != null ? (
-                    <span className={cn("font-mono text-sm", isBest && winnerPriceClass)}>
+                    <span className={cn("font-mono text-sm", isBest && "font-bold text-success")}>
                       {formatDollar(cost)}
                       {isBest && <WinnerMark />}
                     </span>

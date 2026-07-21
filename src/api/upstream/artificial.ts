@@ -2,9 +2,8 @@ import { withCache } from "../cache";
 import { DEFAULT_TTL_MS } from "../../shared/config";
 import { fetchAndParseRsc, findNextData } from "../parsers/rsc";
 import { num, str, strOr, bool, obj } from "../parsers/coerce";
+import { BENCHMARK_KEYS } from "../../shared/constants/benchmarks";
 import type { ArtificialAnalysisModel } from "../../shared/types";
-
-const BENCHMARK_KEYS = ["aime25", "gpqa", "hle", "scicode", "gdpval", "tau2", "terminalbench_hard", "ifbench", "lcr", "omniscience", "critpt", "livecodebench", "mmlu_pro", "math_500", "humaneval", "apex_agents", "terminalbench_v2_1", "tau_banking"] as const;
 
 function compactBenchmarks(m: Record<string, unknown>): Record<string, number | null> {
   const nested = obj(m.benchmarks);

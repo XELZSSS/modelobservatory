@@ -2,7 +2,7 @@ import { memo, useMemo, useEffect } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, Tooltip } from "recharts";
 import { Card, CardContent } from "../../shared/components/ui/card";
-import { numberTextClass, chartTooltipStyle } from "../../shared/utils/cssConstants";
+import { chartTooltipStyle } from "../../shared/utils/format";
 import { cn } from "../../shared/utils/cn";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { buildCompareMetrics, buildRadarData } from "../../shared/utils/compareMetrics";
@@ -41,7 +41,7 @@ const MetricValueDisplay = memo(function MetricValueDisplay({
   const winnerColor = winner === "win" ? "var(--success)" : winner === "loss" ? "var(--destructive)" : undefined;
 
   return (
-    <span className={cn(numberTextClass, winner === "win" && "font-bold", className)} style={winnerColor ? { color: winnerColor } : undefined}>
+    <span className={cn("tabular-nums font-mono", winner === "win" && "font-bold", className)} style={winnerColor ? { color: winnerColor } : undefined}>
       {value}
       {winner === "win" && <TrendingUp size={iconSize} className="inline ml-1" style={{ color: "var(--success)" }} />}
       {winner === "loss" && <TrendingDown size={iconSize} className="inline ml-1" style={{ color: "var(--destructive)" }} />}

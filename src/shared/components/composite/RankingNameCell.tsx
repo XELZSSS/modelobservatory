@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { modelCellClass, modelNameCellClass } from "../../utils/cssConstants";
+
 
 interface RankingNameCellProps {
   name: string;
@@ -8,8 +8,8 @@ interface RankingNameCellProps {
 
 export const RankingNameCell = memo(function RankingNameCell({ name, suffix }: RankingNameCellProps) {
   return (
-    <div className={modelCellClass}>
-      <p className={modelNameCellClass}>{name}</p>
+    <div className="flex items-center gap-2 min-w-0">
+      <p className="text-sm font-bold break-words min-w-0">{name}</p>
       {suffix}
     </div>
   );

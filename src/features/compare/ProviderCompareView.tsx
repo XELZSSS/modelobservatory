@@ -3,7 +3,7 @@ import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useSuspenseArtificialRankings } from "../../shared/hooks/useApiQuery";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { formatScore, formatPricePerMillion } from "../../shared/utils/format";
-import { secondaryTextClass } from "../../shared/utils/cssConstants";
+
 import { computeProviderStats, type ProviderStats } from "../../shared/utils/providerStats";
 
 export function ProviderCompareView() {
@@ -25,26 +25,32 @@ export function ProviderCompareView() {
           </div>
         ),
       },
-      { id: "count", header: t("modelCount"), accessorFn: (p) => p.count, cell: (p) => p.count },
+      { id: "count", header: t("modelCount"), accessorFn: (p) => p.count, sortable: true, align: "right", cell: (p) => p.count },
       {
         id: "avgIntelligence",
         header: t("avgIntelligence"),
         accessorFn: (p) => p.avgIntelligence ?? -1,
+        sortable: true,
+        align: "right",
         cell: (p) => formatScore(t, p.avgIntelligence),
       },
       {
         id: "avgPrice",
         header: t("avgPrice"),
         accessorFn: (p) => p.avgPrice ?? -1,
-        cell: (p) => formatPricePerMillion(t, p.avgPrice),
+        sortable: true,
+        align: "right",
         hiddenMd: true,
+        cell: (p) => formatPricePerMillion(t, p.avgPrice),
       },
       {
         id: "avgSpeed",
         header: t("avgSpeed"),
         accessorFn: (p) => p.avgSpeed ?? -1,
-        cell: (p) => (p.avgSpeed != null ? `${p.avgSpeed.toFixed(1)} tok/s` : t("notAvailable")),
+        sortable: true,
+        align: "right",
         hiddenMd: true,
+        cell: (p) => (p.avgSpeed != null ? `${p.avgSpeed.toFixed(1)} tok/s` : t("notAvailable")),
       },
     ],
     [t],
@@ -52,7 +58,7 @@ export function ProviderCompareView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className={secondaryTextClass}>{t("artificialSource")}</p>
+      <p className="text-xs text-text-secondary">{t("artificialSource")}</p>
       <DataTable columns={columns} data={providerStats} getRowId={(p) => p.name} />
     </div>
   );

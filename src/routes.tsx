@@ -35,8 +35,6 @@ export function AppRoutes() {
       <Route path="/hallucinations" element={<RankingsHubView defaultTab={TAB_INDEX.hallucinationRankings} />} />
       <Route path="/tts" element={<RankingsHubView defaultTab={TAB_INDEX.tts} />} />
       <Route path="/open-source" element={<RankingsHubView defaultTab={TAB_INDEX.openSourceRankings} />} />
-      <Route path="/rankings" element={<RankingsHubView defaultTab={0} />} />
-      <Route path="/categories/:slug" element={<Navigate to="/rankings" replace />} />
       <Route path="/compare" element={<CompareView />} />
       <Route path="/price-compare" element={<PriceCompareView />} />
       <Route path="/provider-compare" element={<ProviderCompareView />} />

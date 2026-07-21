@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useFilteredData } from "../../../shared/hooks/useFilteredData";
 import type { ArtificialAnalysisModel } from "../../../shared/types";
 
-export type ViewMode = "rankings" | "pricing";
+export type ViewMode = "rankings" | "pricing" | "benchmarks";
 export type ReasoningFilter = "all" | "reasoning" | "non-reasoning";
 
 const REASONING_KEYWORDS = /\b(reasoning|thinking)\b/i;

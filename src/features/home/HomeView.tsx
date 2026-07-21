@@ -9,7 +9,7 @@ import { InfoRow } from "../../shared/components/composite/InfoRow";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import { getModelColor, COOL_COLORS } from "../../shared/components/rankColor";
 import { Cell, Pie, PieChart, ResponsiveContainer, Line, LineChart, CartesianGrid, Tooltip, XAxis, YAxis, Legend } from "recharts";
-import { numberTextClass, secondaryTextClass, textSecondaryClass, chartTooltipStyle } from "../../shared/utils/cssConstants";
+import { chartTooltipStyle } from "../../shared/utils/format";
 import { formatShortNumber } from "../../shared/utils/format";
 import { cn } from "../../shared/utils/cn";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
@@ -19,7 +19,7 @@ import { useHomeDashboardData, type HomeKpi, type HomeBarStat, type HomeToolUsag
 import { SearchInput } from "./SearchInput";
 
 const StatusBarPill = memo(function StatusBarPill({ children }: { children: ReactNode }) {
-  return <div className="flex items-center px-1.5 py-[3px] border border-border rounded-md bg-bg-primary"><span className={cn(textSecondaryClass, "whitespace-nowrap tabular-nums")}>{children}</span></div>;
+  return <div className="flex items-center px-1.5 py-[3px] border border-border rounded-md bg-bg-primary"><span className={cn("text-sm text-text-secondary", "whitespace-nowrap tabular-nums")}>{children}</span></div>;
 });
 
 function UptimeDisplay() {
@@ -73,10 +73,10 @@ function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ nam
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-[1px]">
         <p className="text-sm font-bold">{t("toolUsageShare")}</p>
-        <p className={secondaryTextClass}>{t("openRouterSource")}</p>
+        <p className="text-xs text-text-secondary">{t("openRouterSource")}</p>
       </div>
       {rows.length === 0 ? (
-        <p className={textSecondaryClass}>{t("notAvailable")}</p>
+<p className="text-sm text-text-secondary">{t("notAvailable")}</p>
       ) : (
         <div className="flex flex-col md:flex-row gap-4 items-center">
           <div className="relative w-full max-w-[240px] aspect-square shrink-0">
@@ -97,14 +97,14 @@ function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ nam
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               {center ? (
                 <>
-                  <span className={cn("text-sm font-bold leading-none text-center", numberTextClass)}>{center.name}</span>
-                  <span className={cn("text-base font-bold leading-none mt-1.5", numberTextClass)}>{formatShortNumber(center.value)}</span>
-                  <span className={cn(textSecondaryClass, "leading-none mt-0.5")}>{(center.share * 100).toFixed(1)}%</span>
+                  <span className={cn("text-sm font-bold leading-none text-center", "tabular-nums font-mono")}>{center.name}</span>
+                  <span className={cn("text-base font-bold leading-none mt-1.5", "tabular-nums font-mono")}>{formatShortNumber(center.value)}</span>
+                  <span className={cn("text-sm text-text-secondary", "leading-none mt-0.5")}>{(center.share * 100).toFixed(1)}%</span>
                 </>
               ) : (
                 <>
-                  <span className={cn("text-base font-bold leading-none", numberTextClass)}>{formatShortNumber(total)}</span>
-                  <span className={cn(textSecondaryClass, "leading-none mt-0.5")}>{t("tokens")}</span>
+                  <span className={cn("text-base font-bold leading-none", "tabular-nums font-mono")}>{formatShortNumber(total)}</span>
+                  <span className={cn("text-sm text-text-secondary", "leading-none mt-0.5")}>{t("tokens")}</span>
                 </>
               )}
             </div>
@@ -126,7 +126,7 @@ function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ nam
 
 function RankedStatCard({ title, source, rows }: { title: string; source: string; rows: HomeBarStat[] }) {
   const { t } = useTranslation();
-  return <Card><CardContent><div className="flex flex-col gap-0.5 mb-2"><p className="text-sm font-bold">{title}</p><p className={secondaryTextClass}>{source}</p></div>{rows.length === 0 ? <p className={textSecondaryClass}>{t("notAvailable")}</p> : <div className="flex flex-col gap-2">{rows.map((row, i) => <div key={`${row.label}-${i}`} className="flex items-center gap-3 h-[26px]"><span className="text-xs font-bold w-5 text-center shrink-0" style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>{i + 1}</span><span className="text-sm truncate min-w-0 flex-1">{row.label}</span><span className={cn("text-sm font-bold shrink-0", numberTextClass)}>{row.valueLabel}</span></div>)}</div>}</CardContent></Card>;
+  return <Card><CardContent><div className="flex flex-col gap-0.5 mb-2"><p className="text-sm font-bold">{title}</p><p className="text-xs text-text-secondary">{source}</p></div>{rows.length === 0 ? <p className="text-sm text-text-secondary">{t("notAvailable")}</p> : <div className="flex flex-col gap-2">{rows.map((row, i) => <div key={`${row.label}-${i}`} className="flex items-center gap-3 h-[26px]"><span className="text-xs font-bold w-5 text-center shrink-0" style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>{i + 1}</span><span className="text-sm truncate min-w-0 flex-1">{row.label}</span><span className={cn("text-sm font-bold shrink-0", "tabular-nums font-mono")}>{row.valueLabel}</span></div>)}</div>}</CardContent></Card>;
 }
 
 function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }) {

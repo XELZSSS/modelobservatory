@@ -2,8 +2,7 @@ import { StatCard } from "../../../shared/components/composite/StatCard";
 import { InfoCard } from "../../../shared/components/composite/InfoCard";
 import { InfoRow } from "../../../shared/components/composite/InfoRow";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
-import { formatDollar } from "../../../shared/utils/format";
-import { orNA } from "../../../shared/utils/cssConstants";
+import { formatDollar, orNA } from "../../../shared/utils/format";
 import type { TtsModel } from "../../../shared/types";
 import { DetailLayout, StatGrid } from "../../../shared/components/composite/DetailLayout";
 

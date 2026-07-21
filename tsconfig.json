@@ -13,7 +13,6 @@
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,

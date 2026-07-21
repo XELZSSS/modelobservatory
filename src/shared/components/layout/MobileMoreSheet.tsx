@@ -3,7 +3,7 @@ import { Settings } from "lucide-react";
 import { Sheet } from "../ui/sheet";
 import { useTranslation } from "../../i18n/useTranslation";
 import { useNavigation } from "./useNavigation";
-import { secondaryTextClass } from "../../utils/cssConstants";
+
 
 export function MobileMoreSheet({ open, onClose, onSettingsOpen }: { open: boolean; onClose: () => void; onSettingsOpen: () => void }) {
   const { pathname } = useLocation();
@@ -17,7 +17,7 @@ export function MobileMoreSheet({ open, onClose, onSettingsOpen }: { open: boole
     <Sheet open={open} onClose={onClose}>
       <div className="px-2 pt-[5px] pb-[3px]">
         <p className="text-sm font-bold">{t("more")}</p>
-        <p className={secondaryTextClass}>{currentNavLabel}</p>
+        <p className="text-xs text-text-secondary">{currentNavLabel}</p>
       </div>
       <nav className="py-1 overflow-y-auto">
         {mobileMore.map((item) => (

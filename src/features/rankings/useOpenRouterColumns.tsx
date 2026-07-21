@@ -1,7 +1,7 @@
 import type { TranslationKey } from "../../shared/i18n";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
-import { ellipsisTextClasses } from "../../shared/utils/cssConstants";
+
 import { cn } from "../../shared/utils/cn";
 import { formatShortNumber, formatTrend } from "../../shared/utils/format";
 import type { OpenRouterRankEntry, OpenRouterAppEntry } from "../../shared/types";
@@ -26,12 +26,23 @@ const requestColumn = <T extends { requestCount?: number | null }>(t: (key: Tran
 export function useOpenRouterColumns(
   t: (key: TranslationKey) => string,
 ): { modelColumns: DataTableColumn<OpenRouterRankEntry>[]; appColumns: DataTableColumn<OpenRouterAppEntry>[] } {
+  const tagClass = "inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary";
+
   const modelColumns: DataTableColumn<OpenRouterRankEntry>[] = [
     {
       id: "model",
       header: t("modelNameOrId"),
       width: "45%",
-      cell: (item) => <RankingNameCell name={item.name} />,
+      cell: (item) => (
+        <>
+          <RankingNameCell name={item.name} />
+          <div className="flex flex-wrap gap-1 mt-1 md:hidden">
+            <span className={tagClass}>{t("requests")}: {formatShortNumber(item.requestCount || 0)}</span>
+            {item.creator && <span className={tagClass}>{item.creator}</span>}
+            <span className={cn(tagClass, item.change != null ? trendClass(item.change) : "")}>{formatTrend(item.change, t)}</span>
+          </div>
+        </>
+      ),
     },
     tokenColumn<OpenRouterRankEntry>(t),
     requestColumn<OpenRouterRankEntry>(t),
@@ -42,7 +53,7 @@ export function useOpenRouterColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <p className={cn("text-xs", ellipsisTextClasses, "text-right")}>{item.creator || t("unknown")}</p>,
+      cell: (item) => <p className={cn("text-xs", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{item.creator || t("unknown")}</p>,
     },
     {
       id: "trend",
@@ -60,7 +71,15 @@ export function useOpenRouterColumns(
       id: "app",
       header: t("openRouterApps"),
       width: "45%",
-      cell: (item) => <RankingNameCell name={item.name} />,
+      cell: (item) => (
+        <>
+          <RankingNameCell name={item.name} />
+          <div className="flex flex-wrap gap-1 mt-1 md:hidden">
+            <span className={tagClass}>{t("requests")}: {formatShortNumber(item.requestCount || 0)}</span>
+            {item.categories?.length ? <span className={tagClass}>{item.categories.join(", ")}</span> : null}
+          </div>
+        </>
+      ),
     },
     tokenColumn<OpenRouterAppEntry>(t),
     requestColumn<OpenRouterAppEntry>(t),
@@ -71,7 +90,7 @@ export function useOpenRouterColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <p className={cn("text-xs", ellipsisTextClasses, "text-right")}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>,
+      cell: (item) => <p className={cn("text-xs", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>,
     },
   ];
 
