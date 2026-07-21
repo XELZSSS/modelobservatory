@@ -4,6 +4,7 @@ import { Sheet } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { useTranslation } from "../../i18n/useTranslation";
 import { useThemeStore } from "../../stores/themeStore";
+import { REPO_URL } from "../../config";
 
 function SettingRow({ icon, label, button }: { icon: ReactNode; label: string; button: ReactNode }) {
   return (
@@ -57,7 +58,7 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
           }
           label="GitHub"
           button={
-            <Button variant="outline" size="sm" className="w-24" onClick={() => window.open("https://github.com/XELZSSS/modelobservatory", "_blank", "noopener,noreferrer")}>
+            <Button variant="outline" size="sm" className="w-24" onClick={() => window.open(REPO_URL, "_blank", "noopener,noreferrer")}>
               GitHub
             </Button>
           }

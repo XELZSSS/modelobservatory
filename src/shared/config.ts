@@ -44,6 +44,9 @@ export const START_TTL_MS = 24 * 60 * 60 * 1_000;
 // ── API base ───────────────────────────────────────────────────
 export const apiBase = import.meta.env?.VITE_API_BASE?.replace(/\/+$/, "") ?? "";
 
+// ── Repository ──────────────────────────────────────────────────
+export const REPO_URL = "https://github.com/XELZSSS/modelobservatory";
+
 // ── RSS feed URLs ──────────────────────────────────────────────
 const TECHCRUNCH_AI = "https://techcrunch.com/category/artificial-intelligence/feed/";
 const ARS_TECHNICA = "https://feeds.arstechnica.com/arstechnica/index";

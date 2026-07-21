@@ -4,6 +4,9 @@ import { fetchText } from "../http";
 import type { NewsItem } from "../../shared/types";
 import { rssConfig, NEWS_TTL_MS } from "../../shared/config";
 import { decodeEntities, stripHtml } from "../parsers/feed";
+import { ValidationError } from "../errors";
+
+const VALID_CATEGORIES = new Set(Object.keys(rssConfig));
 
 const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" });
 
@@ -31,7 +34,8 @@ function parseFeed(xml: string, sourceUrl: string): NewsItem[] {
 }
 
 export async function getNews(category: string = "official"): Promise<NewsItem[]> {
-  const urls = rssConfig[category as keyof typeof rssConfig] ?? rssConfig.official;
+  if (!VALID_CATEGORIES.has(category)) throw new ValidationError(`Invalid news category "${category}". Valid: ${Array.from(VALID_CATEGORIES).join(", ")}`);
+  const urls = rssConfig[category as keyof typeof rssConfig];
   const fullTtl = NEWS_TTL_MS;
   const partialTtl = 60_000;
 

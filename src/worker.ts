@@ -14,7 +14,6 @@ interface CfProperties {
 
 interface Env {
   METRICS?: KVNamespace;
-  ASSETS?: Fetcher;
 }
 
 export default {
@@ -25,16 +24,6 @@ export default {
     const cf = (request as Request & { cf?: CfProperties }).cf;
     if (cf && typeof cf === "object") setCloudflareInfo(cf as Record<string, unknown>);
 
-    const url = new URL(request.url);
-
-    if (url.pathname.startsWith("/api")) {
-      return app.fetch(request, env);
-    }
-
-    if (env.ASSETS) {
-      return env.ASSETS.fetch(request);
-    }
-
-    return new Response("Not found", { status: 404 });
+    return app.fetch(request, env);
   },
 };

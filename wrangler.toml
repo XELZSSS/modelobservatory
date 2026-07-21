@@ -1,9 +1,9 @@
 name = "modelobservatory"
 main = "src/worker.ts"
-compatibility_date = "2025-06-01"
+compatibility_date = "2026-07-14"
 keep_vars = true
 
-assets = { directory = "dist", binding = "ASSETS" }
+assets = { directory = "dist", not_found_handling = "single-page-application" }
 
 [dev]
 port = 8788

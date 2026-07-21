@@ -36,6 +36,4 @@ export async function fetchText(url: string, init?: RequestInit): Promise<string
   return (await doFetch(url, init ?? {}, "text/html,application/xhtml+xml,*/*")).text();
 }
 
-export async function fetchRsc(url: string, init?: RequestInit): Promise<string> {
-  return (await doFetch(url, init ?? {}, "text/x-component, text/html;q=0.1")).text();
-}
+

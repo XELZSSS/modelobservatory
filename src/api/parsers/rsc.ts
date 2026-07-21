@@ -181,7 +181,7 @@ function unescape(s: string): string {
                 const low = parseInt(lowHex, 16);
                 if (low >= 0xdc00 && low <= 0xdfff) {
                   out += String.fromCodePoint(((code - 0xd800) << 10) + (low - 0xdc00) + 0x10000);
-                  i += 10; // skip both \uXXXX pairs (4 hex + \u + 4 hex)
+                  i += 11; // skip both \uXXXX pairs (12 chars total)
                   break;
                 }
               }

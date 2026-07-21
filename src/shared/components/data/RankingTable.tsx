@@ -42,9 +42,14 @@ export function RankingTable<T>({
     [filtered, getRank],
   );
 
+  const sampleRow = useMemo(() => {
+    const first = data[0];
+    return first ? { rank: 1, item: first } : null;
+  }, [data]);
+
   const tableColumns = useMemo<DataTableColumn<RankedRow<T>>[]>(
-    () => columns(t, rows[0] ?? { rank: 0, item: data[0]! }),
-    [t],
+    () => columns(t, sampleRow ?? { rank: 0, item: undefined! }),
+    [t, sampleRow],
   );
 
   return (
