@@ -4,12 +4,18 @@ import { Card, CardContent } from "../ui/card";
 import { TabContainer, type TabItem } from "../composite/TabContainer";
 import { SectionHeader } from "../composite/SectionHeader";
 
-import { COOL_COLORS } from "../rankColor";
+import { getModelColor, COOL_COLORS } from "../rankColor";
 import { approxEq } from "../../utils/math";
 import { useTranslation } from "../../i18n/useTranslation";
 import type { ModelPrediction, ReleasePrediction, ProviderPrediction, PredictionsPayload } from "../../types";
 import { formatCompactDollar, safeHref } from "../../utils/format";
 import { cn } from "../../utils/cn";
+
+const LINE_CLAMP = "line-clamp-1 sm:line-clamp-2";
+
+function isTopProbability(prob: number, topProb: number): boolean {
+  return prob === topProb || (topProb > 0 && approxEq(prob, topProb));
+}
 
 function ExternalLinkButton({ href, children, showIcon = true, className, iconSize = 14 }: {
   href: string | null | undefined; children?: ReactNode; showIcon?: boolean; className?: string; iconSize?: number;
@@ -36,16 +42,16 @@ function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
           <CardContent className="p-3">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-xs font-extrabold w-5 text-center shrink-0" style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>
+                <span className="text-xs font-extrabold w-5 text-center shrink-0" style={{ color: getModelColor(i) }}>
                   #{i + 1}
                 </span>
                 <span className="text-sm font-bold truncate">{item.company}</span>
               </div>
               <ExternalLinkButton href={item.url} iconSize={12} />
             </div>
-            <p className="text-xs text-text-secondary mb-2 line-clamp-1 sm:line-clamp-2">{item.question}</p>
+            <p className={"text-xs text-text-secondary mb-2 " + LINE_CLAMP}>{item.question}</p>
             <div className="flex items-center justify-between">
-              <span className="text-lg font-extrabold tabular-nums font-mono" style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>
+              <span className="text-lg font-extrabold tabular-nums font-mono" style={{ color: getModelColor(i) }}>
                 {(item.probability * 100).toFixed(1)}%
               </span>
               <div className="text-right text-xs text-text-tertiary">
@@ -72,19 +78,19 @@ function ReleasesTab({ items }: { items: ReleasePrediction[] }) {
             <CardContent className="p-3">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <Clock size={14} className="shrink-0" style={{ color: COOL_COLORS[(i + 3) % COOL_COLORS.length] }} />
+                  <Clock size={14} className="shrink-0" style={{ color: getModelColor(i + 3) }} />
                   <span className="text-sm font-bold truncate">{item.model}</span>
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
-              <p className="text-xs text-text-secondary mb-2 line-clamp-1 sm:line-clamp-2">{item.question}</p>
+              <p className={"text-xs text-text-secondary mb-2 " + LINE_CLAMP}>{item.question}</p>
               <div className="flex flex-col gap-1">
                 {item.predictions.map((p, j) => (
                   <div key={j} className="flex items-center justify-between gap-2">
                     <span className="text-xs text-text-secondary truncate">{p.window}</span>
                     <span
                       className="text-sm font-bold shrink-0 tabular-nums font-mono"
-                      style={{ color: p.probability === topProb || (topProb > 0 && approxEq(p.probability, topProb)) ? COOL_COLORS[(i + 3) % COOL_COLORS.length] : "var(--text-tertiary)" }}
+                      style={{ color: isTopProbability(p.probability, topProb) ? getModelColor(i + 3) : "var(--text-tertiary)" }}
                     >
                       {(p.probability * 100).toFixed(0)}%
                     </span>
@@ -112,19 +118,19 @@ function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
             <CardContent className="p-3">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <Building2 size={14} className="shrink-0" style={{ color: COOL_COLORS[(i + 6) % COOL_COLORS.length] }} />
+                  <Building2 size={14} className="shrink-0" style={{ color: getModelColor(i + 6) }} />
                   <span className="text-sm font-bold truncate">{item.provider}</span>
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
-              <p className="text-xs text-text-secondary mb-2 line-clamp-1 sm:line-clamp-2">{item.question}</p>
+              <p className={"text-xs text-text-secondary mb-2 " + LINE_CLAMP}>{item.question}</p>
               <div className="flex flex-col gap-1">
                 {item.options.slice(0, 3).map((opt, j) => (
                   <div key={j} className="flex items-center justify-between gap-2">
                     <span className="text-xs text-text-secondary truncate">{opt.label}</span>
                     <span
                       className="text-sm font-bold shrink-0 tabular-nums font-mono"
-                      style={{ color: opt.probability === topProb || (topProb > 0 && approxEq(opt.probability, topProb)) ? COOL_COLORS[(i + 6) % COOL_COLORS.length] : "var(--text-tertiary)" }}
+                      style={{ color: isTopProbability(opt.probability, topProb) ? getModelColor(i + 6) : "var(--text-tertiary)" }}
                     >
                       {(opt.probability * 100).toFixed(0)}%
                     </span>

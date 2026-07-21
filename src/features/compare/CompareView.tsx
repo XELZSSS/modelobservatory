@@ -1,10 +1,11 @@
-import { memo, useMemo, useEffect } from "react";
+import { memo, useMemo } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, Tooltip } from "recharts";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import { chartTooltipStyle } from "../../shared/utils/format";
 import { cn } from "../../shared/utils/cn";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import { buildCompareMetrics, buildRadarData } from "../../shared/utils/compareMetrics";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
 import { getModelColor } from "../../shared/components/rankColor";
@@ -129,7 +130,7 @@ const MetricTable = memo(function MetricTable({ metrics, models }: { metrics: Co
 
 export function CompareView() {
   const { t } = useTranslation();
-  useEffect(() => { document.title = t("modelComparison"); }, [t]);
+  useDocumentTitle(t("modelComparison"));
   const [radarRef, radarWidth] = useElementWidth();
   const radarSize = Math.max(100, Math.min(radarWidth - 16, 500));
 

@@ -1,5 +1,6 @@
 import { memo, useMemo, useState, useEffect, type ReactNode } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import { useSuspenseArtificialRankings, useSuspenseHomeDashboard, useHallucinationRankings, useSuspenseHealthStatus, useSystemStats } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 import { PredictionsSection } from "../../shared/components/data/PredictionCards";
@@ -191,7 +192,7 @@ function HomeContent() {
 
 export function HomeView() {
   const { t } = useTranslation();
-  useEffect(() => { document.title = "Model Observatory"; }, []);
+  useDocumentTitle("Model Observatory");
   return (
     <SuspenseQuery>
       <HomeContent />

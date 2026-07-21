@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { CheckCircle, XCircle, Clock, Zap } from "lucide-react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { Card, CardContent } from "../../shared/components/ui/card";
 import type { HealthEntry } from "../../shared/types";
@@ -89,7 +89,7 @@ function StatusContent() {
 
 export function StatusView() {
   const { t } = useTranslation();
-  useEffect(() => { document.title = t("systemStatus"); }, [t]);
+  useDocumentTitle(t("systemStatus"));
   return (
     <SuspenseQuery>
       <StatusContent />

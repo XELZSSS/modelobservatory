@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useTtsLeaderboard } from "../../shared/hooks/useApiQuery";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
+import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
@@ -18,7 +19,6 @@ export function TtsView() {
   const { data } = useTtsLeaderboard();
   const filtered = useFilteredData(data ?? [], getSearchFields);
 
-  const tagClass = "inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary";
   const columns = useMemo<DataTableColumn<TtsModel>[]>(
     () => [
       {
@@ -28,9 +28,9 @@ export function TtsView() {
           <>
             <RankingNameCell name={model.name} />
             <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-              {model.provider && <span className={tagClass}>{model.provider}</span>}
-              {model.speed_chars_per_sec != null && <span className={tagClass}>{t("ttsSpeed")}: {model.speed_chars_per_sec.toFixed(1)}</span>}
-              {model.price_per_1m_chars != null && <span className={tagClass}>{formatDollar(model.price_per_1m_chars, t)}</span>}
+              {model.provider && <TagBadge>{model.provider}</TagBadge>}
+              {model.speed_chars_per_sec != null && <TagBadge>{t("ttsSpeed")}: {model.speed_chars_per_sec.toFixed(1)}</TagBadge>}
+              {model.price_per_1m_chars != null && <TagBadge>{formatDollar(model.price_per_1m_chars, t)}</TagBadge>}
             </div>
           </>
         ),

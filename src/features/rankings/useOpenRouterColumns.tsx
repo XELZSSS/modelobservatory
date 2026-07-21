@@ -1,5 +1,6 @@
 import type { TranslationKey } from "../../shared/i18n";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
+import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
 
 import { cn } from "../../shared/utils/cn";
@@ -26,8 +27,6 @@ const requestColumn = <T extends { requestCount?: number | null }>(t: (key: Tran
 export function useOpenRouterColumns(
   t: (key: TranslationKey) => string,
 ): { modelColumns: DataTableColumn<OpenRouterRankEntry>[]; appColumns: DataTableColumn<OpenRouterAppEntry>[] } {
-  const tagClass = "inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary";
-
   const modelColumns: DataTableColumn<OpenRouterRankEntry>[] = [
     {
       id: "model",
@@ -37,9 +36,9 @@ export function useOpenRouterColumns(
         <>
           <RankingNameCell name={item.name} />
           <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <span className={tagClass}>{t("requests")}: {formatShortNumber(item.requestCount || 0)}</span>
-            {item.creator && <span className={tagClass}>{item.creator}</span>}
-            <span className={cn(tagClass, item.change != null ? trendClass(item.change) : "")}>{formatTrend(item.change, t)}</span>
+            <TagBadge>{t("requests")}: {formatShortNumber(item.requestCount || 0)}</TagBadge>
+            {item.creator && <TagBadge>{item.creator}</TagBadge>}
+            <span className={cn("inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border", item.change != null ? trendClass(item.change) : "border-border bg-bg-secondary text-text-secondary")}>{formatTrend(item.change, t)}</span>
           </div>
         </>
       ),
@@ -75,8 +74,8 @@ export function useOpenRouterColumns(
         <>
           <RankingNameCell name={item.name} />
           <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <span className={tagClass}>{t("requests")}: {formatShortNumber(item.requestCount || 0)}</span>
-            {item.categories?.length ? <span className={tagClass}>{item.categories.join(", ")}</span> : null}
+            <TagBadge>{t("requests")}: {formatShortNumber(item.requestCount || 0)}</TagBadge>
+            {item.categories?.length ? <TagBadge>{item.categories.join(", ")}</TagBadge> : null}
           </div>
         </>
       ),

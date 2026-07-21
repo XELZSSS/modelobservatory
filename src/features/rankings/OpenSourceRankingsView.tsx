@@ -1,5 +1,6 @@
 import { RankingTable, type RankedRow } from "../../shared/components/data/RankingTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
+import { TagBadge } from "../../shared/components/ui/tag-badge";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import type { OpenSourceModelEntry } from "../../shared/types";
 import type { TranslationKey } from "../../shared/i18n";
@@ -9,7 +10,6 @@ const getRowId = (model: OpenSourceModelEntry) => model.id;
 const getSearchFields = (model: OpenSourceModelEntry) => [model.id];
 
 function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<RankedRow<OpenSourceModelEntry>>[] {
-  const tagClass = "inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary";
   return [
     {
       id: "model",
@@ -18,8 +18,8 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
         <>
           <RankingNameCell name={row.item.id.split("/").pop() || row.item.id} />
           <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <span className={tagClass}>{t("likes")}: {formatShortNumber(row.item.likes)}</span>
-            {row.item.license && <span className={tagClass}>{row.item.license}</span>}
+            <TagBadge>{t("likes")}: {formatShortNumber(row.item.likes)}</TagBadge>
+            {row.item.license && <TagBadge>{row.item.license}</TagBadge>}
           </div>
         </>
       ),

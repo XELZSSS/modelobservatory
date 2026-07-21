@@ -30,10 +30,10 @@ export function useSearchAllRankings(searchTerm: string): SearchResult[] {
   const ttsQ = useSuspenseTtsLeaderboard();
   const orQ = useOpenRouterRankings(enabled);
 
-  const artificialData = useMemo(() => artificialQ.data ?? [], [artificialQ.data]);
-  const openSourceRankings = useMemo(() => dashboardQ.data.opensource ?? [], [dashboardQ.data.opensource]);
-  const ttsData = useMemo(() => ttsQ.data ?? [], [ttsQ.data]);
-  const openRouterData = useMemo(() => orQ.data?.tokenUsageRankings ?? [], [orQ.data]);
+  const artificialData = artificialQ.data ?? [];
+  const openSourceRankings = dashboardQ.data.opensource ?? [];
+  const ttsData = ttsQ.data ?? [];
+  const openRouterData = orQ.data?.tokenUsageRankings ?? [];
   const hallucinationRankings = useHallucinationRankings(artificialData, enabled);
 
   return useMemo(() => {
@@ -65,5 +65,5 @@ export function useSearchAllRankings(searchTerm: string): SearchResult[] {
       const bExact = b.name.toLowerCase() === term ? 1 : 0;
       return aExact !== bExact ? bExact - aExact : (b.score ?? 0) - (a.score ?? 0);
     }).slice(0, 20);
-  }, [enabled, searchTerm, artificialData, openRouterData, openSourceRankings, hallucinationRankings, ttsData]);
+  }, [searchTerm, artificialData, openRouterData, openSourceRankings, hallucinationRankings, ttsData]);
 }

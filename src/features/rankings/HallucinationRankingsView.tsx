@@ -1,5 +1,6 @@
 import { RankingTable, type RankedRow } from "../../shared/components/data/RankingTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
+import { TagBadge } from "../../shared/components/ui/tag-badge";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import type { HallucinationRankingEntry } from "../../shared/types";
 import type { TranslationKey } from "../../shared/i18n";
@@ -16,7 +17,6 @@ const getRowId = (entry: HallucinationRankingEntry) => entry.id || entry.slug ||
 const getSearchFields = (entry: HallucinationRankingEntry) => [entry.model];
 
 function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<RankedRow<HallucinationRankingEntry>>[] {
-  const tagClass = "inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary";
   return [
     {
       id: "model",
@@ -25,9 +25,9 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
         <>
           <RankingNameCell name={row.item.model} />
           <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <span className={tagClass}>{t("accuracy")}: {fmtRate(row.item.accuracy)}</span>
-            <span className={tagClass}>{t("attemptRate")}: {fmtRate(row.item.attemptRate)}</span>
-            <span className={tagClass}>{t("omniscienceIndex")}: {fmtScore(row.item.omniscienceIndex)}</span>
+            <TagBadge>{t("accuracy")}: {fmtRate(row.item.accuracy)}</TagBadge>
+            <TagBadge>{t("attemptRate")}: {fmtRate(row.item.attemptRate)}</TagBadge>
+            <TagBadge>{t("omniscienceIndex")}: {fmtScore(row.item.omniscienceIndex)}</TagBadge>
           </div>
         </>
       ),

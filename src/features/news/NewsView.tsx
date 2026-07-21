@@ -1,6 +1,7 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { ExternalLink, Clock, Newspaper, Search } from "lucide-react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import type { TranslationKey } from "../../shared/i18n";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { Card } from "../../shared/components/ui/card";
@@ -92,7 +93,7 @@ function NewsCategoryContent({ categoryId, color }: { categoryId: string; color:
 
 export function NewsView() {
   const { t } = useTranslation();
-  useEffect(() => { document.title = t("aiNews"); }, [t]);
+  useDocumentTitle(t("aiNews"));
   const [activeCategory, setActiveCategory] = useState("official");
 
   const activeColor = CATEGORIES.find((c) => c.id === activeCategory)?.color ?? COOL_COLORS[0]!;

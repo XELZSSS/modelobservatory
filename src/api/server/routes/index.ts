@@ -8,7 +8,9 @@ import { getPredictions } from "../../upstream/polymarket";
 import { checkAllUpstreams } from "../../upstream/status";
 import { getSystemStats } from "../../upstream/system";
 import { getTtsLeaderboard } from "../../upstream/tts";
-import { settled } from "../../cache";
+function settled<T>(result: PromiseSettledResult<T>, fallback: T): T {
+  return result.status === "fulfilled" ? result.value : fallback;
+}
 
 export const routeDefs: RouteDef[] = [
   {

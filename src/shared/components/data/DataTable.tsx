@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useCallback, type ReactNode } from "react";
+import { Fragment, useMemo, type ReactNode } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "../../utils/cn";
 import { useTranslation } from "../../i18n/useTranslation";
@@ -49,31 +49,6 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
   const { sortedData, sortState, toggleSort } = useTableSort(dedupedData, columns);
   const { page, totalPages, pagedData, goToPage, resetPage } = useTablePagination(sortedData, effectivePageSize);
 
-  const handleSort = useCallback(
-    (colId: string) => {
-      resetPage();
-      toggleSort(colId);
-    },
-    [resetPage, toggleSort],
-  );
-
-  const rowIdMap = useMemo(() => {
-    if (!getRowId) return null;
-    const map = new Map<T, string>();
-    for (const record of sortedData) {
-      map.set(record, getRowId(record));
-    }
-    return map;
-  }, [sortedData, getRowId]);
-
-  const resolveRowId = useCallback((record: T, index: number): string => {
-    if (rowIdMap) {
-      const id = rowIdMap.get(record);
-      if (id) return id;
-    }
-    return String(index);
-  }, [rowIdMap]);
-
   return (
     <div className="flex flex-col gap-2">
       {sortedData.length === 0 ? (
@@ -96,7 +71,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                           type="button"
                           className="inline-flex items-center gap-1 hover:text-text-primary transition-colors cursor-pointer"
                           style={{ textAlign: col.align || "left" }}
-                          onClick={() => handleSort(col.id)}
+                          onClick={() => { resetPage(); toggleSort(col.id); }}
                         >
                           {col.header}
                           <span className="inline-flex flex-col leading-none">
@@ -113,7 +88,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
               </thead>
               <tbody>
                 {pagedData.map((record, idx) => {
-                  const rowId = resolveRowId(record, idx);
+                  const rowId = getRowId?.(record) ?? String(idx);
                   const isExpanded = isExpandable && rowId === expandedRowId;
                   const isLast = idx === pagedData.length - 1;
                   return (
@@ -122,17 +97,11 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                         className={cn(!isLast && "border-b border-border", "transition-[background-color] hover:bg-hover", isExpandable && "cursor-pointer")}
                         tabIndex={isExpandable ? 0 : undefined}
                         aria-expanded={isExpandable ? isExpanded : undefined}
-                        onClick={() => {
-                          if (isExpandable) {
-                            onToggleExpand!(expandedRowId === rowId ? null : rowId);
-                          }
-                        }}
+                        onClick={() => { if (isExpandable) onToggleExpand!(expandedRowId === rowId ? null : rowId); }}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
+                          if ((e.key === "Enter" || e.key === " ") && isExpandable) {
                             e.preventDefault();
-                            if (isExpandable) {
-                              onToggleExpand!(expandedRowId === rowId ? null : rowId);
-                            }
+                            onToggleExpand!(expandedRowId === rowId ? null : rowId);
                           }
                         }}
                       >

@@ -17,10 +17,6 @@ interface TabContainerProps {
 }
 
 export function TabContainer({ tabs, activeTab, className, tabSize = "md", onTabChange, children }: TabContainerProps) {
-  const handleTabClick = (tabId: string) => {
-    onTabChange(tabId);
-  };
-
   const content = typeof children === "function" ? children(activeTab) : children;
 
   return (
@@ -30,7 +26,7 @@ export function TabContainer({ tabs, activeTab, className, tabSize = "md", onTab
           <TabButton
             key={tab.id}
             active={activeTab === tab.id}
-            onClick={() => handleTabClick(tab.id)}
+            onClick={() => onTabChange(tab.id)}
             size={tabSize}
             aria-controls={activeTab === tab.id ? `panel-${tab.id}` : undefined}
             id={`tab-${tab.id}`}

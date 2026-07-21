@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 import { useElementWidth } from "../../shared/hooks/useElementWidth";
 import { Card, CardContent } from "../../shared/components/ui/card";
@@ -6,6 +6,7 @@ import { Input } from "../../shared/components/ui/input";
 import { chartTooltipStyle } from "../../shared/utils/format";
 import { cn } from "../../shared/utils/cn";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import { formatDollar } from "../../shared/utils/format";
 import { getModelColor } from "../../shared/components/rankColor";
 import { calcModelCost } from "../../shared/utils/math";
@@ -16,7 +17,7 @@ import { ComparePageLayout } from "./ComparePageLayout";
 
 export function PriceCompareView() {
   const { t } = useTranslation();
-  useEffect(() => { document.title = t("priceComparison"); }, [t]);
+  useDocumentTitle(t("priceComparison"));
   const [chartRef, chartWidth] = useElementWidth();
 
   return (

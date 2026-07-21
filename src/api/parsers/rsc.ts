@@ -236,6 +236,5 @@ export async function fetchAndParseRsc<T>(
   } catch (e) {
     throw new Error(rscParseError(marker, rsc, e), { cause: e });
   }
-  if (entries.length === 0) throw new Error(rscParseError(marker, rsc));
   return entries;
 }

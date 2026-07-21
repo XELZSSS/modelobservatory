@@ -9,8 +9,7 @@ function compactBenchmarks(m: Record<string, unknown>): Record<string, number | 
   const nested = obj(m.benchmarks);
   const benchmarks: Record<string, number | null> = {};
   for (const key of BENCHMARK_KEYS) {
-    const val = num(m[key]) ?? (nested ? num(nested[key]) : null);
-    if (val !== undefined) benchmarks[key] = val;
+    benchmarks[key] = num(m[key]) ?? (nested ? num(nested[key]) : null);
   }
   return benchmarks;
 }

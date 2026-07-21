@@ -1,6 +1,7 @@
-import { lazy, Suspense, useMemo, useState, useEffect } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import type { TranslationKey } from "../../shared/i18n";
 import { useSuspenseArtificialRankings, useHallucinationRankings, useOpenSourceModels, useOpenRouterRankings } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery, Spinner } from "../../shared/components/feedback/SuspenseQuery";
@@ -77,7 +78,7 @@ function RankingsContent({ defaultTab }: { defaultTab: number }) {
 
 export function RankingsHubView({ defaultTab = 0 }: RankingsHubProps) {
   const { t } = useTranslation();
-  useEffect(() => { document.title = t("modelRankings"); }, [t]);
+  useDocumentTitle(t("modelRankings"));
   return (
     <SuspenseQuery>
       <RankingsContent defaultTab={defaultTab} />

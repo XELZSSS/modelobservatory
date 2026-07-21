@@ -1,7 +1,7 @@
-import { type ReactNode } from "react";
 import { Plus, Check } from "lucide-react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { Badge } from "../../shared/components/ui/badge";
+import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { Button } from "../../shared/components/ui/button";
 import { ModelDetailContent } from "../../shared/components/composite/ModelDetailContent";
 
@@ -26,10 +26,6 @@ export function ModelExpandedDetail({ model }: { model: ArtificialAnalysisModel 
       <ModelDetailContent model={model} />
     </div>
   );
-}
-
-function MobileTag({ children }: { children: ReactNode }) {
-  return <span className="inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border border-border bg-bg-secondary text-text-secondary">{children}</span>;
 }
 
 function RankingModelCell({
@@ -67,8 +63,8 @@ function RankingModelCell({
         ))}
       </div>
       <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-        {model.model_creators?.name && <MobileTag>{model.model_creators.name}</MobileTag>}
-        <MobileTag>{t("contextWindow")}: {formatContext(t, model)}</MobileTag>
+        {model.model_creators?.name && <TagBadge>{model.model_creators.name}</TagBadge>}
+        <TagBadge>{t("contextWindow")}: {formatContext(t, model)}</TagBadge>
       </div>
     </>
   );
@@ -160,9 +156,9 @@ export function buildPricingColumns(
             <CompareButton isCompared={isCompared} onToggle={() => toggleCompareModel(model)} />
             </div>
             <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-              {model.model_creators?.name && <MobileTag>{model.model_creators.name}</MobileTag>}
-              {model.pricing?.cache_hit != null && <MobileTag>{t("cacheHitPrice")}: {formatDollar(model.pricing.cache_hit, t)}</MobileTag>}
-              <MobileTag>{t("monthlyCost")}: {formatDollar(calcModelCost(model, calcPrompt, calcCompletion), t)}</MobileTag>
+              {model.model_creators?.name && <TagBadge>{model.model_creators.name}</TagBadge>}
+              {model.pricing?.cache_hit != null && <TagBadge>{t("cacheHitPrice")}: {formatDollar(model.pricing.cache_hit, t)}</TagBadge>}
+              <TagBadge>{t("monthlyCost")}: {formatDollar(calcModelCost(model, calcPrompt, calcCompletion), t)}</TagBadge>
             </div>
           </>
         );

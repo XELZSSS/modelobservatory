@@ -4,7 +4,9 @@ import { timeout } from "hono/timeout";
 import { timing } from "hono/timing";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { registerRoutes } from "./server/registerRoutes";
+import { ApiError } from "./errors";
 
 import { routeDefs } from "./server/routes";
 
@@ -26,6 +28,15 @@ app.use(
 );
 
 registerRoutes(app, [routeDefs]);
+
+app.onError((err, c) => {
+  if (err instanceof ApiError) {
+    const status = (err.status >= 100 && err.status < 600 ? err.status : 500) as ContentfulStatusCode;
+    return c.json({ error: { code: status, message: err.message } }, status);
+  }
+  console.error("[unhandled]", err);
+  return c.json({ error: { code: 500, message: "Internal server error" } }, 500);
+});
 
 app.notFound((c) => c.json({ error: { code: 404, message: "API route not found" } }, 404));
 

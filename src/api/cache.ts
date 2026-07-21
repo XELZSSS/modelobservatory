@@ -15,9 +15,6 @@ class MemoryCache implements CacheBackend {
     const entry = this.store.get(key);
     if (!entry) return null;
     if (entry.expires <= Date.now()) { this.store.delete(key); return null; }
-    // Touch entry to maintain LRU order in insertion-ordered Map
-    this.store.delete(key);
-    this.store.set(key, entry);
     return entry.data as T;
   }
 
@@ -65,19 +62,18 @@ function dedup<T>(key: string, fn: () => Promise<T>): Promise<T> {
 }
 
 // Negative cache: prevent hammering a failing upstream
-const negKeys = new Map<string, ReturnType<typeof setTimeout>>();
+const negCache = new Map<string, number>();
 
 function addNegKey(key: string) {
-  if (negKeys.size >= MAX_NEG_KEYS) {
-    const first = negKeys.keys().next().value;
-    if (first !== undefined) {
-      clearTimeout(negKeys.get(first)!);
-      negKeys.delete(first);
-    }
-  }
-  const existing = negKeys.get(key);
-  if (existing) clearTimeout(existing);
-  negKeys.set(key, setTimeout(() => negKeys.delete(key), NEG_TTL_MS));
+  if (negCache.size >= MAX_NEG_KEYS) negCache.clear();
+  negCache.set(key, Date.now());
+}
+
+function isNegCached(key: string): boolean {
+  const ts = negCache.get(key);
+  if (ts === undefined) return false;
+  if (Date.now() - ts > NEG_TTL_MS) { negCache.delete(key); return false; }
+  return true;
 }
 
 export async function withCache<T>(key: string, ttlMs: number, fn: () => Promise<T>): Promise<T> {
@@ -87,7 +83,7 @@ export async function withCache<T>(key: string, ttlMs: number, fn: () => Promise
 export async function withCacheTtl<T>(key: string, defaultTtl: number, fn: () => Promise<{ data: T; ttl: number }>): Promise<T> {
   const cached = await globalCache.get<T>(key);
   if (cached !== null) return cached;
-  if (negKeys.has(key)) throw new Error("upstream temporarily unavailable");
+  if (isNegCached(key)) throw new Error("upstream temporarily unavailable");
   return dedup(key, async () => {
     try {
       const { data, ttl } = await fn();
@@ -98,10 +94,6 @@ export async function withCacheTtl<T>(key: string, defaultTtl: number, fn: () =>
       throw err;
     }
   });
-}
-
-export function settled<T>(result: PromiseSettledResult<T>, fallback: T): T {
-  return result.status === "fulfilled" ? result.value : fallback;
 }
 
 export function deduplicateBy<T>(arr: T[], keyFn: (item: T) => string): T[] {

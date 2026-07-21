@@ -1,7 +1,8 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { DataTable } from "../../shared/components/data/DataTable";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 
 import { cn } from "../../shared/utils/cn";
 import { ViewLayout } from "../../shared/components/composite/ViewLayout";
@@ -110,7 +111,7 @@ function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "r
 
 export function ReleasesView({ defaultMode, lockedMode = false }: { defaultMode?: "feed" | "release-dates"; lockedMode?: boolean }) {
   const { t } = useTranslation();
-  useEffect(() => { document.title = t("releases"); }, [t]);
+  useDocumentTitle(t("releases"));
   return (
     <SuspenseQuery>
       <ReleasesContent defaultMode={defaultMode || "feed"} lockedMode={lockedMode} />
