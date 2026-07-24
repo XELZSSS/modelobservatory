@@ -1,6 +1,6 @@
-import { fetchJSON } from "../http";
+import { fetchJSON } from "../fetch";
 import { withCache } from "../cache";
-import { getOpenLicense } from "../parsers/license";
+import { getOpenLicense } from "../server/parsers/license";
 import { upstreamConfig, DEFAULT_TTL_MS } from "../../shared/config";
 import type { OpenSourceModelEntry } from "../../shared/types";
 

@@ -1,6 +1,6 @@
 import { withCache } from "../cache";
-import { fetchText } from "../http";
-import { parseRscScriptArray } from "../parsers/rsc";
+import { fetchText } from "../fetch";
+import { parseRscScriptArray } from "../server/parsers/rsc";
 import { DEFAULT_TTL_MS } from "../../shared/config";
 import type { ArenaModel } from "../../shared/types";
 

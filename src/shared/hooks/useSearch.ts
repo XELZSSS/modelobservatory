@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { NewsItem } from "../types";
 import { FIVE_MINUTES } from "../config";
-import { apiFetch, api } from "../../api/client/httpClient";
+import { apiFetch, api } from "../../api/client";
 import type { SearchResult } from "../types/search";
 import { useArtificialRankings, useSuspenseHomeDashboard, useSuspenseTtsLeaderboard, useOpenRouterRankings, useHallucinationRankings } from "./useApiQuery";
 

@@ -1,6 +1,6 @@
-import { lazy, useEffect } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { useSearchStore } from "./shared/stores/searchStore";
+import { lazy } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useSearchResetOnNavigate } from "./shared/hooks/useSearchResetOnNavigate";
 
 const HomeView = lazy(() => import("./features/home/HomeView").then((m) => ({ default: m.HomeView })));
 const RankingsHubView = lazy(() => import("./features/rankings/RankingsHubView").then((m) => ({ default: m.RankingsHubView })));
@@ -16,12 +16,7 @@ const ModelDetailView = lazy(() => import("./features/models/ModelDetailView").t
 const NotFound = lazy(() => import("./features/system/NotFound").then((m) => ({ default: m.NotFound })));
 
 export function AppRoutes() {
-  const location = useLocation();
-  const resetSearch = useSearchStore((s) => s.resetSearch);
-
-  useEffect(() => {
-    resetSearch();
-  }, [location.pathname, resetSearch]);
+  useSearchResetOnNavigate();
 
   return (
     <Routes>

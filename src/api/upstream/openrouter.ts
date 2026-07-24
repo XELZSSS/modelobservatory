@@ -1,6 +1,6 @@
 import { withCache, formatSettleErrors } from "../cache";
-import { fetchJSON } from "../http";
-import { numOr } from "../parsers/coerce";
+import { fetchJSON } from "../fetch";
+import { numOr } from "../server/parsers/coerce";
 import { upstreamConfig, DEFAULT_TTL_MS } from "../../shared/config";
 import type { OpenRouterAppEntry, OpenRouterRankingsPayload, OpenRouterRankEntry } from "../../shared/types";
 

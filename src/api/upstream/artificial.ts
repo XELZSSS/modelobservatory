@@ -1,7 +1,7 @@
 import { withCache } from "../cache";
 import { DEFAULT_TTL_MS } from "../../shared/config";
-import { fetchAndParseRsc, findNextData } from "../parsers/rsc";
-import { num, str, strOr, bool, obj } from "../parsers/coerce";
+import { fetchAndParseRsc, findNextData } from "../server/parsers/rsc";
+import { num, str, strOr, bool, obj } from "../server/parsers/coerce";
 import { BENCHMARK_KEYS } from "../../shared/constants/benchmarks";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 

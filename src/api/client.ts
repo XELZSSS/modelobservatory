@@ -1,4 +1,4 @@
-import { apiBase } from "../../shared/config";
+import { apiBase } from "../shared/config";
 
 /**
  * Simple frontend API fetch. Timeout and cancellation are handled by the

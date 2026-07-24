@@ -1,9 +1,50 @@
+export interface ModelCreators {
+  name?: string;
+  color?: string;
+}
+
+export interface ModelPricing {
+  input?: number | null;
+  output?: number | null;
+  cache_hit?: number | null;
+  cache_hit_discount_percent?: number | null;
+  cacheHitRate?: number | null;
+  blended?: Record<string, number | null | undefined>;
+  intelligence_index_cost?: {
+    total_cost?: number | null;
+    input_cost?: number | null;
+    output_cost?: number | null;
+  };
+}
+
+export interface ModelSpeed {
+  median_output_speed?: number | null;
+  median_time_to_first_token?: number | null;
+  timescaleData?: { median_output_speed?: number | null };
+}
+
+export interface ModelTokenCounts {
+  input_tokens?: number;
+  answer_tokens?: number;
+  output_tokens?: number;
+  reasoning_tokens?: number;
+}
+
+export interface ModelOmniscienceBreakdown {
+  total?: {
+    accuracy?: number | null;
+    attempt_rate?: number | null;
+    hallucination_rate?: number | null;
+    omniscience?: number | null;
+  };
+}
+
 export interface ArtificialAnalysisModel {
   id: string;
   slug: string;
   name: string;
   short_name?: string | null;
-  model_creators?: { name?: string; color?: string };
+  model_creators?: ModelCreators;
   intelligence_index: number | null;
   intelligence_index_is_estimated?: boolean;
   estimated_intelligence_index?: number | null;
@@ -27,32 +68,9 @@ export interface ArtificialAnalysisModel {
 
   benchmarks?: Record<string, number | null>;
 
-  pricing?: {
-    input?: number | null;
-    output?: number | null;
-    cache_hit?: number | null;
-    cache_hit_discount_percent?: number | null;
-    cacheHitRate?: number | null;
-    blended?: Record<string, number | null | undefined>;
-    intelligence_index_cost?: {
-      total_cost?: number | null;
-      input_cost?: number | null;
-      output_cost?: number | null;
-    };
-  };
-
-  speed?: {
-    median_output_speed?: number | null;
-    median_time_to_first_token?: number | null;
-    timescaleData?: { median_output_speed?: number | null };
-  };
-
-  token_counts?: {
-    input_tokens?: number;
-    answer_tokens?: number;
-    output_tokens?: number;
-    reasoning_tokens?: number;
-  };
+  pricing?: ModelPricing;
+  speed?: ModelSpeed;
+  token_counts?: ModelTokenCounts;
 
   input_modality_text?: boolean;
   input_modality_image?: boolean;
@@ -63,7 +81,6 @@ export interface ArtificialAnalysisModel {
   output_modality_speech?: boolean;
   output_modality_video?: boolean;
 
-  // URLs
   model_url?: string | null;
   hosts_url?: string | null;
   model_weights_source_url?: string | null;
@@ -73,14 +90,7 @@ export interface ArtificialAnalysisModel {
   deprecated?: boolean;
   deleted?: boolean;
 
-  omniscience_breakdown?: {
-    total?: {
-      accuracy?: number | null;
-      attempt_rate?: number | null;
-      hallucination_rate?: number | null;
-      omniscience?: number | null;
-    };
-  };
+  omniscience_breakdown?: ModelOmniscienceBreakdown;
 }
 
 export interface TtsModel {

@@ -1,5 +1,5 @@
 import { withCache, formatSettleErrors } from "../cache";
-import { fetchJSON } from "../http";
+import { fetchJSON } from "../fetch";
 import { errorMessage } from "../errors";
 import { deduplicateBy } from "../cache";
 import type { ModelPrediction, ReleasePrediction, ProviderPrediction, PredictionsPayload } from "../../shared/types";
