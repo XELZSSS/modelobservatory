@@ -4,10 +4,7 @@ import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { formatScore } from "../../shared/utils/format";
 
-export function useBenchmarkColumns(
-  t: (key: TranslationKey) => string,
-  selectedBenchmark: string,
-): DataTableColumn<ArtificialAnalysisModel>[] {
+export function useBenchmarkColumns(t: (key: TranslationKey) => string, selectedBenchmark: string): DataTableColumn<ArtificialAnalysisModel>[] {
   return [
     {
       id: "name",

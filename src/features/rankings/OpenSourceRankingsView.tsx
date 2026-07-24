@@ -18,7 +18,9 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
         <>
           <RankingNameCell name={row.item.id.split("/").pop() || row.item.id} />
           <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <TagBadge>{t("likes")}: {formatShortNumber(row.item.likes)}</TagBadge>
+            <TagBadge>
+              {t("likes")}: {formatShortNumber(row.item.likes)}
+            </TagBadge>
             {row.item.license && <TagBadge>{row.item.license}</TagBadge>}
           </div>
         </>
@@ -54,13 +56,5 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
 }
 
 export function OpenSourceRankingsView({ rankings }: { rankings: OpenSourceModelEntry[] }) {
-  return (
-    <RankingTable
-      data={rankings}
-      columns={buildColumns}
-      getRowId={getRowId}
-      getSearchFields={getSearchFields}
-      sourceKey="openSourceDataSource"
-    />
-  );
+  return <RankingTable data={rankings} columns={buildColumns} getRowId={getRowId} getSearchFields={getSearchFields} sourceKey="openSourceDataSource" />;
 }

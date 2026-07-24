@@ -1,7 +1,7 @@
-import { type ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 import { Card, CardContent } from "../ui/card";
 
-export function InfoCard({ title, children }: { title: string; children: ReactNode }) {
+export const InfoCard = memo(function InfoCard({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Card>
       <CardContent className="p-3 last:pb-3">
@@ -10,4 +10,4 @@ export function InfoCard({ title, children }: { title: string; children: ReactNo
       </CardContent>
     </Card>
   );
-}
+});

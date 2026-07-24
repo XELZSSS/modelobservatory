@@ -14,19 +14,27 @@ class MemoryCache implements CacheBackend {
   async get<T>(key: string): Promise<T | null> {
     const entry = this.store.get(key);
     if (!entry) return null;
-    if (entry.expires <= Date.now()) { this.store.delete(key); return null; }
+    if (entry.expires <= Date.now()) {
+      this.store.delete(key);
+      return null;
+    }
     return entry.data as T;
   }
 
   async set<T>(key: string, value: T, ttlMs: number): Promise<void> {
     this.store.delete(key);
     this.store.set(key, { data: value, expires: Date.now() + ttlMs });
-    if (++this.writes >= 100) { this.writes = 0; this.evict(); }
+    if (++this.writes >= 100) {
+      this.writes = 0;
+      this.evict();
+    }
   }
 
   private evict() {
     const now = Date.now();
-    for (const [k, v] of this.store) { if (v.expires <= now) this.store.delete(k); }
+    for (const [k, v] of this.store) {
+      if (v.expires <= now) this.store.delete(k);
+    }
     while (this.store.size > MAX_ENTRIES) {
       const firstKey = this.store.keys().next().value;
       if (firstKey !== undefined) this.store.delete(firstKey);
@@ -37,14 +45,20 @@ class MemoryCache implements CacheBackend {
 
 const memCache: CacheBackend = new MemoryCache();
 export let globalCache: CacheBackend = memCache;
-export function initCache(backend: CacheBackend) { globalCache = backend; }
+export function initCache(backend: CacheBackend) {
+  globalCache = backend;
+}
 
 export class KVCache implements CacheBackend {
   constructor(private kv: KVNamespace) {}
   async get<T>(key: string): Promise<T | null> {
     const raw = await this.kv.get(key, "text");
     if (!raw) return null;
-    try { return JSON.parse(raw) as T; } catch { return null; }
+    try {
+      return JSON.parse(raw) as T;
+    } catch {
+      return null;
+    }
   }
   async set<T>(key: string, value: T, ttlMs: number): Promise<void> {
     await this.kv.put(key, JSON.stringify(value), { expirationTtl: Math.max(60, Math.ceil(ttlMs / 1000)) });
@@ -72,7 +86,10 @@ function addNegKey(key: string) {
 function isNegCached(key: string): boolean {
   const ts = negCache.get(key);
   if (ts === undefined) return false;
-  if (Date.now() - ts > NEG_TTL_MS) { negCache.delete(key); return false; }
+  if (Date.now() - ts > NEG_TTL_MS) {
+    negCache.delete(key);
+    return false;
+  }
   return true;
 }
 

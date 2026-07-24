@@ -54,10 +54,7 @@ function parseRscPayload<T>(body: string, marker: string, extract: (data: unknow
     const result = extract(tree);
     if (result && result.length > 0) return result;
   }
-  throw new Error(
-    `RSC marker "${marker}" not found or payload empty. ` +
-      `body length=${body.length}, head="${snippet(body)}"`,
-  );
+  throw new Error(`RSC marker "${marker}" not found or payload empty. ` + `body length=${body.length}, head="${snippet(body)}"`);
 }
 
 function dfs<T>(root: unknown, collect: boolean, predicate: (node: unknown) => T | null): T | T[] | null {
@@ -141,11 +138,17 @@ function findArrayEnd(s: string, start: number): number {
     const ch = s[i];
     if (inString) {
       // A backslash escapes the next char inside a JSON string.
-      if (ch === "\\") { i++; continue; }
+      if (ch === "\\") {
+        i++;
+        continue;
+      }
       if (ch === '"') inString = false;
       continue;
     }
-    if (ch === '"') { inString = true; continue; }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
     if (ch === "[") depth++;
     else if (ch === "]") {
       depth--;
@@ -162,14 +165,30 @@ function unescape(s: string): string {
     if (s[i] === "\\" && i + 1 < s.length) {
       const next = s[i + 1];
       switch (next) {
-        case '"': out += '"'; break;
-        case "\\": out += "\\"; break;
-        case "/": out += "/"; break;
-        case "n": out += "\n"; break;
-        case "t": out += "\t"; break;
-        case "r": out += "\r"; break;
-        case "b": out += "\b"; break;
-        case "f": out += "\f"; break;
+        case '"':
+          out += '"';
+          break;
+        case "\\":
+          out += "\\";
+          break;
+        case "/":
+          out += "/";
+          break;
+        case "n":
+          out += "\n";
+          break;
+        case "t":
+          out += "\t";
+          break;
+        case "r":
+          out += "\r";
+          break;
+        case "b":
+          out += "\b";
+          break;
+        case "f":
+          out += "\f";
+          break;
         case "u": {
           const hex = s.slice(i + 2, i + 6);
           if (/^[0-9a-fA-F]{4}$/.test(hex)) {
@@ -193,7 +212,8 @@ function unescape(s: string): string {
           }
           break;
         }
-        default: out += next;
+        default:
+          out += next;
       }
       i++;
     } else {
@@ -219,11 +239,7 @@ function isMarkerBoundary(line: string, marker: string): boolean {
  * Fetch an RSC page from Artificial Analysis and parse flight chunks.
  * Wraps fetch + parse + diagnostic error into a single call.
  */
-export async function fetchAndParseRsc<T>(
-  path: string,
-  marker: string,
-  extract: (data: unknown) => T[] | null,
-): Promise<T[]> {
+export async function fetchAndParseRsc<T>(path: string, marker: string, extract: (data: unknown) => T[] | null): Promise<T[]> {
   let rsc: string;
   try {
     rsc = await fetchAARsc(path);

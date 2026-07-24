@@ -1,7 +1,6 @@
 import { memo, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
-
 export const InfoRow = memo(function InfoRow({ label, value, compact = false }: { label: string; value: ReactNode; compact?: boolean }) {
   const textSize = compact ? "text-xs" : "text-sm";
   return (

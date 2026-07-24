@@ -27,8 +27,12 @@ function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
         <p className={cn("text-xs text-text-secondary", "leading-relaxed")}>{getRecommendation(item.id, t)}</p>
       </div>
       <div className={cn("flex flex-row justify-between items-center", "text-xs text-text-secondary")}>
-        <span>{t("apiModelId")}: <code className="font-mono bg-bg-secondary px-1">{item.id}</code></span>
-        <span>{t("todayCategory")}: <span className="font-bold uppercase">{categoryLabel(item.category, t)}</span></span>
+        <span>
+          {t("apiModelId")}: <code className="font-mono bg-bg-secondary px-1">{item.id}</code>
+        </span>
+        <span>
+          {t("todayCategory")}: <span className="font-bold uppercase">{categoryLabel(item.category, t)}</span>
+        </span>
       </div>
     </div>
   );
@@ -45,7 +49,9 @@ function AppExpandedDetail({ item }: { item: OpenRouterAppEntry }) {
       </div>
       {item.description && <p className={cn("text-xs text-text-secondary", "leading-relaxed p-2 rounded-md bg-bg-secondary")}>{item.description}</p>}
       <div className={cn("flex flex-row justify-between items-center", "text-xs text-text-secondary")}>
-        <span>ID: <code className="font-mono bg-bg-secondary px-1">{item.id}</code></span>
+        <span>
+          ID: <code className="font-mono bg-bg-secondary px-1">{item.id}</code>
+        </span>
         {item.url && <span className="truncate max-w-[60%]">{item.url}</span>}
       </div>
     </div>

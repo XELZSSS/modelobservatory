@@ -37,19 +37,27 @@ export function useAARankingFilters(rankings: ArtificialAnalysisModel[]) {
     if (modalityFilter === "all") return searchFiltered;
     return searchFiltered.filter((m) => {
       switch (modalityFilter) {
-        case "text": return m.input_modality_text || m.output_modality_text;
-        case "image": return m.input_modality_image || m.output_modality_image;
-        case "speech": return m.input_modality_speech || m.output_modality_speech;
-        case "video": return m.input_modality_video || m.output_modality_video;
-        default: return true;
+        case "text":
+          return m.input_modality_text || m.output_modality_text;
+        case "image":
+          return m.input_modality_image || m.output_modality_image;
+        case "speech":
+          return m.input_modality_speech || m.output_modality_speech;
+        case "video":
+          return m.input_modality_video || m.output_modality_video;
+        default:
+          return true;
       }
     });
   }, [searchFiltered, modalityFilter]);
 
   return {
     filtered,
-    viewMode, setViewMode,
-    reasoningFilter, setReasoningFilter,
-    modalityFilter, setModalityFilter,
+    viewMode,
+    setViewMode,
+    reasoningFilter,
+    setReasoningFilter,
+    modalityFilter,
+    setModalityFilter,
   };
 }

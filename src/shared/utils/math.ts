@@ -1,3 +1,5 @@
+import type { ArtificialAnalysisModel } from "../types";
+
 /**
  * Normalize a value that may be a fraction (0-1) or a percentage (0-100).
  * Heuristic: values strictly between 0 and 1 (exclusive) are treated as fractions
@@ -29,8 +31,6 @@ export function clampPercent(value: number | null | undefined): number | null {
   return Math.max(0, Math.min(100, norm));
 }
 
-import type { ArtificialAnalysisModel } from "../types";
-
 export function calcModelCost(model: ArtificialAnalysisModel, promptTokens: number, completionTokens: number): number | null {
   if (!Number.isFinite(promptTokens) || !Number.isFinite(completionTokens)) return null;
   const pt = Math.max(0, promptTokens);
@@ -39,16 +39,13 @@ export function calcModelCost(model: ArtificialAnalysisModel, promptTokens: numb
   const pricing = model.pricing;
   if (!pricing) return null;
 
-  const inputPrice = pricing.input;
-  const outputPrice = pricing.output;
-
-  if (typeof inputPrice === "number" && Number.isFinite(inputPrice) && typeof outputPrice === "number" && Number.isFinite(outputPrice)) {
-    return (pt / 1_000_000) * inputPrice + (ct / 1_000_000) * outputPrice;
+  if (Number.isFinite(pricing.input) && Number.isFinite(pricing.output)) {
+    return (pt / 1_000_000) * pricing.input! + (ct / 1_000_000) * pricing.output!;
   }
 
   const blended = pricing.blended?.["7_2_1"];
-  if (typeof blended === "number" && Number.isFinite(blended)) {
-    return ((pt + ct) / 1_000_000) * blended;
+  if (Number.isFinite(blended)) {
+    return ((pt + ct) / 1_000_000) * blended!;
   }
 
   return null;

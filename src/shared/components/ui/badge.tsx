@@ -1,13 +1,13 @@
 import { cn } from "../../utils/cn";
-import type React from "react";
+import { memo, type ReactNode } from "react";
 
 interface BadgeProps {
   variant?: "default" | "outline";
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
-export function Badge({ variant = "default", className, children }: BadgeProps) {
+export const Badge = memo(function Badge({ variant = "default", className, children }: BadgeProps) {
   return (
     <span
       className={cn(
@@ -19,4 +19,4 @@ export function Badge({ variant = "default", className, children }: BadgeProps) 
       {children}
     </span>
   );
-}
+});

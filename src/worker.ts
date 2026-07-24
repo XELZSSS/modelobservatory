@@ -16,10 +16,15 @@ interface Env {
   METRICS?: KVNamespace;
 }
 
+let cacheInitialized = false;
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const cacheBackend = env.METRICS ? new KVCache(env.METRICS) : globalCache;
-    initCache(cacheBackend);
+    if (!cacheInitialized) {
+      const cacheBackend = env.METRICS ? new KVCache(env.METRICS) : globalCache;
+      initCache(cacheBackend);
+      cacheInitialized = true;
+    }
 
     const cf = (request as Request & { cf?: CfProperties }).cf;
     if (cf && typeof cf === "object") setCloudflareInfo(cf as Record<string, unknown>);

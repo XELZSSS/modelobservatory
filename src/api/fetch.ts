@@ -9,7 +9,9 @@ const BASE_HEADERS: Record<string, string> = {
 
 async function doFetch(url: string, init: RequestInit, accept: string): Promise<Response> {
   const headers = { ...BASE_HEADERS, accept, ...init.headers };
-  const signal = init.signal ?? AbortSignal.timeout(TIMEOUT_MS);
+  const externalSignal = init.signal;
+  const timeoutSignal = AbortSignal.timeout(TIMEOUT_MS);
+  const signal = externalSignal ? AbortSignal.any([externalSignal, timeoutSignal]) : timeoutSignal;
   try {
     const res = await fetch(url, { headers, signal });
     if (!res.ok) {
@@ -19,7 +21,9 @@ async function doFetch(url: string, init: RequestInit, accept: string): Promise<
     return res;
   } catch (e) {
     await new Promise((r) => setTimeout(r, 2000));
-    const res = await fetch(url, { headers, signal: init.signal ?? AbortSignal.timeout(TIMEOUT_MS) });
+    const retryTimeout = AbortSignal.timeout(TIMEOUT_MS);
+    const retrySignal = externalSignal ? AbortSignal.any([externalSignal, retryTimeout]) : retryTimeout;
+    const res = await fetch(url, { headers, signal: retrySignal });
     if (!res.ok) {
       const body = accept.includes("json") ? await res.text().catch(() => "") : "";
       throw new Error(`HTTP ${res.status} for ${url}${body ? `: ${body.slice(0, 200)}` : ""}`, { cause: e });
@@ -35,5 +39,3 @@ export async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> 
 export async function fetchText(url: string, init?: RequestInit): Promise<string> {
   return (await doFetch(url, init ?? {}, "text/html,application/xhtml+xml,*/*")).text();
 }
-
-

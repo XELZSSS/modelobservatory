@@ -30,7 +30,6 @@ export async function getTtsLeaderboard(): Promise<TtsModel[]> {
         };
       }),
     );
-    return deduplicateBy(entries, (e) => e.id)
-      .sort((a, b) => (b.quality_elo ?? 0) - (a.quality_elo ?? 0));
+    return deduplicateBy(entries, (e) => e.id).sort((a, b) => (b.quality_elo ?? 0) - (a.quality_elo ?? 0));
   });
 }

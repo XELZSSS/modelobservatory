@@ -58,7 +58,14 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
   return (
     <div className="flex flex-col gap-2">
       {currentNews.map((item) => (
-        <a key={item.id} href={safeHref(item.link) ?? undefined} target="_blank" rel="noopener noreferrer" className="group block hover:border-text-primary" aria-label={`${item.title} - ${item.source}`}>
+        <a
+          key={item.id}
+          href={safeHref(item.link) ?? undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group block hover:border-text-primary"
+          aria-label={`${item.title} - ${item.source}`}
+        >
           <Card className="p-3" style={{ borderLeft: `3px solid ${color}` }}>
             <div className="flex flex-row items-start justify-between gap-4">
               <h3 className="text-sm font-bold text-text-primary leading-relaxed group-hover:underline">{item.title}</h3>

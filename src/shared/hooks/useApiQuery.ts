@@ -14,9 +14,14 @@ import { HEALTH_CHECK_INTERVAL, SYSTEM_STATS_INTERVAL, FIVE_MINUTES, THIRTY_MINU
 import { apiFetch, api } from "../../api/client";
 import { normalizePercent } from "../utils/math";
 
-interface QueryCtx { signal?: AbortSignal }
+interface QueryCtx {
+  signal?: AbortSignal;
+}
 
-const fetcher = <T>(path: string) => ({ signal }: QueryCtx) => apiFetch<T>(path, signal);
+const fetcher =
+  <T>(path: string) =>
+  ({ signal }: QueryCtx) =>
+    apiFetch<T>(path, signal);
 
 function createApiQuery<T>(path: string, opts?: { staleTime?: number; refetchInterval?: number | false }) {
   const key = [path.split("?")[0]!.replace(/\//g, ":")];
@@ -46,14 +51,9 @@ export const useSuspenseHomeDashboard = qHomeDashboard.useSuspense;
 export const useOpenRouterRankings = qOpenRouter.use;
 export const useSuspenseOpenRouterRankings = qOpenRouter.useSuspense;
 
-export function useOpenSourceModels(enabled = true) {
-  return useQuery<OpenSourceModelEntry[]>({
-    queryKey: ["openSourceModels"],
-    queryFn: fetcher<OpenSourceModelEntry[]>(api.openSourceModels()),
-    staleTime: FIVE_MINUTES,
-    enabled,
-  });
-}
+export const qOpenSourceModels = createApiQuery<OpenSourceModelEntry[]>(api.openSourceModels(), { staleTime: FIVE_MINUTES });
+export const useOpenSourceModels = qOpenSourceModels.use;
+export const useSuspenseOpenSourceModels = qOpenSourceModels.useSuspense;
 
 function buildHallucinationRankings(models: ArtificialAnalysisModel[]): HallucinationRankingEntry[] {
   return models

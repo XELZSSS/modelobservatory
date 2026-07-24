@@ -20,14 +20,13 @@ export async function apiFetch<T>(path: string, signal?: AbortSignal): Promise<T
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     throw new Error(body?.error?.message || `HTTP ${res.status}: ${res.statusText}`);
   }
-  return (await res.json() as { data: T }).data;
+  return ((await res.json()) as { data: T }).data;
 }
 
 export const api = {
   artificialIndex: "/api/artificial-analysis-index",
   arenaLeaderboard: (category: string) => `/api/arena-leaderboard?category=${encodeURIComponent(category)}`,
-  openSourceModels: (sort = "trendingScore", direction = "-1", limit = 500) =>
-    `/api/open-source-models?sort=${sort}&direction=${direction}&limit=${limit}`,
+  openSourceModels: (sort = "trendingScore", direction = "-1", limit = 500) => `/api/open-source-models?sort=${sort}&direction=${direction}&limit=${limit}`,
   openSourceReleases: "/api/open-source-releases",
   openRouterRankings: "/api/openrouter-rankings",
   ttsLeaderboard: "/api/tts-leaderboard",

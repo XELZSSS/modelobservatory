@@ -1,5 +1,6 @@
 import type { TFunction, TranslationKey } from "../i18n";
 import type { ArtificialAnalysisModel } from "../types";
+import { BENCHMARK_LABELS } from "../constants/benchmarks";
 
 export function safeHref(url: string | null | undefined): string | undefined {
   if (!url) return undefined;
@@ -106,7 +107,6 @@ export const chartTooltipStyle = {
 } as const;
 
 export function benchmarkLabel(key: string, t: TFunction): string {
-  const camelKey = key.split("_").map((part, i) => i === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)).join("");
-  const labelKey = `benchmark${camelKey.charAt(0).toUpperCase() + camelKey.slice(1)}` as TranslationKey;
-  return t(labelKey);
+  const labelKey = BENCHMARK_LABELS[key as keyof typeof BENCHMARK_LABELS];
+  return labelKey ? t(labelKey) : key;
 }

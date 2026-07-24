@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, type ReactNode } from "react";
 import { en } from "./locales/en";
 import { zh } from "./locales/zh";
 import { useLangStore } from "../stores/langStore";
@@ -46,15 +45,18 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = (newLang: Lang) => setLangState(newLang);
 
-  const t = (key: TranslationKey, params?: TranslationParams): string => {
-    let template = resolveTemplate(key, lang);
-    if (params) {
-      template = interpolate(template, params);
-    }
-    return template;
-  };
+  const t = useCallback(
+    (key: TranslationKey, params?: TranslationParams): string => {
+      let template = resolveTemplate(key, lang);
+      if (params) {
+        template = interpolate(template, params);
+      }
+      return template;
+    },
+    [lang],
+  );
 
-  const contextValue = { lang, t, setLang, toggleLang };
+  const contextValue = useMemo(() => ({ lang, t, setLang, toggleLang }), [lang, t, setLang, toggleLang]);
 
   return <I18nContext.Provider value={contextValue}>{children}</I18nContext.Provider>;
 }

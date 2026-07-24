@@ -33,7 +33,9 @@ export function OsDetailContent({ model }: { model: OpenSourceModelEntry }) {
         <InfoCard title={t("tags")}>
           <div className="flex flex-wrap gap-1.5">
             {model.tags.map((tag) => (
-              <Badge key={tag} variant="outline">{tag}</Badge>
+              <Badge key={tag} variant="outline">
+                {tag}
+              </Badge>
             ))}
           </div>
         </InfoCard>

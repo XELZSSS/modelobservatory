@@ -22,9 +22,12 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
   const feedColumns = useMemo<DataTableColumn<FeedEntry>[]>(() => {
     const getTypeMeta = (type: FeedEntry["type"]) => {
       switch (type) {
-        case "update": return { label: t("releaseUpdate"), color: "text-info" };
-        case "opensource": return { label: t("releaseOpenSource"), color: "text-warning" };
-        default: return { label: type, color: "text-text-secondary" };
+        case "update":
+          return { label: t("releaseUpdate"), color: "text-info" };
+        case "opensource":
+          return { label: t("releaseOpenSource"), color: "text-warning" };
+        default:
+          return { label: type, color: "text-text-secondary" };
       }
     };
 
@@ -43,12 +46,26 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
         ),
       },
       {
-        id: "date", header: t("date"), accessorFn: (r) => r.ts, sortable: true, align: "right", width: 100, hiddenMd: true,
+        id: "date",
+        header: t("date"),
+        accessorFn: (r) => r.ts,
+        sortable: true,
+        align: "right",
+        width: 100,
+        hiddenMd: true,
         cell: (row) => <span className="text-xs">{row.date}</span>,
       },
       {
-        id: "type", header: t("type"), sortable: true, align: "right", width: 140, hiddenMd: true,
-        cell: (row) => { const meta = getTypeMeta(row.type); return <span className={cn("text-xs font-semibold", meta.color)}>{meta.label}</span>; },
+        id: "type",
+        header: t("type"),
+        sortable: true,
+        align: "right",
+        width: 140,
+        hiddenMd: true,
+        cell: (row) => {
+          const meta = getTypeMeta(row.type);
+          return <span className={cn("text-xs font-semibold", meta.color)}>{meta.label}</span>;
+        },
       },
     ];
   }, [t]);
@@ -62,10 +79,24 @@ function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {
   const releaseColumns = useMemo<DataTableColumn<DatedModel>[]>(
     () => [
       { id: "model", header: t("modelNameOrId"), cell: (row) => <span className="text-sm font-bold break-words min-w-0">{row.model.name}</span> },
-      { id: "creator", header: t("creator"), sortable: true, align: "right", width: "24%", hiddenMd: true,
-        cell: (row) => <span className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{row.model.model_creators?.name || t("notAvailable")}</span>,
+      {
+        id: "creator",
+        header: t("creator"),
+        sortable: true,
+        align: "right",
+        width: "24%",
+        hiddenMd: true,
+        cell: (row) => (
+          <span className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{row.model.model_creators?.name || t("notAvailable")}</span>
+        ),
       },
-      { id: "releaseDate", header: t("releaseDate"), accessorFn: (r) => r.time, sortable: true, align: "right", width: "18%",
+      {
+        id: "releaseDate",
+        header: t("releaseDate"),
+        accessorFn: (r) => r.time,
+        sortable: true,
+        align: "right",
+        width: "18%",
         cell: (row) => new Date(row.time).toLocaleDateString(),
       },
     ],

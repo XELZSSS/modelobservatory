@@ -71,7 +71,10 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                           type="button"
                           className="inline-flex items-center gap-1 hover:text-text-primary transition-colors cursor-pointer"
                           style={{ textAlign: col.align || "left" }}
-                          onClick={() => { resetPage(); toggleSort(col.id); }}
+                          onClick={() => {
+                            resetPage();
+                            toggleSort(col.id);
+                          }}
                         >
                           {col.header}
                           <span className="inline-flex flex-col leading-none">
@@ -97,7 +100,9 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                         className={cn(!isLast && "border-b border-border", "transition-[background-color] hover:bg-hover", isExpandable && "cursor-pointer")}
                         tabIndex={isExpandable ? 0 : undefined}
                         aria-expanded={isExpandable ? isExpanded : undefined}
-                        onClick={() => { if (isExpandable) onToggleExpand!(expandedRowId === rowId ? null : rowId); }}
+                        onClick={() => {
+                          if (isExpandable) onToggleExpand!(expandedRowId === rowId ? null : rowId);
+                        }}
                         onKeyDown={(e) => {
                           if ((e.key === "Enter" || e.key === " ") && isExpandable) {
                             e.preventDefault();
@@ -106,7 +111,11 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
                         }}
                       >
                         {columns.map((col) => (
-                          <td key={col.id} className={cn("py-2 px-2.5 break-words min-w-0", col.align === "right" && "tabular-nums font-mono", col.hiddenMd && "hidden md:table-cell")} style={{ width: col.width, textAlign: col.align || "left" }}>
+                          <td
+                            key={col.id}
+                            className={cn("py-2 px-2.5 break-words min-w-0", col.align === "right" && "tabular-nums font-mono", col.hiddenMd && "hidden md:table-cell")}
+                            style={{ width: col.width, textAlign: col.align || "left" }}
+                          >
                             {col.cell(record)}
                           </td>
                         ))}
@@ -125,9 +134,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
             </table>
           </div>
 
-          {sortedData.length > effectivePageSize && (
-            <Pagination page={page} totalPages={totalPages} onChange={goToPage} className="pt-1 self-center" />
-          )}
+          {sortedData.length > effectivePageSize && <Pagination page={page} totalPages={totalPages} onChange={goToPage} className="pt-1 self-center" />}
         </>
       )}
     </div>

@@ -7,9 +7,16 @@ import type { OpenRouterAppEntry, OpenRouterRankingsPayload, OpenRouterRankEntry
 const OPENROUTER = upstreamConfig.openrouter;
 
 const CREATORS: Record<string, string> = {
-  anthropic: "Anthropic", cohere: "Cohere", deepseek: "DeepSeek", google: "Google",
-  mistralai: "Mistral", "meta-llama": "Meta", minimax: "MiniMax", openai: "OpenAI",
-  qwen: "Qwen", xiaomi: "Xiaomi",
+  anthropic: "Anthropic",
+  cohere: "Cohere",
+  deepseek: "DeepSeek",
+  google: "Google",
+  mistralai: "Mistral",
+  "meta-llama": "Meta",
+  minimax: "MiniMax",
+  openai: "OpenAI",
+  qwen: "Qwen",
+  xiaomi: "Xiaomi",
 };
 
 interface ModelRow {
@@ -36,7 +43,11 @@ interface AppRow {
   app: { id: number; title: string; description: string; slug: string; main_url: string | null; origin_url: string; categories: string[] };
 }
 
-interface AppResponse { day: AppRow[]; week: AppRow[]; month: AppRow[] }
+interface AppResponse {
+  day: AppRow[];
+  week: AppRow[];
+  month: AppRow[];
+}
 
 function creatorFromSlug(slug: string): string {
   const p = slug.split("/")[0] || "Unknown";
@@ -52,12 +63,24 @@ function categoryFrom(slug: string, name: string): OpenRouterRankEntry["category
 
 function titleFromSlug(permaslug: string): string {
   return (permaslug.split("/").slice(1).join("/") || permaslug)
-    .replace(/[:/]/g, " ").split("-").filter(Boolean)
+    .replace(/[:/]/g, " ")
+    .split("-")
+    .filter(Boolean)
     .map((p) => (p.length <= 3 || /^\d/.test(p) ? p.toUpperCase() : p.charAt(0).toUpperCase() + p.slice(1)))
     .join(" ");
 }
 
-const SUM_KEYS = ["total_prompt_tokens", "total_completion_tokens", "total_native_tokens_reasoning", "total_native_tokens_cached", "total_tool_calls", "count", "num_media_prompt", "num_media_completion", "num_audio_prompt"] as const;
+const SUM_KEYS = [
+  "total_prompt_tokens",
+  "total_completion_tokens",
+  "total_native_tokens_reasoning",
+  "total_native_tokens_cached",
+  "total_tool_calls",
+  "count",
+  "num_media_prompt",
+  "num_media_completion",
+  "num_audio_prompt",
+] as const;
 
 function mergeRows(rows: ModelRow[]): ModelRow[] {
   const grouped = new Map<string, ModelRow>();
@@ -65,7 +88,10 @@ function mergeRows(rows: ModelRow[]): ModelRow[] {
   for (const row of rows) {
     const key = row.variant_permaslug || row.model_permaslug || `unknown-${idx++}`;
     const existing = grouped.get(key);
-    if (!existing) { grouped.set(key, { ...row, variant_permaslug: key }); continue; }
+    if (!existing) {
+      grouped.set(key, { ...row, variant_permaslug: key });
+      continue;
+    }
     for (const k of SUM_KEYS) {
       existing[k] = numOr(existing[k]) + numOr(row[k]);
     }
@@ -77,20 +103,30 @@ function mergeRows(rows: ModelRow[]): ModelRow[] {
 
 function mapModels(rows: ModelRow[]): OpenRouterRankEntry[] {
   return mergeRows(rows)
-    .sort((a, b) => (numOr(a.total_prompt_tokens) + numOr(a.total_completion_tokens)) - (numOr(b.total_prompt_tokens) + numOr(b.total_completion_tokens)))
+    .sort((a, b) => numOr(a.total_prompt_tokens) + numOr(a.total_completion_tokens) - (numOr(b.total_prompt_tokens) + numOr(b.total_completion_tokens)))
     .reverse()
     .map((row, i) => {
       const id = row.model_permaslug;
       const name = titleFromSlug(id);
       return {
-        rank: i + 1, id, name, creator: creatorFromSlug(id), category: categoryFrom(id, name),
-        variant: row.variant, date: row.date,
+        rank: i + 1,
+        id,
+        name,
+        creator: creatorFromSlug(id),
+        category: categoryFrom(id, name),
+        variant: row.variant,
+        date: row.date,
         totalTokens: numOr(row.total_prompt_tokens) + numOr(row.total_completion_tokens),
-        promptTokens: numOr(row.total_prompt_tokens), completionTokens: numOr(row.total_completion_tokens),
-        reasoningTokens: numOr(row.total_native_tokens_reasoning), cachedTokens: numOr(row.total_native_tokens_cached),
-        requestCount: numOr(row.count), toolCalls: numOr(row.total_tool_calls),
-        mediaPrompts: numOr(row.num_media_prompt), mediaCompletions: numOr(row.num_media_completion),
-        audioPrompts: numOr(row.num_audio_prompt), change: row.change ?? null,
+        promptTokens: numOr(row.total_prompt_tokens),
+        completionTokens: numOr(row.total_completion_tokens),
+        reasoningTokens: numOr(row.total_native_tokens_reasoning),
+        cachedTokens: numOr(row.total_native_tokens_cached),
+        requestCount: numOr(row.count),
+        toolCalls: numOr(row.total_tool_calls),
+        mediaPrompts: numOr(row.num_media_prompt),
+        mediaCompletions: numOr(row.num_media_completion),
+        audioPrompts: numOr(row.num_audio_prompt),
+        change: row.change ?? null,
       };
     });
 }
@@ -101,12 +137,15 @@ function mapApps(rows: AppRow[]): OpenRouterAppEntry[] {
     .filter((r) => r.app_id && !seen.has(r.app_id) && (seen.add(r.app_id), true))
     .sort((a, b) => numOr(b.total_tokens) - numOr(a.total_tokens))
     .map((row, i) => ({
-      rank: i + 1, id: String(row.app_id),
+      rank: i + 1,
+      id: String(row.app_id),
       name: row.app?.title || row.app?.slug || `App ${row.app_id}`,
-      description: row.app?.description, slug: row.app?.slug,
+      description: row.app?.description,
+      slug: row.app?.slug,
       url: row.app?.origin_url || row.app?.main_url || null,
       categories: row.app?.categories || [],
-      totalTokens: numOr(row.total_tokens), requestCount: numOr(row.total_requests),
+      totalTokens: numOr(row.total_tokens),
+      requestCount: numOr(row.total_requests),
     }));
 }
 

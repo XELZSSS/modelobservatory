@@ -15,22 +15,33 @@ function parseFeed(xml: string, sourceUrl: string): NewsItem[] {
   const channel = feed?.rss?.channel || feed?.feed;
   if (!channel) return [];
   const rawTitle = channel.title;
-  const sourceName = (typeof rawTitle === "string" ? rawTitle : rawTitle?.["#text"]) || (() => { try { return new URL(sourceUrl).hostname; } catch { return "Unknown"; } })();
+  const sourceName =
+    (typeof rawTitle === "string" ? rawTitle : rawTitle?.["#text"]) ||
+    (() => {
+      try {
+        return new URL(sourceUrl).hostname;
+      } catch {
+        return "Unknown";
+      }
+    })();
   let items = channel.item || channel.entry || [];
   if (!Array.isArray(items)) items = [items];
-  return items.slice(0, 50).map((item: Record<string, unknown>) => {
-    const title = item.title;
-    const rawLink = item.link;
-    const link = typeof rawLink === "string" ? rawLink : (rawLink as Record<string, unknown>)?.href;
-    if (!title || !link) return null;
-    return {
-      id: String((item.guid as Record<string, unknown>)?.["#text"] || item.guid || item.id || link),
-      title: decodeEntities(stripHtml(String(title))),
-      link: String(link),
-      pubDate: String(item.pubDate || item.published || item.updated || "1970-01-01T00:00:00Z"),
-      source: String(sourceName),
-    };
-  }).filter((x: NewsItem | null): x is NewsItem => x !== null);
+  return items
+    .slice(0, 50)
+    .map((item: Record<string, unknown>) => {
+      const title = item.title;
+      const rawLink = item.link;
+      const link = typeof rawLink === "string" ? rawLink : (rawLink as Record<string, unknown>)?.href;
+      if (!title || !link) return null;
+      return {
+        id: String((item.guid as Record<string, unknown>)?.["#text"] || item.guid || item.id || link),
+        title: decodeEntities(stripHtml(String(title))),
+        link: String(link),
+        pubDate: String(item.pubDate || item.published || item.updated || "1970-01-01T00:00:00Z"),
+        source: String(sourceName),
+      };
+    })
+    .filter((x: NewsItem | null): x is NewsItem => x !== null);
 }
 
 export async function getNews(category: string = "official"): Promise<NewsItem[]> {

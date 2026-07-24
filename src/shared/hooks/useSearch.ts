@@ -40,30 +40,77 @@ export function useSearchAllRankings(searchTerm: string): SearchResult[] {
     if (!enabled) return [];
     const term = searchTerm.toLowerCase();
     return [
-      ...searchDataset(artificialData, term, (m) => [m.name, m.slug, m.model_creators?.name], (m) => ({
-        id: m.id, name: m.name, source: "modelRankings", score: m.intelligence_index,
-        provider: m.model_creators?.name || null, link: `/model/aa/${m.slug || m.id}`,
-      })),
-      ...searchDataset(openRouterData, term, (m) => [m.name, m.id], (m) => ({
-        id: m.id, name: m.name, source: "openRouterRankings", score: null,
-        provider: m.creator || null, link: `/model/or/${m.id}`,
-      })),
-      ...searchDataset(openSourceRankings, term, (m) => [m.id], (m) => ({
-        id: m.id, name: m.id, source: "openSourceRankings", score: null,
-        provider: m.author || null, link: `/model/os/${m.id}`,
-      })),
-      ...searchDataset(hallucinationRankings, term, (m) => [m.model], (m) => ({
-        id: m.id, name: m.model, source: "hallucinationRankings", score: m.omniscienceIndex,
-        provider: null, link: `/model/hall/${m.slug || m.id}`,
-      })),
-      ...searchDataset(ttsData, term, (m) => [m.name], (m) => ({
-        id: m.id, name: m.name, source: "tts", score: m.quality_elo,
-        provider: m.provider || null, link: `/model/tts/${m.name}`,
-      })),
-    ].sort((a, b) => {
-      const aExact = a.name.toLowerCase() === term ? 1 : 0;
-      const bExact = b.name.toLowerCase() === term ? 1 : 0;
-      return aExact !== bExact ? bExact - aExact : (b.score ?? 0) - (a.score ?? 0);
-    }).slice(0, 20);
+      ...searchDataset(
+        artificialData,
+        term,
+        (m) => [m.name, m.slug, m.model_creators?.name],
+        (m) => ({
+          id: m.id,
+          name: m.name,
+          source: "modelRankings",
+          score: m.intelligence_index,
+          provider: m.model_creators?.name || null,
+          link: `/model/aa/${m.slug || m.id}`,
+        }),
+      ),
+      ...searchDataset(
+        openRouterData,
+        term,
+        (m) => [m.name, m.id],
+        (m) => ({
+          id: m.id,
+          name: m.name,
+          source: "openRouterRankings",
+          score: null,
+          provider: m.creator || null,
+          link: `/model/or/${m.id}`,
+        }),
+      ),
+      ...searchDataset(
+        openSourceRankings,
+        term,
+        (m) => [m.id],
+        (m) => ({
+          id: m.id,
+          name: m.id,
+          source: "openSourceRankings",
+          score: null,
+          provider: m.author || null,
+          link: `/model/os/${m.id}`,
+        }),
+      ),
+      ...searchDataset(
+        hallucinationRankings,
+        term,
+        (m) => [m.model],
+        (m) => ({
+          id: m.id,
+          name: m.model,
+          source: "hallucinationRankings",
+          score: m.omniscienceIndex,
+          provider: null,
+          link: `/model/hall/${m.slug || m.id}`,
+        }),
+      ),
+      ...searchDataset(
+        ttsData,
+        term,
+        (m) => [m.name],
+        (m) => ({
+          id: m.id,
+          name: m.name,
+          source: "tts",
+          score: m.quality_elo,
+          provider: m.provider || null,
+          link: `/model/tts/${m.name}`,
+        }),
+      ),
+    ]
+      .sort((a, b) => {
+        const aExact = a.name.toLowerCase() === term ? 1 : 0;
+        const bExact = b.name.toLowerCase() === term ? 1 : 0;
+        return aExact !== bExact ? bExact - aExact : (b.score ?? 0) - (a.score ?? 0);
+      })
+      .slice(0, 20);
   }, [searchTerm, artificialData, openRouterData, openSourceRankings, hallucinationRankings, ttsData]);
 }

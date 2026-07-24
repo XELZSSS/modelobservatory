@@ -55,7 +55,10 @@ export function ComparePageLayout({ backLabelKey, backTo, backState, title, chil
       <CompareChipBar
         models={models}
         onRemove={removeCompareModel}
-        onClear={() => { clearCompare(); navigate(backTo); }}
+        onClear={() => {
+          clearCompare();
+          navigate(backTo);
+        }}
       />
       {children(models)}
     </div>

@@ -25,9 +25,15 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
         <>
           <RankingNameCell name={row.item.model} />
           <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <TagBadge>{t("accuracy")}: {fmtRate(row.item.accuracy)}</TagBadge>
-            <TagBadge>{t("attemptRate")}: {fmtRate(row.item.attemptRate)}</TagBadge>
-            <TagBadge>{t("omniscienceIndex")}: {fmtScore(row.item.omniscienceIndex)}</TagBadge>
+            <TagBadge>
+              {t("accuracy")}: {fmtRate(row.item.accuracy)}
+            </TagBadge>
+            <TagBadge>
+              {t("attemptRate")}: {fmtRate(row.item.attemptRate)}
+            </TagBadge>
+            <TagBadge>
+              {t("omniscienceIndex")}: {fmtScore(row.item.omniscienceIndex)}
+            </TagBadge>
           </div>
         </>
       ),
@@ -71,13 +77,5 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
 }
 
 export function HallucinationRankingsView({ rankings }: { rankings: HallucinationRankingEntry[] }) {
-  return (
-    <RankingTable
-      data={rankings}
-      columns={buildColumns}
-      getRowId={getRowId}
-      getSearchFields={getSearchFields}
-      sourceKey="hallucinationSource"
-    />
-  );
+  return <RankingTable data={rankings} columns={buildColumns} getRowId={getRowId} getSearchFields={getSearchFields} sourceKey="hallucinationSource" />;
 }

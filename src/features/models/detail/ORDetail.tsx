@@ -19,7 +19,11 @@ function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
         <StatCard label={t("creator")} value={model.creator} />
         <StatCard label={t("inputTokens")} value={formatShortNumber(model.promptTokens ?? 0)} />
         <StatCard label={t("outputTokens")} value={formatShortNumber(model.completionTokens ?? 0)} />
-        {model.reasoningTokens ? <StatCard label={t("reasoningTokens")} value={formatShortNumber(model.reasoningTokens)} /> : <StatCard label={t("category")} value={categoryLabel(model.category, t)} />}
+        {model.reasoningTokens ? (
+          <StatCard label={t("reasoningTokens")} value={formatShortNumber(model.reasoningTokens)} />
+        ) : (
+          <StatCard label={t("category")} value={categoryLabel(model.category, t)} />
+        )}
       </StatGrid>
       <InfoGrid>
         <InfoCard title={t("modelInfo")}>
@@ -38,7 +42,11 @@ function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
       </InfoCard>
       <div className="flex flex-wrap gap-1.5">
         <Badge variant="outline">{model.variant || model.category}</Badge>
-        {model.isFree && <Badge variant="outline" className="text-success">Free</Badge>}
+        {model.isFree && (
+          <Badge variant="outline" className="text-success">
+            Free
+          </Badge>
+        )}
       </div>
     </DetailLayout>
   );

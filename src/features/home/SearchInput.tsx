@@ -78,17 +78,11 @@ export function SearchInput() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-text-primary truncate">{result.name}</span>
-                  {result.score != null && (
-                    <span className="text-xs text-text-secondary ml-2 shrink-0">
-                      {result.score.toFixed(1)}
-                    </span>
-                  )}
+                  {result.score != null && <span className="text-xs text-text-secondary ml-2 shrink-0">{result.score.toFixed(1)}</span>}
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className={cn("text-xs", "text-xs text-text-secondary")}>{t(result.source as TranslationKey)}</span>
-                  {result.provider && (
-                    <span className={cn("text-xs", "text-xs text-text-secondary")}>{result.provider}</span>
-                  )}
+                  <span className="text-xs text-text-secondary">{t(result.source as TranslationKey)}</span>
+                  {result.provider && <span className="text-xs text-text-secondary">{result.provider}</span>}
                 </div>
               </button>
             ))}

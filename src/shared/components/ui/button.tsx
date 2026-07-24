@@ -1,5 +1,5 @@
 import { cn } from "../../utils/cn";
-import type React from "react";
+import { memo, type ReactNode } from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "outline" | "ghost" | "link" | "ghost-icon";
@@ -22,10 +22,10 @@ const sizeClass: Record<string, string> = {
   icon: "size-8 rounded-md",
 };
 
-export function Button({ variant = "default", size = "default", className, children, ...props }: ButtonProps) {
+export const Button = memo(function Button({ variant = "default", size = "default", className, children, ...props }: ButtonProps) {
   return (
     <button type="button" className={cn(baseClass, variantClass[variant], sizeClass[size], className)} {...props}>
       {children}
     </button>
   );
-}
+});

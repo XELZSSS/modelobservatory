@@ -2,7 +2,6 @@ import { memo, type ReactNode, type ComponentType } from "react";
 import { cn } from "../../utils/cn";
 import { Card, CardContent } from "../ui/card";
 
-
 interface StatCardProps {
   label: string;
   value: ReactNode;

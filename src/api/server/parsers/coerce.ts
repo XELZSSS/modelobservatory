@@ -7,8 +7,7 @@
  */
 
 /** Strict finite number, else null. Used for benchmark/score fields. */
-export const num = (v: unknown): number | null =>
-  typeof v === "number" && Number.isFinite(v) ? v : null;
+export const num = (v: unknown): number | null => (typeof v === "number" && Number.isFinite(v) ? v : null);
 
 /**
  * Coerce to a finite number with a fallback. Accepts numeric strings (mirrors
@@ -30,11 +29,7 @@ export const strOr = (v: unknown): string | null | undefined => {
 };
 
 /** Boolean or undefined (null/undefined stay undefined, not null). */
-export const bool = (v: unknown): boolean | undefined =>
-  typeof v === "boolean" ? v : undefined;
+export const bool = (v: unknown): boolean | undefined => (typeof v === "boolean" ? v : undefined);
 
 /** A plain object (not an array, not null) or undefined. */
-export const obj = (v: unknown): Record<string, unknown> | undefined =>
-  typeof v === "object" && v !== null && !Array.isArray(v)
-    ? (v as Record<string, unknown>)
-    : undefined;
+export const obj = (v: unknown): Record<string, unknown> | undefined => (typeof v === "object" && v !== null && !Array.isArray(v) ? (v as Record<string, unknown>) : undefined);

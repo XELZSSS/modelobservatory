@@ -38,9 +38,7 @@ function DataSourceCard({ entry }: { entry: HealthEntry }) {
             <Clock size={12} className="shrink-0" />
             <span>{ok ? `HTTP ${entry.statusCode}` : t("statusError")}</span>
           </div>
-          {!ok && entry.detail && (
-            <p className="text-xs text-destructive mt-1 truncate">{entry.detail}</p>
-          )}
+          {!ok && entry.detail && <p className="text-xs text-destructive mt-1 truncate">{entry.detail}</p>}
         </div>
       </CardContent>
     </Card>
@@ -69,19 +67,25 @@ function StatusContent() {
 
       {errorCount > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-xs font-bold text-destructive">{t("hasIssues")} ({errorCount})</p>
+          <p className="text-xs font-bold text-destructive">
+            {t("hasIssues")} ({errorCount})
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {data.filter((e) => e.status !== "ok").map((entry) => (
-              <DataSourceCard key={entry.name} entry={entry} />
-            ))}
+            {data
+              .filter((e) => e.status !== "ok")
+              .map((entry) => (
+                <DataSourceCard key={entry.name} entry={entry} />
+              ))}
           </div>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {data.filter((e) => e.status === "ok").map((entry) => (
-          <DataSourceCard key={entry.name} entry={entry} />
-        ))}
+        {data
+          .filter((e) => e.status === "ok")
+          .map((entry) => (
+            <DataSourceCard key={entry.name} entry={entry} />
+          ))}
       </div>
     </div>
   );

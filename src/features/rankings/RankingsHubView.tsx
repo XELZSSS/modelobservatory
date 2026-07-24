@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, memo, Suspense, useMemo, useState } from "react";
 
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
@@ -22,17 +22,11 @@ interface RankingsHubProps {
 const TAB_IDS = ["modelRankings", "openRouterRankings", "openSourceRankings", "hallucinationRankings", "tts", "providerCompare"] as const;
 type TabId = (typeof TAB_IDS)[number];
 
-function TabPanel({ children }: { children: React.ReactNode }) {
+const TabPanel = memo(function TabPanel({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<Spinner />}>{children}</Suspense>;
-}
+});
 
-function ActiveTabContent({
-  activeTabId,
-  artificialRankings,
-}: {
-  activeTabId: TabId;
-  artificialRankings: import("../../shared/types").ArtificialAnalysisModel[];
-}) {
+function ActiveTabContent({ activeTabId, artificialRankings }: { activeTabId: TabId; artificialRankings: import("../../shared/types").ArtificialAnalysisModel[] }) {
   const hallucinationRankings = useHallucinationRankings(artificialRankings, activeTabId === "hallucinationRankings");
   const openSourceQ = useOpenSourceModels(activeTabId === "openSourceRankings");
   const orQ = useOpenRouterRankings(activeTabId === "openRouterRankings");
@@ -41,15 +35,39 @@ function ActiveTabContent({
     case "modelRankings":
       return <ArtificialAnalysisView rankings={artificialRankings} />;
     case "openRouterRankings":
-      return orQ.data ? <TabPanel><OpenRouterRankingsView data={orQ.data} /></TabPanel> : <Spinner />;
+      return orQ.data ? (
+        <TabPanel>
+          <OpenRouterRankingsView data={orQ.data} />
+        </TabPanel>
+      ) : (
+        <Spinner />
+      );
     case "openSourceRankings":
-      return openSourceQ.data ? <TabPanel><OpenSourceRankingsView rankings={openSourceQ.data ?? []} /></TabPanel> : <Spinner />;
+      return openSourceQ.data ? (
+        <TabPanel>
+          <OpenSourceRankingsView rankings={openSourceQ.data ?? []} />
+        </TabPanel>
+      ) : (
+        <Spinner />
+      );
     case "hallucinationRankings":
-      return <TabPanel><HallucinationRankingsView rankings={hallucinationRankings} /></TabPanel>;
+      return (
+        <TabPanel>
+          <HallucinationRankingsView rankings={hallucinationRankings} />
+        </TabPanel>
+      );
     case "tts":
-      return <TabPanel><TtsView /></TabPanel>;
+      return (
+        <TabPanel>
+          <TtsView />
+        </TabPanel>
+      );
     case "providerCompare":
-      return <TabPanel><ProviderCompareView /></TabPanel>;
+      return (
+        <TabPanel>
+          <ProviderCompareView />
+        </TabPanel>
+      );
     default:
       return null;
   }
@@ -61,10 +79,7 @@ function RankingsContent({ defaultTab }: { defaultTab: number }) {
 
   const { data: artificialRankings } = useSuspenseArtificialRankings();
 
-  const tabs: TabItem[] = useMemo(
-    () => TAB_IDS.map((id) => ({ id, label: t(id as TranslationKey) })),
-    [t],
-  );
+  const tabs: TabItem[] = useMemo(() => TAB_IDS.map((id) => ({ id, label: t(id as TranslationKey) })), [t]);
 
   return (
     <>

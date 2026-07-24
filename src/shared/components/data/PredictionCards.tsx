@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { memo, useState, type ReactNode } from "react";
 import { Clock, Building2, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { TabContainer, type TabItem } from "../composite/TabContainer";
@@ -17,20 +17,34 @@ function isTopProbability(prob: number, topProb: number): boolean {
   return prob === topProb || (topProb > 0 && approxEq(prob, topProb));
 }
 
-function ExternalLinkButton({ href, children, showIcon = true, className, iconSize = 14 }: {
-  href: string | null | undefined; children?: ReactNode; showIcon?: boolean; className?: string; iconSize?: number;
+const ExternalLinkButton = memo(function ExternalLinkButton({
+  href,
+  children,
+  showIcon = true,
+  className,
+  iconSize = 14,
+}: {
+  href: string | null | undefined;
+  children?: ReactNode;
+  showIcon?: boolean;
+  className?: string;
+  iconSize?: number;
 }) {
   const safeUrl = safeHref(href);
   if (!safeUrl) return null;
-  return <a href={safeUrl} target="_blank" rel="noopener noreferrer" className={cn("text-text-tertiary hover:text-text-primary transition-colors", className)}>{children || (showIcon && <ExternalLink size={iconSize} />)}</a>;
-}
+  return (
+    <a href={safeUrl} target="_blank" rel="noopener noreferrer" className={cn("text-text-tertiary hover:text-text-primary transition-colors", className)}>
+      {children || (showIcon && <ExternalLink size={iconSize} />)}
+    </a>
+  );
+});
 
-function EmptyPredictions() {
+const EmptyPredictions = memo(function EmptyPredictions() {
   const { t } = useTranslation();
   return <p className="text-xs text-text-secondary py-4 text-center">{t("noPredictions")}</p>;
-}
+});
 
-function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
+const ModelRankingTab = memo(function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
   if (items.length === 0) return <EmptyPredictions />;
 
   const sorted = [...items].sort((a, b) => b.probability - a.probability);
@@ -64,9 +78,9 @@ function ModelRankingTab({ items }: { items: ModelPrediction[] }) {
       ))}
     </div>
   );
-}
+});
 
-function ReleasesTab({ items }: { items: ReleasePrediction[] }) {
+const ReleasesTab = memo(function ReleasesTab({ items }: { items: ReleasePrediction[] }) {
   if (items.length === 0) return <EmptyPredictions />;
 
   return (
@@ -104,9 +118,9 @@ function ReleasesTab({ items }: { items: ReleasePrediction[] }) {
       })}
     </div>
   );
-}
+});
 
-function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
+const ProvidersTab = memo(function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
   if (items.length === 0) return <EmptyPredictions />;
 
   return (
@@ -147,7 +161,7 @@ function ProvidersTab({ items }: { items: ProviderPrediction[] }) {
       })}
     </div>
   );
-}
+});
 
 export function PredictionsSection({ data }: { data: PredictionsPayload }) {
   const { t } = useTranslation();

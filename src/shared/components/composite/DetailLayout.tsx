@@ -6,11 +6,7 @@ export function DetailLayout({ children }: { children: ReactNode }) {
 }
 
 export function StatGrid({ columns = 4, children }: { columns?: 2 | 3 | 4; children: ReactNode }) {
-  return (
-    <div className={cn("grid gap-2", columns === 2 && "grid-cols-2", columns === 3 && "grid-cols-3", columns === 4 && "grid-cols-2 md:grid-cols-4")}>
-      {children}
-    </div>
-  );
+  return <div className={cn("grid gap-2", columns === 2 && "grid-cols-2", columns === 3 && "grid-cols-3", columns === 4 && "grid-cols-2 md:grid-cols-4")}>{children}</div>;
 }
 
 export function InfoGrid({ children }: { children: ReactNode }) {

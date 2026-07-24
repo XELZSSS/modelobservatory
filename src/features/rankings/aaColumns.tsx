@@ -14,7 +14,15 @@ import { useTranslation } from "../../shared/i18n/useTranslation";
 
 function CompareButton({ isCompared, onToggle }: { isCompared: boolean; onToggle: () => void }) {
   return (
-    <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onToggle(); }} className="shrink-0">
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggle();
+      }}
+      className="shrink-0"
+    >
       {isCompared ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
     </Button>
   );
@@ -28,15 +36,7 @@ export function ModelExpandedDetail({ model }: { model: ArtificialAnalysisModel 
   );
 }
 
-function RankingModelCell({
-  model,
-  isCompared,
-  onToggleCompare,
-}: {
-  model: ArtificialAnalysisModel;
-  isCompared: boolean;
-  onToggleCompare: (m: ArtificialAnalysisModel) => void;
-}) {
+function RankingModelCell({ model, isCompared, onToggleCompare }: { model: ArtificialAnalysisModel; isCompared: boolean; onToggleCompare: (m: ArtificialAnalysisModel) => void }) {
   const { t } = useTranslation();
   const metricItems: [string, string][] = [
     [t("intelligenceIndex"), formatScore(t, model.intelligence_index)],
@@ -52,7 +52,7 @@ function RankingModelCell({
             {t("estimated")}
           </Badge>
         )}
-         <CompareButton isCompared={isCompared} onToggle={() => onToggleCompare(model)} />
+        <CompareButton isCompared={isCompared} onToggle={() => onToggleCompare(model)} />
       </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0 mt-1 md:hidden">
         {metricItems.map(([label, value]) => (
@@ -64,7 +64,9 @@ function RankingModelCell({
       </div>
       <div className="flex flex-wrap gap-1 mt-1 md:hidden">
         {model.model_creators?.name && <TagBadge>{model.model_creators.name}</TagBadge>}
-        <TagBadge>{t("contextWindow")}: {formatContext(t, model)}</TagBadge>
+        <TagBadge>
+          {t("contextWindow")}: {formatContext(t, model)}
+        </TagBadge>
       </div>
     </>
   );
@@ -74,12 +76,7 @@ function priceCell(get: (m: ArtificialAnalysisModel) => number | null | undefine
   return (m: ArtificialAnalysisModel) => formatDollar(get(m), t);
 }
 
-function scoreColumn(
-  id: string,
-  header: string,
-  accessor: (m: ArtificialAnalysisModel) => number | null | undefined,
-  t: TFunction,
-): DataTableColumn<ArtificialAnalysisModel> {
+function scoreColumn(id: string, header: string, accessor: (m: ArtificialAnalysisModel) => number | null | undefined, t: TFunction): DataTableColumn<ArtificialAnalysisModel> {
   return {
     id,
     header,
@@ -103,13 +100,7 @@ export function buildRankingColumns(
       width: "40%",
       cell: (model) => {
         const { isCompared } = getModelState(model);
-        return (
-          <RankingModelCell
-            model={model}
-            isCompared={isCompared}
-            onToggleCompare={toggleCompareModel}
-          />
-        );
+        return <RankingModelCell model={model} isCompared={isCompared} onToggleCompare={toggleCompareModel} />;
       },
     },
     {
@@ -153,12 +144,18 @@ export function buildPricingColumns(
           <>
             <div className="flex items-center gap-1 min-w-0">
               <p className="text-sm break-words min-w-0">{model.name || model.slug}</p>
-            <CompareButton isCompared={isCompared} onToggle={() => toggleCompareModel(model)} />
+              <CompareButton isCompared={isCompared} onToggle={() => toggleCompareModel(model)} />
             </div>
             <div className="flex flex-wrap gap-1 mt-1 md:hidden">
               {model.model_creators?.name && <TagBadge>{model.model_creators.name}</TagBadge>}
-              {model.pricing?.cache_hit != null && <TagBadge>{t("cacheHitPrice")}: {formatDollar(model.pricing.cache_hit, t)}</TagBadge>}
-              <TagBadge>{t("monthlyCost")}: {formatDollar(calcModelCost(model, calcPrompt, calcCompletion), t)}</TagBadge>
+              {model.pricing?.cache_hit != null && (
+                <TagBadge>
+                  {t("cacheHitPrice")}: {formatDollar(model.pricing.cache_hit, t)}
+                </TagBadge>
+              )}
+              <TagBadge>
+                {t("monthlyCost")}: {formatDollar(calcModelCost(model, calcPrompt, calcCompletion), t)}
+              </TagBadge>
             </div>
           </>
         );

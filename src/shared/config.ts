@@ -13,11 +13,11 @@ export const STORAGE_KEYS = {
 
 const DEFAULT_BACK = "backToModelRankings" as const;
 export const MODEL_SOURCES = {
-  aa:   { labelKey: "modelRankings" as const,         backTo: "/models",         backLabelKey: DEFAULT_BACK },
-  or:   { labelKey: "openRouterRankings" as const,    backTo: "/models",         backLabelKey: DEFAULT_BACK },
-  os:   { labelKey: "openSourceRankings" as const,    backTo: "/open-source",    backLabelKey: "backToOpenSourceRankings" as const },
+  aa: { labelKey: "modelRankings" as const, backTo: "/models", backLabelKey: DEFAULT_BACK },
+  or: { labelKey: "openRouterRankings" as const, backTo: "/models", backLabelKey: DEFAULT_BACK },
+  os: { labelKey: "openSourceRankings" as const, backTo: "/open-source", backLabelKey: "backToOpenSourceRankings" as const },
   hall: { labelKey: "hallucinationRankings" as const, backTo: "/hallucinations", backLabelKey: DEFAULT_BACK },
-  tts:  { labelKey: "tts" as const,                  backTo: "/tts",            backLabelKey: DEFAULT_BACK },
+  tts: { labelKey: "tts" as const, backTo: "/tts", backLabelKey: DEFAULT_BACK },
 } as const;
 
 export type ModelSource = keyof typeof MODEL_SOURCES;

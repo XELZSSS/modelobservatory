@@ -16,7 +16,9 @@ import { approxEq } from "../../shared/utils/math";
 import { ComparePageLayout } from "./ComparePageLayout";
 
 function computeMetricWinners(metric: CompareMetric, models: ArtificialAnalysisModel[]): Map<string, "win" | "loss"> {
-  const values = models.map((m) => ({ id: modelId(m), val: metric.getNumericValue?.(m) })).filter((v): v is { id: string; val: number } => typeof v.val === "number" && Number.isFinite(v.val));
+  const values = models
+    .map((m) => ({ id: modelId(m), val: metric.getNumericValue?.(m) }))
+    .filter((v): v is { id: string; val: number } => typeof v.val === "number" && Number.isFinite(v.val));
   if (values.length === 0) return new Map();
   const best = metric.higherIsBetter === false ? Math.min(...values.map((v) => v.val)) : Math.max(...values.map((v) => v.val));
   const worst = metric.higherIsBetter === false ? Math.max(...values.map((v) => v.val)) : Math.min(...values.map((v) => v.val));

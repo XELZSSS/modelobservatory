@@ -4,7 +4,6 @@ import { Sheet } from "../ui/sheet";
 import { useTranslation } from "../../i18n/useTranslation";
 import { useNavigation } from "./useNavigation";
 
-
 export function MobileMoreSheet({ open, onClose, onSettingsOpen }: { open: boolean; onClose: () => void; onSettingsOpen: () => void }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();

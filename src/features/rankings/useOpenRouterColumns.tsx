@@ -9,24 +9,32 @@ import type { OpenRouterRankEntry, OpenRouterAppEntry } from "../../shared/types
 
 function trendClass(change?: number | null) {
   if (change == null || change === 0) return "bg-bg-tertiary text-text-secondary border-border";
-  return change > 0
-    ? "bg-success/10 text-success border-success/20"
-    : "bg-destructive/10 text-destructive border-destructive/20";
+  return change > 0 ? "bg-success/10 text-success border-success/20" : "bg-destructive/10 text-destructive border-destructive/20";
 }
 
 const tokenColumn = <T extends { totalTokens?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({
-  id: "tokens", header: t("totalTokens"), accessorFn: (row) => row.totalTokens, sortable: true, align: "right",
+  id: "tokens",
+  header: t("totalTokens"),
+  accessorFn: (row) => row.totalTokens,
+  sortable: true,
+  align: "right",
   cell: (item) => <span className="font-mono font-bold text-text-primary">{formatShortNumber(item.totalTokens || 0)}</span>,
 });
 
 const requestColumn = <T extends { requestCount?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({
-  id: "requests", header: t("requests"), accessorFn: (row) => row.requestCount, sortable: true, align: "right", hiddenMd: true,
+  id: "requests",
+  header: t("requests"),
+  accessorFn: (row) => row.requestCount,
+  sortable: true,
+  align: "right",
+  hiddenMd: true,
   cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.requestCount || 0)}</span>,
 });
 
-export function useOpenRouterColumns(
-  t: (key: TranslationKey) => string,
-): { modelColumns: DataTableColumn<OpenRouterRankEntry>[]; appColumns: DataTableColumn<OpenRouterAppEntry>[] } {
+export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
+  modelColumns: DataTableColumn<OpenRouterRankEntry>[];
+  appColumns: DataTableColumn<OpenRouterAppEntry>[];
+} {
   const modelColumns: DataTableColumn<OpenRouterRankEntry>[] = [
     {
       id: "model",
@@ -36,9 +44,18 @@ export function useOpenRouterColumns(
         <>
           <RankingNameCell name={item.name} />
           <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <TagBadge>{t("requests")}: {formatShortNumber(item.requestCount || 0)}</TagBadge>
+            <TagBadge>
+              {t("requests")}: {formatShortNumber(item.requestCount || 0)}
+            </TagBadge>
             {item.creator && <TagBadge>{item.creator}</TagBadge>}
-            <span className={cn("inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border", item.change != null ? trendClass(item.change) : "border-border bg-bg-secondary text-text-secondary")}>{formatTrend(item.change, t)}</span>
+            <span
+              className={cn(
+                "inline-flex items-center text-[11px] leading-[16px] px-1.5 py-0.5 rounded-[4px] border",
+                item.change != null ? trendClass(item.change) : "border-border bg-bg-secondary text-text-secondary",
+              )}
+            >
+              {formatTrend(item.change, t)}
+            </span>
           </div>
         </>
       ),
@@ -74,7 +91,9 @@ export function useOpenRouterColumns(
         <>
           <RankingNameCell name={item.name} />
           <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <TagBadge>{t("requests")}: {formatShortNumber(item.requestCount || 0)}</TagBadge>
+            <TagBadge>
+              {t("requests")}: {formatShortNumber(item.requestCount || 0)}
+            </TagBadge>
             {item.categories?.length ? <TagBadge>{item.categories.join(", ")}</TagBadge> : null}
           </div>
         </>
@@ -89,7 +108,9 @@ export function useOpenRouterColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <p className={cn("text-xs", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>,
+      cell: (item) => (
+        <p className={cn("text-xs", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>
+      ),
     },
   ];
 

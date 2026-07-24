@@ -24,33 +24,18 @@ interface RankingTableProps<T> {
   extraHeader?: React.ReactNode;
 }
 
-export function RankingTable<T>({
-  data,
-  columns,
-  getRowId,
-  getSearchFields,
-  sourceKey,
-  getRank,
-  emptyMessageKey,
-  extraHeader,
-}: RankingTableProps<T>) {
+export function RankingTable<T>({ data, columns, getRowId, getSearchFields, sourceKey, getRank, emptyMessageKey, extraHeader }: RankingTableProps<T>) {
   const { t } = useTranslation();
   const filtered = useFilteredData(data, getSearchFields);
 
-  const rows = useMemo(
-    () => filtered.map((item, index) => ({ rank: getRank ? getRank(item, index) : index + 1, item })),
-    [filtered, getRank],
-  );
+  const rows = useMemo(() => filtered.map((item, index) => ({ rank: getRank ? getRank(item, index) : index + 1, item })), [filtered, getRank]);
 
   const sampleRow = useMemo(() => {
     const first = data[0];
     return first ? { rank: 1, item: first } : null;
   }, [data]);
 
-  const tableColumns = useMemo<DataTableColumn<RankedRow<T>>[]>(
-    () => columns(t, sampleRow ?? { rank: 0, item: undefined! }),
-    [t, sampleRow],
-  );
+  const tableColumns = useMemo<DataTableColumn<RankedRow<T>>[]>(() => columns(t, sampleRow ?? { rank: 0, item: undefined! }), [t, sampleRow]);
 
   return (
     <ViewLayout>

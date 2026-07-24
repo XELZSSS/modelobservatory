@@ -21,11 +21,7 @@ export function PriceCompareView() {
   const [chartRef, chartWidth] = useElementWidth();
 
   return (
-    <ComparePageLayout
-      backLabelKey="backToPricing" backTo="/models"
-      backState={{ viewMode: "pricing" }}
-      title={t("priceComparison")}
-    >
+    <ComparePageLayout backLabelKey="backToPricing" backTo="/models" backState={{ viewMode: "pricing" }} title={t("priceComparison")}>
       {(models) => <PriceCompareContent models={models} chartRef={chartRef} chartWidth={chartWidth} />}
     </ComparePageLayout>
   );
@@ -92,25 +88,25 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
       <Card>
         <CardContent className="p-4">
           <div ref={chartRef} className="w-full h-[220px]">
-          {chartWidth > 0 && (
-            <BarChart width={chartWidth} height={220} data={chartData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="var(--text-tertiary)" />
-              <YAxis tick={{ fontSize: 10 }} stroke="var(--text-tertiary)" tickFormatter={(v: number) => `$${v}`} />
-              <Tooltip contentStyle={chartTooltipStyle} formatter={(value) => [`$${Number(value).toFixed(2)}`, ""]} />
-              {models.map((model, index) => (
-                <Bar
-                  key={model.id ?? index}
-                  dataKey={`model_${index}`}
-                  name={model.short_name || model.name}
-                  fill={getModelColor(index)}
-                  radius={[4, 4, 0, 0]}
-                  isAnimationActive={false}
-                />
-              ))}
-            </BarChart>
-          )}
-        </div>
+            {chartWidth > 0 && (
+              <BarChart width={chartWidth} height={220} data={chartData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="var(--text-tertiary)" />
+                <YAxis tick={{ fontSize: 10 }} stroke="var(--text-tertiary)" tickFormatter={(v: number) => `$${v}`} />
+                <Tooltip contentStyle={chartTooltipStyle} formatter={(value) => [`$${Number(value).toFixed(2)}`, ""]} />
+                {models.map((model, index) => (
+                  <Bar
+                    key={model.id ?? index}
+                    dataKey={`model_${index}`}
+                    name={model.short_name || model.name}
+                    fill={getModelColor(index)}
+                    radius={[4, 4, 0, 0]}
+                    isAnimationActive={false}
+                  />
+                ))}
+              </BarChart>
+            )}
+          </div>
         </CardContent>
       </Card>
 

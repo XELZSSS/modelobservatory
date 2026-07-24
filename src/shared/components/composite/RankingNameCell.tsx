@@ -1,6 +1,5 @@
 import { memo } from "react";
 
-
 interface RankingNameCellProps {
   name: string;
   suffix?: React.ReactNode;

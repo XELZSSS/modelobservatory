@@ -29,7 +29,11 @@ export function TtsView() {
             <RankingNameCell name={model.name} />
             <div className="flex flex-wrap gap-1 mt-1 md:hidden">
               {model.provider && <TagBadge>{model.provider}</TagBadge>}
-              {model.speed_chars_per_sec != null && <TagBadge>{t("ttsSpeed")}: {model.speed_chars_per_sec.toFixed(1)}</TagBadge>}
+              {model.speed_chars_per_sec != null && (
+                <TagBadge>
+                  {t("ttsSpeed")}: {model.speed_chars_per_sec.toFixed(1)}
+                </TagBadge>
+              )}
               {model.price_per_1m_chars != null && <TagBadge>{formatDollar(model.price_per_1m_chars, t)}</TagBadge>}
             </div>
           </>

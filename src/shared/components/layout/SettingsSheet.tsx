@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { memo } from "react";
 import { Languages, Moon, Sun, X } from "lucide-react";
 import { Sheet } from "../ui/sheet";
 import { Button } from "../ui/button";
@@ -6,7 +7,7 @@ import { useTranslation } from "../../i18n/useTranslation";
 import { useThemeStore } from "../../stores/themeStore";
 import { REPO_URL } from "../../config";
 
-function SettingRow({ icon, label, button }: { icon: ReactNode; label: string; button: ReactNode }) {
+const SettingRow = memo(function SettingRow({ icon, label, button }: { icon: ReactNode; label: string; button: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-2">
@@ -16,7 +17,7 @@ function SettingRow({ icon, label, button }: { icon: ReactNode; label: string; b
       {button}
     </div>
   );
-}
+});
 
 export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t, lang, toggleLang } = useTranslation();

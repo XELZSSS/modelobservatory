@@ -1,7 +1,21 @@
-import { type ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
-export function TabButton({ active, onClick, children, size = "md", id, "aria-controls": ariaControls }: { active: boolean; onClick: () => void; children: ReactNode; size?: "sm" | "md"; id?: string; "aria-controls"?: string }) {
+export const TabButton = memo(function TabButton({
+  active,
+  onClick,
+  children,
+  size = "md",
+  id,
+  "aria-controls": ariaControls,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  size?: "sm" | "md";
+  id?: string;
+  "aria-controls"?: string;
+}) {
   return (
     <button
       type="button"
@@ -19,4 +33,4 @@ export function TabButton({ active, onClick, children, size = "md", id, "aria-co
       {children}
     </button>
   );
-}
+});
