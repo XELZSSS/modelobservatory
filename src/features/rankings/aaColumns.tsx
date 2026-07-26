@@ -11,15 +11,23 @@ import { calcModelCost } from "../../shared/utils/math";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { TFunction } from "../../shared/i18n";
 import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useCompareStore } from "../../shared/stores/compareStore";
+import { PRICING_BLENDS } from "../../shared/config";
 
-function CompareButton({ isCompared, onToggle }: { isCompared: boolean; onToggle: () => void }) {
+function useIsCompared(model: ArtificialAnalysisModel): boolean {
+  return useCompareStore((s) => s.compareIds.includes(model.id || model.slug));
+}
+
+function CompareButton({ model }: { model: ArtificialAnalysisModel }) {
+  const isCompared = useIsCompared(model);
+  const toggleCompareModel = useCompareStore((s) => s.toggleCompareModel);
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={(e) => {
         e.stopPropagation();
-        onToggle();
+        toggleCompareModel(model);
       }}
       className="shrink-0"
     >
@@ -36,7 +44,7 @@ export function ModelExpandedDetail({ model }: { model: ArtificialAnalysisModel 
   );
 }
 
-function RankingModelCell({ model, isCompared, onToggleCompare }: { model: ArtificialAnalysisModel; isCompared: boolean; onToggleCompare: (m: ArtificialAnalysisModel) => void }) {
+function RankingModelCell({ model }: { model: ArtificialAnalysisModel }) {
   const { t } = useTranslation();
   const metricItems: [string, string][] = [
     [t("intelligenceIndex"), formatScore(t, model.intelligence_index)],
@@ -52,7 +60,7 @@ function RankingModelCell({ model, isCompared, onToggleCompare }: { model: Artif
             {t("estimated")}
           </Badge>
         )}
-        <CompareButton isCompared={isCompared} onToggle={() => onToggleCompare(model)} />
+        <CompareButton model={model} />
       </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0 mt-1 md:hidden">
         {metricItems.map(([label, value]) => (
@@ -88,20 +96,13 @@ function scoreColumn(id: string, header: string, accessor: (m: ArtificialAnalysi
   };
 }
 
-export function buildRankingColumns(
-  t: TFunction,
-  getModelState: (model: ArtificialAnalysisModel) => { isCompared: boolean },
-  toggleCompareModel: (m: ArtificialAnalysisModel) => void,
-): DataTableColumn<ArtificialAnalysisModel>[] {
+export function buildRankingColumns(t: TFunction): DataTableColumn<ArtificialAnalysisModel>[] {
   return [
     {
       id: "model",
       header: t("modelNameOrId"),
       width: "40%",
-      cell: (model) => {
-        const { isCompared } = getModelState(model);
-        return <RankingModelCell model={model} isCompared={isCompared} onToggleCompare={toggleCompareModel} />;
-      },
+      cell: (model) => <RankingModelCell model={model} />,
     },
     {
       id: "creator",
@@ -128,8 +129,6 @@ export function buildRankingColumns(
 
 export function buildPricingColumns(
   t: TFunction,
-  getModelState: (model: ArtificialAnalysisModel) => { isCompared: boolean },
-  toggleCompareModel: (m: ArtificialAnalysisModel) => void,
   calcPrompt: number,
   calcCompletion: number,
 ): DataTableColumn<ArtificialAnalysisModel>[] {
@@ -138,28 +137,25 @@ export function buildPricingColumns(
       id: "model",
       header: t("modelNameOrId"),
       width: "35%",
-      cell: (model) => {
-        const { isCompared } = getModelState(model);
-        return (
-          <>
-            <div className="flex items-center gap-1 min-w-0">
-              <p className="text-sm break-words min-w-0">{model.name || model.slug}</p>
-              <CompareButton isCompared={isCompared} onToggle={() => toggleCompareModel(model)} />
-            </div>
-            <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-              {model.model_creators?.name && <TagBadge>{model.model_creators.name}</TagBadge>}
-              {model.pricing?.cache_hit != null && (
-                <TagBadge>
-                  {t("cacheHitPrice")}: {formatDollar(model.pricing.cache_hit, t)}
-                </TagBadge>
-              )}
+      cell: (model) => (
+        <>
+          <div className="flex items-center gap-1 min-w-0">
+            <p className="text-sm break-words min-w-0">{model.name || model.slug}</p>
+            <CompareButton model={model} />
+          </div>
+          <div className="flex flex-wrap gap-1 mt-1 md:hidden">
+            {model.model_creators?.name && <TagBadge>{model.model_creators.name}</TagBadge>}
+            {model.pricing?.cache_hit != null && (
               <TagBadge>
-                {t("monthlyCost")}: {formatDollar(calcModelCost(model, calcPrompt, calcCompletion), t)}
+                {t("cacheHitPrice")}: {formatDollar(model.pricing.cache_hit, t)}
               </TagBadge>
-            </div>
-          </>
-        );
-      },
+            )}
+            <TagBadge>
+              {t("monthlyCost")}: {formatDollar(calcModelCost(model, calcPrompt, calcCompletion), t)}
+            </TagBadge>
+          </div>
+        </>
+      ),
     },
     {
       id: "provider",
@@ -206,10 +202,10 @@ export function buildPricingColumns(
     {
       id: "blendedPrice",
       header: t("blendedPrice"),
-      accessorFn: (r) => r.pricing?.blended?.["7_2_1"] ?? null,
+      accessorFn: (r) => r.pricing?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1] ?? null,
       sortable: true,
       align: "right",
-      cell: priceCell((m) => m.pricing?.blended?.["7_2_1"], t),
+      cell: priceCell((m) => m.pricing?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1], t),
     },
     {
       id: "monthlyCost",

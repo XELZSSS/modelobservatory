@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useFilteredData } from "../../../shared/hooks/useFilteredData";
+import { useSearchStore } from "../../../shared/stores/searchStore";
+import { PRICING_BLENDS } from "../../../shared/config";
 import type { ArtificialAnalysisModel } from "../../../shared/types";
 
 export type ViewMode = "rankings" | "pricing" | "benchmarks";
@@ -13,7 +14,30 @@ function isReasoningModel(model: ArtificialAnalysisModel) {
   return REASONING_KEYWORDS.test(model.name) || REASONING_PREFIXES.test(model.name);
 }
 
-const getSearchFields = (m: ArtificialAnalysisModel) => [m.name, m.slug, m.model_creators?.name || ""];
+function matchesSearch(model: ArtificialAnalysisModel, term: string): boolean {
+  if (!term) return true;
+  return (
+    model.name.toLowerCase().includes(term) ||
+    model.slug.toLowerCase().includes(term) ||
+    (model.model_creators?.name || "").toLowerCase().includes(term)
+  );
+}
+
+function matchesModality(model: ArtificialAnalysisModel, modality: string): boolean {
+  if (modality === "all") return true;
+  switch (modality) {
+    case "text":
+      return !!(model.input_modality_text || model.output_modality_text);
+    case "image":
+      return !!(model.input_modality_image || model.output_modality_image);
+    case "speech":
+      return !!(model.input_modality_speech || model.output_modality_speech);
+    case "video":
+      return !!(model.input_modality_video || model.output_modality_video);
+    default:
+      return true;
+  }
+}
 
 export function useAARankingFilters(rankings: ArtificialAnalysisModel[]) {
   const location = useLocation();
@@ -21,43 +45,30 @@ export function useAARankingFilters(rankings: ArtificialAnalysisModel[]) {
   const [reasoningFilter, setReasoningFilter] = useState<ReasoningFilter>("all");
   const [modalityFilter, setModalityFilter] = useState<string>("all");
 
-  const preFiltered = useMemo(() => {
-    let result = rankings.filter((model) => {
-      if (viewMode === "rankings") return typeof model.intelligence_index === "number" && Number.isFinite(model.intelligence_index);
-      return model.pricing?.input != null || model.pricing?.output != null || model.pricing?.cache_hit != null || model.pricing?.blended?.["7_2_1"] != null;
-    });
-    if (reasoningFilter === "reasoning") result = result.filter(isReasoningModel);
-    else if (reasoningFilter === "non-reasoning") result = result.filter((m) => !isReasoningModel(m));
-    return result;
-  }, [rankings, viewMode, reasoningFilter]);
-
-  const searchFiltered = useFilteredData(preFiltered, getSearchFields);
+  const searchTerm = useSearchStore((s) => s.searchTerm);
 
   const filtered = useMemo(() => {
-    if (modalityFilter === "all") return searchFiltered;
-    return searchFiltered.filter((m) => {
-      switch (modalityFilter) {
-        case "text":
-          return m.input_modality_text || m.output_modality_text;
-        case "image":
-          return m.input_modality_image || m.output_modality_image;
-        case "speech":
-          return m.input_modality_speech || m.output_modality_speech;
-        case "video":
-          return m.input_modality_video || m.output_modality_video;
-        default:
-          return true;
+    const lowerTerm = searchTerm.toLowerCase().trim();
+    return rankings.filter((model) => {
+      if (viewMode === "rankings") {
+        if (typeof model.intelligence_index !== "number" || !Number.isFinite(model.intelligence_index)) return false;
+      } else if (viewMode === "pricing") {
+        const p = model.pricing;
+        if (p?.input == null && p?.output == null && p?.cache_hit == null && p?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1] == null) return false;
+      } else {
+        return true;
       }
-    });
-  }, [searchFiltered, modalityFilter]);
 
-  return {
-    filtered,
-    viewMode,
-    setViewMode,
-    reasoningFilter,
-    setReasoningFilter,
-    modalityFilter,
-    setModalityFilter,
-  };
+      if (reasoningFilter === "reasoning" && !isReasoningModel(model)) return false;
+      if (reasoningFilter === "non-reasoning" && isReasoningModel(model)) return false;
+
+      if (!matchesSearch(model, lowerTerm)) return false;
+
+      if (!matchesModality(model, modalityFilter)) return false;
+
+      return true;
+    });
+  }, [rankings, viewMode, reasoningFilter, searchTerm, modalityFilter]);
+
+  return { filtered, viewMode, setViewMode, reasoningFilter, setReasoningFilter, modalityFilter, setModalityFilter };
 }

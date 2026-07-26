@@ -44,7 +44,7 @@ function parseFeed(xml: string, sourceUrl: string): NewsItem[] {
     .filter((x: NewsItem | null): x is NewsItem => x !== null);
 }
 
-export async function getNews(category: string = "official"): Promise<NewsItem[]> {
+export async function getNews(category: string = "industry"): Promise<NewsItem[]> {
   if (!VALID_CATEGORIES.has(category)) throw new ValidationError(`Invalid news category "${category}". Valid: ${Array.from(VALID_CATEGORIES).join(", ")}`);
   const urls = rssConfig[category as keyof typeof rssConfig];
   const fullTtl = NEWS_TTL_MS;

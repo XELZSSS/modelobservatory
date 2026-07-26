@@ -1,5 +1,5 @@
 import { withCache } from "../cache";
-import { DEFAULT_TTL_MS } from "../../shared/config";
+import { DEFAULT_TTL_MS, PRICING_BLENDS } from "../../shared/config";
 import { fetchAndParseRsc, findNextData } from "../server/parsers/rsc";
 import { num, str, strOr, bool, obj } from "../server/parsers/coerce";
 import { BENCHMARK_KEYS } from "../../shared/constants/benchmarks";
@@ -25,11 +25,11 @@ function compactPricing(m: Record<string, unknown>, iic: Record<string, unknown>
     cache_hit_discount_percent: num(m.cache_hit_discount_percent),
     cacheHitRate: num(m.cacheHitRate),
     blended: {
-      "0_3_1": num(m.price_1m_blended_0_3_1) ?? undefined,
-      "7_2_1": num(m.price_1m_blended_7_2_1) ?? undefined,
-      "0_1_1": num(m.price_1m_blended_0_1_1) ?? undefined,
-      "0_100_1": num(m.price_1m_blended_0_100_1) ?? undefined,
-      "100_1_1": num(m.price_1m_blended_100_1_1) ?? undefined,
+      [PRICING_BLENDS.INPUT_3_OUTPUT_1]: num(m.price_1m_blended_0_3_1) ?? undefined,
+      [PRICING_BLENDS.INPUT_7_OUTPUT_2_1]: num(m.price_1m_blended_7_2_1) ?? undefined,
+      [PRICING_BLENDS.INPUT_0_OUTPUT_1_1]: num(m.price_1m_blended_0_1_1) ?? undefined,
+      [PRICING_BLENDS.INPUT_0_OUTPUT_100_1]: num(m.price_1m_blended_0_100_1) ?? undefined,
+      [PRICING_BLENDS.INPUT_100_OUTPUT_1_1]: num(m.price_1m_blended_100_1_1) ?? undefined,
     },
     intelligence_index_cost: iic ? { ...iic } : undefined,
   };

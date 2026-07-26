@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
@@ -175,20 +175,12 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
     [rankings, selectedBenchmark],
   );
 
-  const getModelState = useCallback(
-    (model: ArtificialAnalysisModel) => {
-      const key = model.id || model.slug;
-      return { isCompared: compareIds.includes(key) };
-    },
-    [compareIds],
-  );
-
   const modelColumns = useMemo<DataTableColumn<ArtificialAnalysisModel>[]>(() => {
     if (viewMode === "benchmarks") return [];
     return viewMode === "pricing"
-      ? buildPricingColumns(t, getModelState, toggleCompareModel, calcPrompt, calcCompletion)
-      : buildRankingColumns(t, getModelState, toggleCompareModel);
-  }, [getModelState, toggleCompareModel, t, viewMode, calcPrompt, calcCompletion]);
+      ? buildPricingColumns(t, calcPrompt, calcCompletion)
+      : buildRankingColumns(t);
+  }, [t, viewMode, calcPrompt, calcCompletion]);
 
   const benchmarkColumns = useBenchmarkColumns(t, selectedBenchmark);
 

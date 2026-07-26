@@ -41,7 +41,7 @@ export const routeDefs: RouteDef[] = [
   {
     path: "/api/news",
     params: ["category"],
-    defaults: { category: "official" },
+    defaults: { category: "industry" },
     handler: (category) => getNews(category),
   },
   {

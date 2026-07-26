@@ -17,14 +17,10 @@ import type { NewsItem } from "../../shared/types";
 import { useIsMobile } from "../../shared/hooks/useIsMobile";
 
 const CATEGORIES: { id: string; labelKey: TranslationKey; color: string }[] = [
-  { id: "official", labelKey: "catOfficial", color: COOL_COLORS[0]! },
-  { id: "industry", labelKey: "catIndustry", color: COOL_COLORS[1]! },
-  { id: "research", labelKey: "catResearch", color: COOL_COLORS[2]! },
-  { id: "agentic", labelKey: "catAgentic", color: COOL_COLORS[3]! },
-  { id: "hardware", labelKey: "catHardware", color: COOL_COLORS[4]! },
-  { id: "policy", labelKey: "catPolicy", color: COOL_COLORS[5]! },
-  { id: "funding", labelKey: "catFunding", color: COOL_COLORS[6]! },
-  { id: "opensource", labelKey: "catOpenSource", color: COOL_COLORS[7]! },
+  { id: "industry", labelKey: "catIndustry", color: COOL_COLORS[0]! },
+  { id: "opensource", labelKey: "catOpenSource", color: COOL_COLORS[1]! },
+  { id: "hardware", labelKey: "catHardware", color: COOL_COLORS[2]! },
+  { id: "funding", labelKey: "catFunding", color: COOL_COLORS[3]! },
 ];
 
 function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color: string; isLoading: boolean; isError: boolean }) {
@@ -101,7 +97,7 @@ function NewsCategoryContent({ categoryId, color }: { categoryId: string; color:
 export function NewsView() {
   const { t } = useTranslation();
   useDocumentTitle(t("aiNews"));
-  const [activeCategory, setActiveCategory] = useState("official");
+  const [activeCategory, setActiveCategory] = useState("industry");
 
   const activeColor = CATEGORIES.find((c) => c.id === activeCategory)?.color ?? COOL_COLORS[0]!;
 

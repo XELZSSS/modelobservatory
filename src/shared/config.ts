@@ -35,6 +35,15 @@ export const upstreamConfig = {
 export const HEALTH_TIMEOUT_MS = 15_000;
 export const USER_AGENT = "ModelObservatory/1.0 (+https://github.com/model-observatory)";
 
+// ── Pricing blend keys ─────────────────────────────────────────
+export const PRICING_BLENDS = {
+  INPUT_3_OUTPUT_1: "0_3_1",
+  INPUT_7_OUTPUT_2_1: "7_2_1",
+  INPUT_0_OUTPUT_1_1: "0_1_1",
+  INPUT_0_OUTPUT_100_1: "0_100_1",
+  INPUT_100_OUTPUT_1_1: "100_1_1",
+} as const;
+
 // ── cache TTLs ─────────────────────────────────────────────────
 export const DEFAULT_TTL_MS = FIVE_MINUTES;
 export const NEWS_TTL_MS = THIRTY_MINUTES;
@@ -48,19 +57,23 @@ export const apiBase = import.meta.env?.VITE_API_BASE?.replace(/\/+$/, "") ?? ""
 export const REPO_URL = "https://github.com/XELZSSS/modelobservatory";
 
 // ── RSS feed URLs ──────────────────────────────────────────────
-const TECHCRUNCH_AI = "https://techcrunch.com/category/artificial-intelligence/feed/";
+// Each feed source appears in exactly one category to avoid duplicate content across tabs.
+const VENTUREBEAT_AI = "https://venturebeat.com/category/ai/feed/";
 const ARS_TECHNICA = "https://feeds.arstechnica.com/arstechnica/index";
+const WIRED = "https://www.wired.com/feed/tag/ai/latest/rss";
+const TECHCRUNCH_AI = "https://techcrunch.com/category/artificial-intelligence/feed/";
+const ZDNET = "https://www.zdnet.com/topic/artificial-intelligence/rss.xml";
+
+
+const TECHCRUNCH_STARTUPS = "https://techcrunch.com/category/startups/feed/";
+const CRUNCHBASE = "https://news.crunchbase.com/feed/";
 const HF_BLOG = "https://huggingface.co/blog/feed.xml";
 const ANALYTICS_VIDHYA = "https://www.analyticsvidhya.com/blog/category/artificial-intelligence/feed/";
-const VENTUREBEAT_AI = "https://venturebeat.com/category/ai/feed/";
+const MIT_TECH_REVIEW = "https://www.technologyreview.com/topic/artificial-intelligence/feed/";
 
 export const rssConfig = {
-  official: [TECHCRUNCH_AI, VENTUREBEAT_AI],
-  industry: [ARS_TECHNICA, "https://www.wired.com/feed/tag/ai/latest/rss"],
-  research: ["https://export.arxiv.org/rss/cs.AI", HF_BLOG],
-  agentic: ["https://www.technologyreview.com/topic/artificial-intelligence/feed/", ANALYTICS_VIDHYA],
-  policy: [TECHCRUNCH_AI, ARS_TECHNICA],
-  hardware: [VENTUREBEAT_AI, "https://www.zdnet.com/topic/artificial-intelligence/rss.xml"],
-  funding: ["https://techcrunch.com/category/startups/feed/", "https://news.crunchbase.com/feed/"],
-  opensource: [HF_BLOG, ANALYTICS_VIDHYA],
+  industry: [VENTUREBEAT_AI, TECHCRUNCH_AI, ARS_TECHNICA, WIRED, MIT_TECH_REVIEW],
+  opensource: [ANALYTICS_VIDHYA, HF_BLOG],
+  hardware: [ZDNET],
+  funding: [TECHCRUNCH_STARTUPS, CRUNCHBASE],
 } as const;

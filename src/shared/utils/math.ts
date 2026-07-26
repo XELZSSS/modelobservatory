@@ -1,4 +1,5 @@
 import type { ArtificialAnalysisModel } from "../types";
+import { PRICING_BLENDS } from "../config";
 
 /**
  * Normalize a value that may be a fraction (0-1) or a percentage (0-100).
@@ -43,7 +44,7 @@ export function calcModelCost(model: ArtificialAnalysisModel, promptTokens: numb
     return (pt / 1_000_000) * pricing.input! + (ct / 1_000_000) * pricing.output!;
   }
 
-  const blended = pricing.blended?.["7_2_1"];
+  const blended = pricing.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1];
   if (Number.isFinite(blended)) {
     return ((pt + ct) / 1_000_000) * blended!;
   }

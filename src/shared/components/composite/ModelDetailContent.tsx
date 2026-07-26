@@ -5,6 +5,7 @@ import { InfoCard } from "./InfoCard";
 import { useTranslation } from "../../i18n/useTranslation";
 import { formatBoolean, formatContext, formatCost, formatPricePerMillion, formatScore, benchmarkLabel, orNA } from "../../utils/format";
 import type { TFunction } from "../../i18n";
+import { PRICING_BLENDS } from "../../config";
 
 const MODALITY_STYLES = {
   text: "bg-green-100 text-green-800",
@@ -52,7 +53,7 @@ export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }
         <InfoCard title={t("pricing")}>
           <InfoRow compact label={t("promptPrice")} value={formatPricePerMillion(t, pricing?.input)} />
           <InfoRow compact label={t("completionPrice")} value={formatPricePerMillion(t, pricing?.output)} />
-          <InfoRow compact label={t("blendedPrice")} value={formatPricePerMillion(t, pricing?.blended?.["7_2_1"])} />
+          <InfoRow compact label={t("blendedPrice")} value={formatPricePerMillion(t, pricing?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1])} />
         </InfoCard>
       </div>
       {model.benchmarks && Object.values(model.benchmarks).some((v) => v != null) && (

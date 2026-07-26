@@ -12,7 +12,7 @@ import { DetailLayout, StatGrid, InfoGrid } from "../../../shared/components/com
 import type { OpenRouterRankEntry } from "../../../shared/types";
 
 function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   return (
     <DetailLayout>
       <StatGrid columns={4}>
@@ -38,7 +38,7 @@ function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
         </InfoCard>
       </InfoGrid>
       <InfoCard title={t("techSelectionAdvice")}>
-        <p className="text-xs text-text-secondary leading-relaxed">{getRecommendation(model.id, t)}</p>
+        <p className="text-xs text-text-secondary leading-relaxed">{getRecommendation(model.id, lang)}</p>
       </InfoCard>
       <div className="flex flex-wrap gap-1.5">
         <Badge variant="outline">{model.variant || model.category}</Badge>

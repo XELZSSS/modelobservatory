@@ -12,11 +12,11 @@ const TOP_N = 6;
 interface Market {
   id: string;
   question: string;
+  slug: string;
   outcomes: string;
   outcomePrices: string;
   volume: string;
   endDate: string;
-  url: string;
   active: boolean;
   closed: boolean;
 }
@@ -80,8 +80,8 @@ function deadline(endDate: string): string {
   return isNaN(d.getTime()) ? "" : d.toISOString().split("T")[0]!;
 }
 
-function url(u: string): string {
-  return u ? `https://polymarket.com${u}` : "";
+function marketUrl(slug: string): string {
+  return slug ? `https://polymarket.com/event/${slug}` : "";
 }
 
 function sortByVolume<T extends { volume: number }>(items: T[]): T[] {
@@ -127,7 +127,7 @@ function buildModelPredictions(markets: Market[]): ModelPrediction[] {
           probability: yesProb(outcomes, prices),
           volume: Number(m.volume) || 0,
           deadline: deadline(m.endDate),
-          url: url(m.url),
+          url: marketUrl(m.slug),
         };
       })
       .filter((x): x is ModelPrediction => x !== null),
@@ -147,7 +147,7 @@ function buildReleasePredictions(markets: Market[]): ReleasePrediction[] {
           model: modelMatch?.[0] || m.question.split("?")[0]?.trim() || m.question,
           predictions: outcomes.map((label, i) => ({ window: label, probability: prices[i] || 0 })),
           volume: Number(m.volume) || 0,
-          url: url(m.url),
+          url: marketUrl(m.slug),
         };
       }),
   );
@@ -170,7 +170,7 @@ function buildProviderPredictions(markets: Market[]): ProviderPrediction[] {
           options: outcomes.map((label, i) => ({ label, probability: prices[i] || 0 })),
           volume: Number(m.volume) || 0,
           deadline: deadline(m.endDate),
-          url: url(m.url),
+          url: marketUrl(m.slug),
         };
       })
       .filter((x): x is ProviderPrediction => x !== null),

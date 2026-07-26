@@ -22,9 +22,8 @@ class MemoryCache implements CacheBackend {
   }
 
   async set<T>(key: string, value: T, ttlMs: number): Promise<void> {
-    this.store.delete(key);
     this.store.set(key, { data: value, expires: Date.now() + ttlMs });
-    if (++this.writes >= 100) {
+    if (++this.writes >= 200) {
       this.writes = 0;
       this.evict();
     }
@@ -32,13 +31,18 @@ class MemoryCache implements CacheBackend {
 
   private evict() {
     const now = Date.now();
+    let staleCount = 0;
     for (const [k, v] of this.store) {
-      if (v.expires <= now) this.store.delete(k);
+      if (v.expires <= now) { this.store.delete(k); staleCount++; }
     }
-    while (this.store.size > MAX_ENTRIES) {
-      const firstKey = this.store.keys().next().value;
-      if (firstKey !== undefined) this.store.delete(firstKey);
-      else break;
+    if (this.store.size > MAX_ENTRIES) {
+      const toDelete = this.store.size - MAX_ENTRIES;
+      let deleted = 0;
+      for (const k of this.store.keys()) {
+        if (deleted >= toDelete) break;
+        this.store.delete(k);
+        deleted++;
+      }
     }
   }
 }

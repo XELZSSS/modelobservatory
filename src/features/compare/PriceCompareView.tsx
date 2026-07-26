@@ -8,6 +8,7 @@ import { cn } from "../../shared/utils/cn";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import { formatDollar } from "../../shared/utils/format";
+import { PRICING_BLENDS } from "../../shared/config";
 import { getModelColor } from "../../shared/components/rankColor";
 import { calcModelCost } from "../../shared/utils/math";
 import { approxEq } from "../../shared/utils/math";
@@ -39,7 +40,7 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
   const costEfficiency = useMemo(() => {
     return models.map((model) => {
       const intelligence = model.intelligence_index;
-      const blended = model.pricing?.blended?.["7_2_1"];
+      const blended = model.pricing?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1];
       if (intelligence == null || blended == null || blended === 0) return null;
       return intelligence / blended;
     });
@@ -79,8 +80,7 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
       <Card>
         <CardContent className="p-4">
           <p className="text-sm font-bold mb-3">{t("priceBreakdown")}</p>
-          <PriceTable priceRows={priceRows} models={models} bestPrices={bestPrices} variant="desktop" />
-          <PriceTable priceRows={priceRows} models={models} bestPrices={bestPrices} variant="mobile" />
+          <PriceTable priceRows={priceRows} models={models} bestPrices={bestPrices} />
         </CardContent>
       </Card>
 
@@ -114,8 +114,7 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
       <Card>
         <CardContent className="p-4">
           <p className="text-sm font-bold mb-3">{t("costEfficiency")}</p>
-          <EfficiencyTable models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} variant="desktop" />
-          <EfficiencyTable models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} variant="mobile" />
+          <EfficiencyTable models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
         </CardContent>
       </Card>
 

@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { useSearchResetOnNavigate } from "./shared/hooks/useSearchResetOnNavigate";
 
 const HomeView = lazy(() => import("./features/home/HomeView").then((m) => ({ default: m.HomeView })));
@@ -10,7 +10,6 @@ const ReleasesView = lazy(() => import("./features/releases/ReleasesView").then(
 const StatusView = lazy(() => import("./features/system/StatusView").then((m) => ({ default: m.StatusView })));
 const CompareView = lazy(() => import("./features/compare/CompareView").then((m) => ({ default: m.CompareView })));
 const PriceCompareView = lazy(() => import("./features/compare/PriceCompareView").then((m) => ({ default: m.PriceCompareView })));
-const ProviderCompareView = lazy(() => import("./features/compare/ProviderCompareView").then((m) => ({ default: m.ProviderCompareView })));
 const NewsView = lazy(() => import("./features/news/NewsView").then((m) => ({ default: m.NewsView })));
 const ModelDetailView = lazy(() => import("./features/models/ModelDetailView").then((m) => ({ default: m.ModelDetailView })));
 const NotFound = lazy(() => import("./features/system/NotFound").then((m) => ({ default: m.NotFound })));
@@ -22,7 +21,6 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<HomeView />} />
       <Route path="/models" element={<RankingsHubView defaultTab={0} />} />
-      <Route path="/pricing" element={<Navigate to="/models" replace state={{ viewMode: "pricing" }} />} />
       <Route path="/releases" element={<ReleasesView defaultMode="feed" />} />
       <Route path="/news" element={<NewsView />} />
       <Route path="/score-release" element={<ReleasesView defaultMode="release-dates" lockedMode />} />
@@ -32,7 +30,6 @@ export function AppRoutes() {
       <Route path="/open-source" element={<RankingsHubView defaultTab={TAB_INDEX.openSourceRankings} />} />
       <Route path="/compare" element={<CompareView />} />
       <Route path="/price-compare" element={<PriceCompareView />} />
-      <Route path="/provider-compare" element={<ProviderCompareView />} />
       <Route path="/model/:source/*" element={<ModelDetailView />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

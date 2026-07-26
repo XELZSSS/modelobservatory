@@ -13,7 +13,7 @@ import { getRecommendation } from "../../shared/utils/recommendation";
 import { useOpenRouterColumns } from "./useOpenRouterColumns";
 
 function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   return (
     <div className="p-4 flex flex-col gap-3 text-left">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -24,7 +24,7 @@ function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
       </div>
       <div className="flex flex-col gap-1.5 p-3 rounded-md bg-bg-secondary">
         <p className="text-xs font-bold text-text-primary">{t("techSelectionAdvice")}</p>
-        <p className={cn("text-xs text-text-secondary", "leading-relaxed")}>{getRecommendation(item.id, t)}</p>
+        <p className={cn("text-xs text-text-secondary", "leading-relaxed")}>{getRecommendation(item.id, lang)}</p>
       </div>
       <div className={cn("flex flex-row justify-between items-center", "text-xs text-text-secondary")}>
         <span>
