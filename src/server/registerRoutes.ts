@@ -1,7 +1,7 @@
 import type { Hono } from "hono";
 import { startTime, endTime } from "hono/timing";
-import type { RouteDef } from "../schema";
-import { ValidationError } from "../errors";
+import type { RouteDef } from "./schema";
+import { ValidationError } from "./errors";
 
 export function registerRoutes(app: Hono, routeArrays: RouteDef[][]): void {
   for (const routes of routeArrays) {

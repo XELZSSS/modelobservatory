@@ -1,6 +1,6 @@
-import app from "./api/router";
-import { initCache, KVCache, globalCache } from "./api/cache";
-import { setCloudflareInfo } from "./api/upstream/system";
+import app from "./router";
+import { initCache, KVCache, globalCache } from "./cache";
+import { setCloudflareInfo } from "./data-sources/system";
 
 interface CfProperties {
   country?: string;

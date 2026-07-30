@@ -10,7 +10,7 @@ interface TableHeaderProps<T> {
   onSort: (colId: string) => void;
 }
 
-export function TableHeader<T>({ columns, sortState, onSort }: TableHeaderProps<T>) {
+function TableHeaderInner<T>({ columns, sortState, onSort }: TableHeaderProps<T>) {
   return (
     <thead>
       <tr className="border-b border-border bg-bg-secondary">
@@ -43,3 +43,5 @@ export function TableHeader<T>({ columns, sortState, onSort }: TableHeaderProps<
     </thead>
   );
 }
+
+export const TableHeader = memo(TableHeaderInner) as typeof TableHeaderInner;

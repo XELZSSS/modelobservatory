@@ -12,7 +12,7 @@
  * failure is diagnosable from the rendered ErrorDetail alone.
  */
 
-import { upstreamConfig } from "../../../shared/config";
+import { upstreamConfig } from "../../shared/config";
 
 const AA_BASE = upstreamConfig.artificialAnalysis;
 const AA_RSC_HEADERS = { RSC: "1", "Next-Router-State-Tree": "%5B%5D" } as const;

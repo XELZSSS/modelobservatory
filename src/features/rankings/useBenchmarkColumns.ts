@@ -1,4 +1,4 @@
-import { BENCHMARK_KEYS, BENCHMARK_LABELS } from "../../shared/constants/benchmarks";
+import { BENCHMARK_KEYS, BENCHMARK_LABELS } from "../../shared/config/benchmarks";
 import type { TranslationKey } from "../../shared/i18n";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";

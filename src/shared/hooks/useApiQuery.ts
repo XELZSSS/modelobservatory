@@ -11,7 +11,7 @@ import type {
   HomeDashboardData,
 } from "../types";
 import { HEALTH_CHECK_INTERVAL, SYSTEM_STATS_INTERVAL, FIVE_MINUTES, THIRTY_MINUTES } from "../config";
-import { apiFetch, api } from "../../api/client";
+import { apiFetch, api } from "../../client/api/client";
 import { normalizePercent } from "../utils/math";
 
 interface QueryCtx {

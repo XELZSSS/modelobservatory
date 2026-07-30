@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useState } from "react";
+import { memo, useCallback, useDeferredValue, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
@@ -17,7 +17,7 @@ import { buildRankingColumns, buildPricingColumns, ModelExpandedDetail } from ".
 
 import { useAARankingFilters, type ViewMode, type ReasoningFilter } from "./aa/useAARankingFilters";
 import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
-import { BENCHMARK_KEYS, BENCHMARK_LABELS } from "../../shared/constants/benchmarks";
+import { BENCHMARK_KEYS, BENCHMARK_LABELS } from "../../shared/config/benchmarks";
 import { useBenchmarkColumns } from "./useBenchmarkColumns";
 
 function useCostEstimator(filteredRankings: ArtificialAnalysisModel[]) {

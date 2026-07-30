@@ -1,5 +1,5 @@
 import { memo, type ReactNode } from "react";
-import { Card, CardContent, CardAccent } from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 
 export const InfoCard = memo(function InfoCard({ title, children }: { title: string; children: ReactNode }) {
   return (

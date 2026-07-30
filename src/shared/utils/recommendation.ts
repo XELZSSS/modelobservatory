@@ -1,1 +1,1 @@
-export { getRecommendation } from "../constants/recommendations";
+export { getRecommendation } from "../config/recommendations";

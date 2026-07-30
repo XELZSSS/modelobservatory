@@ -5,10 +5,10 @@ import { timing } from "hono/timing";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import { registerRoutes } from "./server/registerRoutes";
+import { registerRoutes } from "./registerRoutes";
 import { ApiError } from "./errors";
 
-import { routeDefs } from "./server/routes";
+import { routeDefs } from "./routes";
 
 export const app = new Hono();
 

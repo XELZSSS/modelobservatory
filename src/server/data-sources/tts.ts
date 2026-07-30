@@ -1,7 +1,7 @@
 import { withCache } from "../cache";
 import { DEFAULT_TTL_MS } from "../../shared/config";
-import { fetchAndParseRsc, dfsCollect } from "../server/parsers/rsc";
-import { num } from "../server/parsers/coerce";
+import { fetchAndParseRsc, dfsCollect } from "../parsers/rsc";
+import { num } from "../parsers/coerce";
 import { deduplicateBy } from "../cache";
 import type { TtsModel } from "../../shared/types";
 

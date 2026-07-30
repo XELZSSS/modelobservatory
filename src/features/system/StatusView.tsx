@@ -78,7 +78,7 @@ function StatusContent() {
         </PageSection>
       )}
 
-      <PageSection title={t("healthySources" as any)}>
+      <PageSection title={t("healthySources")}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {data
             .filter((e) => e.status === "ok")

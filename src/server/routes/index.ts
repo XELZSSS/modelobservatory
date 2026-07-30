@@ -1,13 +1,13 @@
-import type { RouteDef } from "../../schema";
-import { getLeaderboard as getArenaLeaderboard } from "../../upstream/arena";
-import { getIntelligenceIndex } from "../../upstream/artificial";
-import { getModels, getReleases } from "../../upstream/huggingface";
-import { getNews } from "../../upstream/news";
-import { getOpenRouterRankings } from "../../upstream/openrouter";
-import { getPredictions } from "../../upstream/polymarket";
-import { checkAllUpstreams } from "../../upstream/status";
-import { getSystemStats } from "../../upstream/system";
-import { getTtsLeaderboard } from "../../upstream/tts";
+import type { RouteDef } from "../schema";
+import { getLeaderboard as getArenaLeaderboard } from "../data-sources/arena";
+import { getIntelligenceIndex } from "../data-sources/artificial";
+import { getModels, getReleases } from "../data-sources/huggingface";
+import { getNews } from "../data-sources/news";
+import { getOpenRouterRankings } from "../data-sources/openrouter";
+import { getPredictions } from "../data-sources/polymarket";
+import { checkAllUpstreams } from "../data-sources/status";
+import { getSystemStats } from "../data-sources/system";
+import { getTtsLeaderboard } from "../data-sources/tts";
 import { settled } from "../utils";
 
 export const routeDefs: RouteDef[] = [

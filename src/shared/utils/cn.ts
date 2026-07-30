@@ -1,16 +1,7 @@
-type ClassValue = string | false | null | undefined | { [key: string]: boolean | null | undefined };
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import type { ClassValue } from "clsx";
 
-export function cn(...classes: ClassValue[]): string {
-  const result: string[] = [];
-  for (const cls of classes) {
-    if (!cls) continue;
-    if (typeof cls === "string") {
-      result.push(cls);
-    } else {
-      for (const key in cls) {
-        if (cls[key]) result.push(key);
-      }
-    }
-  }
-  return result.join(" ");
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
 }

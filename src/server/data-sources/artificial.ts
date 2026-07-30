@@ -1,8 +1,8 @@
 import { withCache } from "../cache";
 import { DEFAULT_TTL_MS, PRICING_BLENDS } from "../../shared/config";
-import { fetchAndParseRsc, findNextData } from "../server/parsers/rsc";
-import { num, str, strOr, bool, obj } from "../server/parsers/coerce";
-import { BENCHMARK_KEYS } from "../../shared/constants/benchmarks";
+import { fetchAndParseRsc, findNextData } from "../parsers/rsc";
+import { num, str, strOr, bool, obj } from "../parsers/coerce";
+import { BENCHMARK_KEYS } from "../../shared/config/benchmarks";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 
 function compactBenchmarks(m: Record<string, unknown>): Record<string, number | null> {

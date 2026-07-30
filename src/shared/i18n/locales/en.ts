@@ -210,4 +210,6 @@ export const en = {
   benchmarkApexAgents: "APEX Agents",
   benchmarkTerminalbenchV2_1: "TerminalBench v2.1",
   benchmarkTauBanking: "TAU Banking",
+  healthySources: "Healthy Sources",
+  marketPredictions: "Market Predictions",
 } as const;

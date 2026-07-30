@@ -1,6 +1,6 @@
 import type { TFunction, TranslationKey } from "../i18n";
 import type { ArtificialAnalysisModel } from "../types";
-import { BENCHMARK_LABELS } from "../constants/benchmarks";
+import { BENCHMARK_LABELS } from "../config/benchmarks";
 
 export function safeHref(url: string | null | undefined): string | undefined {
   if (!url) return undefined;

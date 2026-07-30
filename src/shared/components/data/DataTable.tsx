@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react";
+import { memo, useCallback, useMemo, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { useTranslation } from "../../i18n/useTranslation";
 import { useIsMobile } from "../../hooks/useIsMobile";
@@ -29,7 +29,7 @@ interface DataTableProps<T> {
   renderExpandedRow?: (row: T) => ReactNode;
 }
 
-export function DataTable<T>({ data, columns, getRowId, pageSize = 30, hideHeader, expandedRowId, onToggleExpand, renderExpandedRow }: DataTableProps<T>) {
+function DataTableInner<T>({ data, columns, getRowId, pageSize = 30, hideHeader, expandedRowId, onToggleExpand, renderExpandedRow }: DataTableProps<T>) {
   const isMobile = useIsMobile();
   const effectivePageSize = isMobile ? Math.min(pageSize, 15) : pageSize;
   const { t } = useTranslation();
@@ -50,6 +50,11 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, hideHeade
   const { sortedData, sortState, toggleSort } = useTableSort(dedupedData, columns);
   const { page, totalPages, pagedData, goToPage, resetPage } = useTablePagination(sortedData, effectivePageSize);
 
+  const handleSort = useCallback((colId: string) => {
+    resetPage();
+    toggleSort(colId);
+  }, [resetPage, toggleSort]);
+
   return (
     <div className="flex flex-col gap-2">
       {sortedData.length === 0 ? (
@@ -58,7 +63,7 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, hideHeade
         <>
           <div className="rounded-lg border border-border overflow-x-auto min-w-0">
             <table className="w-full text-sm table-auto">
-              {!hideHeader && <TableHeader columns={columns} sortState={sortState} onSort={(colId) => { resetPage(); toggleSort(colId); }} />}
+              {!hideHeader && <TableHeader columns={columns} sortState={sortState} onSort={handleSort} />}
               <TableBody
                 pagedData={pagedData}
                 columns={columns}
@@ -76,3 +81,5 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, hideHeade
     </div>
   );
 }
+
+export const DataTable = memo(DataTableInner) as typeof DataTableInner;

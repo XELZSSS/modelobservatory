@@ -1,4 +1,4 @@
-import { memo, useMemo, useState, useEffect, type ReactNode } from "react";
+import { memo, useCallback, useMemo, useState, useEffect, type ReactNode } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import { useSuspenseArtificialRankings, useSuspenseHomeDashboard, useHallucinationRankings, useSuspenseHealthStatus, useSystemStats } from "../../shared/hooks/useApiQuery";
@@ -28,7 +28,7 @@ const StatusBarPill = memo(function StatusBarPill({ children }: { children: Reac
   );
 });
 
-function UptimeDisplay() {
+const UptimeDisplay = memo(function UptimeDisplay() {
   const { t } = useTranslation();
   const statsQ = useSystemStats();
   const uptime = statsQ.data?.uptime ?? 0;
@@ -40,7 +40,7 @@ function UptimeDisplay() {
     return t("uptimeDays", { value: Math.floor(s / 86400), value2: Math.floor((s % 86400) / 3600) });
   };
   return <StatusBarPill><span className="inline-block w-1.5 h-1.5 rounded-full bg-success" />{t("uptime")}: {fmt(uptime)}</StatusBarPill>;
-}
+});
 
 const ClockDisplay = memo(function ClockDisplay() {
   const [now, setNow] = useState(() => new Date());
@@ -119,7 +119,7 @@ const ArenaT2ISection = memo(function ArenaT2ISection({ models }: { models: Aren
   );
 });
 
-function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ name: string; value: number; share: number }> }) {
+const ToolUsageShareDonut = memo(function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ name: string; value: number; share: number }> }) {
   const { t, lang } = useTranslation();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const center = hoveredIndex != null ? rows[hoveredIndex] : null;
@@ -187,7 +187,7 @@ function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ nam
       )}
     </div>
   );
-}
+});
 
 const RankedStatCard = memo(function RankedStatCard({ title, source, rows }: { title: string; source: string; rows: HomeBarStat[] }) {
   const { t } = useTranslation();
@@ -216,7 +216,7 @@ const RankedStatCard = memo(function RankedStatCard({ title, source, rows }: { t
   );
 });
 
-function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }) {
+const IndexLineChart = memo(function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }) {
   const { t } = useTranslation();
   const [chartRef, chartWidth] = useElementWidth();
   const top10 = useMemo(
@@ -264,7 +264,7 @@ function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }) {
       </CardContent>
     </Card>
   );
-}
+});
 
 const StatisticsSection = memo(function StatisticsSection({
   downloadStats,
@@ -293,7 +293,7 @@ const StatisticsSection = memo(function StatisticsSection({
   );
 });
 
-function HomeContent() {
+const HomeContent = memo(function HomeContent() {
   const { t } = useTranslation();
 
   const { data: artificialData } = useSuspenseArtificialRankings();
@@ -350,13 +350,13 @@ function HomeContent() {
       <ArenaT2ISection models={arenaT2IModels} />
 
       {predictions && (
-        <PageSection title={t("marketPredictions" as any)}>
+        <PageSection title={t("marketPredictions")}>
           <PredictionsSection data={predictions} />
         </PageSection>
       )}
     </PageContainer>
   );
-}
+});
 
 export function HomeView() {
   const { t } = useTranslation();

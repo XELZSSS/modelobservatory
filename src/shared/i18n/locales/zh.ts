@@ -210,4 +210,6 @@ export const zh = {
   benchmarkApexAgents: "APEX Agents",
   benchmarkTerminalbenchV2_1: "TerminalBench v2.1",
   benchmarkTauBanking: "TAU Banking",
+  healthySources: "健康数据源",
+  marketPredictions: "市场预测",
 } as const;

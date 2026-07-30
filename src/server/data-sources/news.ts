@@ -3,7 +3,7 @@ import { withCacheTtl } from "../cache";
 import { fetchText } from "../fetch";
 import type { NewsItem } from "../../shared/types";
 import { rssConfig, NEWS_TTL_MS } from "../../shared/config";
-import { decodeEntities, stripHtml } from "../server/parsers/feed";
+import { decodeEntities, stripHtml } from "../parsers/feed";
 import { ValidationError } from "../errors";
 
 const VALID_CATEGORIES = new Set(Object.keys(rssConfig));
