@@ -20,12 +20,12 @@ export function CompareChipBar({
   const { t } = useTranslation();
   const canCompare = models.length >= 2;
   return (
-    <div className="flex flex-wrap gap-2 items-center justify-between">
+    <div className="flex flex-wrap gap-3 items-center justify-between p-3 rounded-lg border border-border bg-bg-secondary/50">
       <div className="flex flex-wrap gap-2 items-center">
         {models.map((model) => (
-          <span key={modelId(model)} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-bg-tertiary border border-border">
+          <span key={modelId(model)} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-bg-card border border-border text-sm">
             <span className="text-sm font-medium truncate max-w-[120px]">{model.short_name || model.name}</span>
-            <Button variant="ghost" size="icon" onClick={() => onRemove(model)} className="shrink-0" aria-label={`${t("remove")} ${model.short_name || model.name}`}>
+            <Button variant="ghost" size="icon" onClick={() => onRemove(model)} className="shrink-0 -mr-1" aria-label={`${t("remove")} ${model.short_name || model.name}`}>
               <X size={14} />
             </Button>
           </span>
@@ -41,7 +41,7 @@ export function CompareChipBar({
           </Button>
         )}
       </div>
-      {onCompare && !canCompare && models.length > 0 && <p className="text-xs text-text-secondary">{t("compareLimit")}</p>}
+      {onCompare && !canCompare && models.length > 0 && <p className="text-xs text-text-secondary w-full">{t("compareLimit")}</p>}
     </div>
   );
 }

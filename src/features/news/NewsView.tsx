@@ -15,6 +15,7 @@ import { cn } from "../../shared/utils/cn";
 import { TabContainer, type TabItem } from "../../shared/components/composite/TabContainer";
 import type { NewsItem } from "../../shared/types";
 import { useIsMobile } from "../../shared/hooks/useIsMobile";
+import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
 
 const CATEGORIES: { id: string; labelKey: TranslationKey; color: string }[] = [
   { id: "industry", labelKey: "catIndustry", color: COOL_COLORS[0]! },
@@ -36,7 +37,7 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
 
   if (isError) {
     return (
-      <Card className="text-sm p-4 text-center" style={{ color: "var(--destructive)" }}>
+      <Card className="text-sm p-6 text-center" style={{ color: "var(--destructive)" }}>
         {t("newsLoadFailed")}
       </Card>
     );
@@ -44,7 +45,7 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
 
   if (news.length === 0) {
     return (
-      <Card className="flex flex-col items-center justify-center p-4 text-text-secondary">
+      <Card className="flex flex-col items-center justify-center p-8 text-text-secondary">
         <Search size={24} className="mb-2 opacity-50" />
         <p className="text-sm">{t("noResults")}</p>
       </Card>
@@ -52,27 +53,27 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       {currentNews.map((item) => (
         <a
           key={item.id}
           href={safeHref(item.link) ?? undefined}
           target="_blank"
           rel="noopener noreferrer"
-          className="group block hover:border-text-primary"
+          className="group block"
           aria-label={`${item.title} - ${item.source}`}
         >
-          <Card className="p-3" style={{ borderLeft: `3px solid ${color}` }}>
-            <div className="flex flex-row items-start justify-between gap-4">
-              <h3 className="text-sm font-bold text-text-primary leading-relaxed group-hover:underline">{item.title}</h3>
-              <ExternalLink size={14} className="shrink-0 text-text-secondary mt-1" />
+          <Card className="p-4 hover:border-accent/30 transition-colors">
+            <div className="flex items-start justify-between gap-4">
+              <h3 className="text-sm font-semibold text-text-primary leading-relaxed group-hover:text-accent transition-colors">{item.title}</h3>
+              <ExternalLink size={14} className="shrink-0 text-text-secondary mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <div className="flex flex-row items-center gap-3 mt-2">
-              <div className={cn("flex items-center gap-1", "text-xs text-text-secondary")}>
-                <Newspaper size={12} />
+            <div className="flex items-center gap-3 mt-2.5">
+              <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
                 <span>{item.source}</span>
               </div>
-              <div className={cn("flex items-center gap-1", "text-xs text-text-secondary")}>
+              <div className="flex items-center gap-1 text-xs text-text-secondary">
                 <Clock size={12} />
                 <span>{formatRelativeTime(item.pubDate, t)}</span>
               </div>
@@ -81,7 +82,7 @@ function NewsList({ news, color, isLoading, isError }: { news: NewsItem[]; color
         </a>
       ))}
       {totalPages > 1 && (
-        <div className="mt-2 mb-4 flex justify-center">
+        <div className="mt-2 flex justify-center">
           <Pagination page={safePage} totalPages={totalPages} onChange={setCurrentPage} />
         </div>
       )}
@@ -111,11 +112,11 @@ export function NewsView() {
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <SectionHeader title={t("aiNews")} />
+    <PageContainer>
+      <PageHeader title={t("aiNews")} />
       <TabContainer tabs={tabs} activeTab={activeCategory} tabSize="sm" onTabChange={setActiveCategory}>
         <NewsCategoryContent categoryId={activeCategory} color={activeColor} />
       </TabContainer>
-    </div>
+    </PageContainer>
   );
 }

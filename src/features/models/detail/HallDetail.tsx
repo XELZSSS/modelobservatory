@@ -27,7 +27,7 @@ function HallDetailContent({ model, aaModel }: { model: HallucinationRankingEntr
       </InfoCard>
       {aaModel && (
         <>
-          <p className="text-xs font-bold text-text-secondary mt-2">{t("modelDetail")}</p>
+          <p className="text-xs font-semibold text-text-secondary mt-2">{t("modelDetail")}</p>
           <ModelDetailContent model={aaModel} />
         </>
       )}

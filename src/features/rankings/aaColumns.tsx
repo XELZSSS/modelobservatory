@@ -54,7 +54,7 @@ function RankingModelCell({ model }: { model: ArtificialAnalysisModel }) {
   return (
     <>
       <div className="flex items-center gap-2 min-w-0">
-        <p className="text-sm font-bold break-words min-w-0">{model.name}</p>
+        <p className="text-sm font-semibold break-words min-w-0">{model.name}</p>
         {model.intelligence_index_is_estimated && (
           <Badge variant="outline" className="shrink-0">
             {t("estimated")}
@@ -100,24 +100,24 @@ export function buildRankingColumns(t: TFunction): DataTableColumn<ArtificialAna
   return [
     {
       id: "model",
-      header: t("modelNameOrId"),
+      header: "",
       width: "40%",
       cell: (model) => <RankingModelCell model={model} />,
     },
     {
       id: "creator",
-      header: t("creator"),
+      header: "",
       accessorFn: (row) => row.model_creators?.name || null,
       hiddenMd: true,
       align: "right",
       cell: (model) => <p className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
     },
-    scoreColumn("intelligence", t("intelligenceIndex"), (m) => m.intelligence_index, t),
-    scoreColumn("coding", t("coding"), (m) => m.coding_index, t),
-    scoreColumn("agentic", t("agentic"), (m) => m.agentic_index, t),
+    scoreColumn("intelligence", "", (m) => m.intelligence_index, t),
+    scoreColumn("coding", "", (m) => m.coding_index, t),
+    scoreColumn("agentic", "", (m) => m.agentic_index, t),
     {
       id: "contextWindow",
-      header: t("contextWindow"),
+      header: "",
       accessorFn: (row) => row.context_window_tokens,
       sortable: true,
       align: "right",
@@ -135,7 +135,7 @@ export function buildPricingColumns(
   return [
     {
       id: "model",
-      header: t("modelNameOrId"),
+      header: "",
       width: "35%",
       cell: (model) => (
         <>
@@ -159,7 +159,7 @@ export function buildPricingColumns(
     },
     {
       id: "provider",
-      header: t("provider"),
+      header: "",
       accessorFn: (r) => r.model_creators?.name || null,
       sortable: true,
       align: "right",
@@ -168,15 +168,16 @@ export function buildPricingColumns(
     },
     {
       id: "context",
-      header: t("contextTokens"),
+      header: "",
       accessorFn: (r) => r.context_window_tokens,
       sortable: true,
       align: "right",
+      hiddenMd: true,
       cell: (model) => formatContext(t, model),
     },
     {
       id: "cacheHitPrice",
-      header: t("cacheHitPrice"),
+      header: "",
       accessorFn: (r) => r.pricing?.cache_hit ?? null,
       sortable: true,
       align: "right",
@@ -185,7 +186,7 @@ export function buildPricingColumns(
     },
     {
       id: "promptPrice",
-      header: t("promptPrice"),
+      header: "",
       accessorFn: (r) => r.pricing?.input ?? null,
       sortable: true,
       align: "right",
@@ -193,7 +194,7 @@ export function buildPricingColumns(
     },
     {
       id: "completionPrice",
-      header: t("completionPrice"),
+      header: "",
       accessorFn: (r) => r.pricing?.output ?? null,
       sortable: true,
       align: "right",
@@ -201,15 +202,16 @@ export function buildPricingColumns(
     },
     {
       id: "blendedPrice",
-      header: t("blendedPrice"),
+      header: "",
       accessorFn: (r) => r.pricing?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1] ?? null,
       sortable: true,
       align: "right",
+      hiddenMd: true,
       cell: priceCell((m) => m.pricing?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1], t),
     },
     {
       id: "monthlyCost",
-      header: t("monthlyCost"),
+      header: "",
       sortable: true,
       align: "right",
       hiddenMd: true,

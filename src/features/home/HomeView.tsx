@@ -8,6 +8,7 @@ import { StatCard } from "../../shared/components/composite/StatCard";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { InfoRow } from "../../shared/components/composite/InfoRow";
 import { Card, CardContent } from "../../shared/components/ui/card";
+import { PageContainer, PageSection, PageHeader } from "../../shared/components/layout/PageContainer";
 import { getModelColor, COOL_COLORS } from "../../shared/components/rankColor";
 import { Cell, Pie, PieChart, ResponsiveContainer, Line, LineChart, CartesianGrid, Tooltip, XAxis, YAxis, Legend } from "recharts";
 import { chartTooltipStyle } from "../../shared/utils/format";
@@ -21,8 +22,8 @@ import { SearchInput } from "./SearchInput";
 
 const StatusBarPill = memo(function StatusBarPill({ children }: { children: ReactNode }) {
   return (
-    <div className="flex items-center px-1.5 py-[3px] border border-border rounded-md bg-bg-primary">
-      <span className={cn("text-sm text-text-secondary", "whitespace-nowrap tabular-nums")}>{children}</span>
+    <div className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg bg-bg-card text-xs text-text-secondary">
+      {children}
     </div>
   );
 });
@@ -38,11 +39,7 @@ function UptimeDisplay() {
     if (s < 86400) return t("uptimeHours", { value: Math.floor(s / 3600), value2: Math.floor((s % 3600) / 60) });
     return t("uptimeDays", { value: Math.floor(s / 86400), value2: Math.floor((s % 86400) / 3600) });
   };
-  return (
-    <StatusBarPill>
-      {t("uptime")}: {fmt(uptime)}
-    </StatusBarPill>
-  );
+  return <StatusBarPill><span className="inline-block w-1.5 h-1.5 rounded-full bg-success" />{t("uptime")}: {fmt(uptime)}</StatusBarPill>;
 }
 
 const ClockDisplay = memo(function ClockDisplay() {
@@ -56,11 +53,9 @@ const ClockDisplay = memo(function ClockDisplay() {
 
 const KpiStrip = memo(function KpiStrip({ kpis }: { kpis: HomeKpi[] }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-2.5">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {kpis.map((kpi, i) => (
-        <div key={kpi.label} className={cn(i >= 2 && "hidden sm:block")}>
-          <StatCard icon={kpi.Icon} label={kpi.label} value={kpi.value} />
-        </div>
+        <StatCard key={kpi.label} icon={kpi.Icon} label={kpi.label} value={kpi.value} />
       ))}
     </div>
   );
@@ -68,16 +63,17 @@ const KpiStrip = memo(function KpiStrip({ kpis }: { kpis: HomeKpi[] }) {
 
 const ProviderSpeedCard = memo(function ProviderSpeedCard({ providerStats }: { providerStats: HomeProviderStat[] }) {
   return (
-    <Card className="h-fit">
-      <CardContent className="p-4">
-        <div className="flex flex-col gap-3">
+    <Card accent="top">
+      <CardContent padding="md">
+        <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Provider Speed</p>
+        <div className="flex flex-col gap-2.5">
           {providerStats.slice(0, 6).map((p) => (
             <div key={p.name} className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
                 <span className="text-sm font-medium truncate">{p.name}</span>
               </div>
-              <span className="text-sm font-mono font-semibold ml-3 shrink-0">{p.avgSpeed.toFixed(1)} tok/s</span>
+              <span className="text-sm font-semibold font-mono ml-3 shrink-0">{p.avgSpeed.toFixed(1)} tok/s</span>
             </div>
           ))}
         </div>
@@ -89,26 +85,22 @@ const ProviderSpeedCard = memo(function ProviderSpeedCard({ providerStats }: { p
 const ArenaT2ICard = memo(function ArenaT2ICard({ entry, rank, color }: { entry: ArenaModel; rank: number; color: string }) {
   const { t } = useTranslation();
   return (
-    <Card>
-      <CardContent className="min-h-[132px] p-3 last:pb-3">
-        <div className="flex flex-col gap-3 h-full justify-between">
-          <div className="flex flex-row gap-2 items-start justify-between min-w-0">
-            <div className="flex flex-row gap-1.5 items-center min-w-0">
-              <span className="w-[3px] h-5 shrink-0" style={{ backgroundColor: color }} />
-              <p className="text-base truncate min-w-0 font-bold">{entry.model}</p>
-            </div>
-            <span className="text-sm font-extrabold shrink-0" style={{ color }}>
-              #{rank}
-            </span>
+    <Card accent="left">
+      <div className="flex flex-col gap-2.5 p-4 w-full">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-sm font-bold truncate">{entry.model}</span>
           </div>
-          <hr className="border-t border-border" />
-          <div className="flex flex-col gap-1.5">
-            <InfoRow label={t("eloScore")} value={<span style={{ color, fontWeight: 700 }}>{entry.score != null ? entry.score.toFixed(0) : t("notAvailable")}</span>} />
-            <InfoRow label={t("votes")} value={entry.votes != null ? entry.votes.toLocaleString() : t("notAvailable")} />
-            <InfoRow label={t("license")} value={entry.license || t("notAvailable")} />
-          </div>
+          <span className="text-xs font-bold shrink-0 px-2 py-0.5 rounded-full" style={{ backgroundColor: color + "18", color }}>
+            #{rank}
+          </span>
         </div>
-      </CardContent>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-text-secondary">
+          <span>ELO: <strong className="text-text-primary font-semibold" style={{ color }}>{entry.score != null ? entry.score.toFixed(0) : t("notAvailable")}</strong></span>
+          <span>{t("votes")}: <strong className="text-text-primary font-semibold">{entry.votes != null ? entry.votes.toLocaleString() : t("notAvailable")}</strong></span>
+          <span>{t("license")}: <strong className="text-text-primary font-semibold">{entry.license || t("notAvailable")}</strong></span>
+        </div>
+      </div>
     </Card>
   );
 });
@@ -117,16 +109,13 @@ const ArenaT2ISection = memo(function ArenaT2ISection({ models }: { models: Aren
   const { t } = useTranslation();
   if (models.length === 0) return null;
   return (
-    <div>
-      <SectionHeader title={t("textToImage")} meta={t("arenaAISource")} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+    <PageSection title={t("textToImage")} description={t("arenaAISource")}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {models.slice(0, 8).map((entry, index) => (
-          <div key={entry.model} className={cn(index >= 2 && "hidden sm:block")}>
-            <ArenaT2ICard entry={entry} rank={index + 1} color={getModelColor(index)} />
-          </div>
+          <ArenaT2ICard key={entry.model} entry={entry} rank={index + 1} color={getModelColor(index)} />
         ))}
       </div>
-    </div>
+    </PageSection>
   );
 });
 
@@ -138,27 +127,25 @@ function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ nam
   const percent = (v: number) => v.toLocaleString(lang === "zh" ? "zh-CN" : "en-US", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-col gap-[1px]">
-        <p className="text-sm font-bold">{t("toolUsageShare")}</p>
-        <p className="text-xs text-text-secondary">{t("openRouterSource")}</p>
-      </div>
+    <div className="flex flex-col gap-3">
+      <p className="text-sm font-semibold">{t("toolUsageShare")}</p>
+      <p className="text-xs text-text-secondary -mt-1">{t("openRouterSource")}</p>
       {rows.length === 0 ? (
         <p className="text-sm text-text-secondary">{t("notAvailable")}</p>
       ) : (
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="relative w-full max-w-[240px] aspect-square shrink-0">
+        <div className="flex flex-col md:flex-row gap-6 items-center">
+          <div className="relative w-full max-w-[220px] aspect-square shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart onMouseLeave={() => setHoveredIndex(null)} aria-label={t("toolUsageShare")}>
                 <Pie
                   data={rows}
                   dataKey="value"
                   nameKey="name"
-                  innerRadius={40}
-                  outerRadius={72}
-                  paddingAngle={0}
-                  stroke="var(--bg-secondary)"
-                  strokeWidth={1}
+                  innerRadius={36}
+                  outerRadius={68}
+                  paddingAngle={1}
+                  stroke="var(--bg-card)"
+                  strokeWidth={2}
                   isAnimationActive={false}
                 >
                   {rows.map((row, index) => (
@@ -175,24 +162,24 @@ function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ nam
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               {center ? (
                 <>
-                  <span className={cn("text-sm font-bold leading-none text-center", "tabular-nums font-mono")}>{center.name}</span>
-                  <span className={cn("text-base font-bold leading-none mt-1.5", "tabular-nums font-mono")}>{formatShortNumber(center.value)}</span>
-                  <span className={cn("text-sm text-text-secondary", "leading-none mt-0.5")}>{(center.share * 100).toFixed(1)}%</span>
+                  <span className="text-xs font-bold leading-none text-center">{center.name}</span>
+                  <span className="text-base font-bold leading-none mt-1 font-mono">{formatShortNumber(center.value)}</span>
+                  <span className="text-xs text-text-secondary leading-none mt-0.5">{(center.share * 100).toFixed(1)}%</span>
                 </>
               ) : (
                 <>
-                  <span className={cn("text-base font-bold leading-none", "tabular-nums font-mono")}>{formatShortNumber(total)}</span>
-                  <span className={cn("text-sm text-text-secondary", "leading-none mt-0.5")}>{t("tokens")}</span>
+                  <span className="text-lg font-bold leading-none font-mono">{formatShortNumber(total)}</span>
+                  <span className="text-xs text-text-secondary leading-none mt-0.5">{t("tokens")}</span>
                 </>
               )}
             </div>
           </div>
           <div className="hidden md:flex flex-col gap-2 min-w-0 flex-1">
             {rows.map((row, index) => (
-              <div key={row.name} className="grid grid-cols-[12px_1fr_auto] gap-2 items-center min-w-0">
-                <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: getModelColor(index) }} />
+              <div key={row.name} className="grid grid-cols-[10px_1fr_auto] gap-2.5 items-center min-w-0">
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: getModelColor(index) }} />
                 <span className="text-sm truncate">{row.name}</span>
-                <span className="text-sm font-mono font-semibold">{percent(row.share)}</span>
+                <span className="text-sm font-semibold font-mono">{percent(row.share)}</span>
               </div>
             ))}
           </div>
@@ -205,23 +192,21 @@ function ToolUsageShareDonut({ total, rows }: { total: number; rows: Array<{ nam
 const RankedStatCard = memo(function RankedStatCard({ title, source, rows }: { title: string; source: string; rows: HomeBarStat[] }) {
   const { t } = useTranslation();
   return (
-    <Card>
-      <CardContent>
-        <div className="flex flex-col gap-0.5 mb-2">
-          <p className="text-sm font-bold">{title}</p>
-          <p className="text-xs text-text-secondary">{source}</p>
-        </div>
+    <Card accent="top">
+      <CardContent padding="md">
+        <p className="text-sm font-semibold mb-1">{title}</p>
+        <p className="text-xs text-text-secondary mb-3">{source}</p>
         {rows.length === 0 ? (
           <p className="text-sm text-text-secondary">{t("notAvailable")}</p>
         ) : (
           <div className="flex flex-col gap-2">
             {rows.map((row, i) => (
-              <div key={`${row.label}-${i}`} className="flex items-center gap-3 h-[26px]">
+              <div key={`${row.label}-${i}`} className="flex items-center gap-3 h-6">
                 <span className="text-xs font-bold w-5 text-center shrink-0" style={{ color: COOL_COLORS[i % COOL_COLORS.length] }}>
                   {i + 1}
                 </span>
                 <span className="text-sm truncate min-w-0 flex-1">{row.label}</span>
-                <span className={cn("text-sm font-bold shrink-0", "tabular-nums font-mono")}>{row.valueLabel}</span>
+                <span className="text-sm font-semibold font-mono shrink-0">{row.valueLabel}</span>
               </div>
             ))}
           </div>
@@ -253,12 +238,13 @@ function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }) {
     [top10],
   );
   return (
-    <Card>
-      <CardContent>
-        <div ref={chartRef} className="w-full h-[180px] overflow-hidden">
+    <Card accent="top">
+      <CardContent padding="md">
+        <p className="text-sm font-semibold mb-3">{t("intelligenceIndex")} — Top 10</p>
+        <div ref={chartRef} className="w-full h-[200px]">
           {chartWidth > 0 && top10.length > 0 && (
-            <LineChart width={chartWidth} height={180} data={chartData} margin={{ top: 2, right: 8, bottom: 2, left: 0 }}>
-              <CartesianGrid stroke="var(--border)" />
+            <LineChart width={chartWidth} height={200} data={chartData} margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
+              <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
               <XAxis dataKey="name" tick={false} stroke="var(--border)" />
               <YAxis
                 tick={{ fontSize: 10, fill: "var(--text-tertiary)" }}
@@ -268,40 +254,10 @@ function IndexLineChart({ models }: { models: ArtificialAnalysisModel[] }) {
                 tickFormatter={(v: number) => Math.round(v).toString()}
               />
               <Tooltip contentStyle={chartTooltipStyle} formatter={(value) => Math.round(Number(value))} />
-              <Legend wrapperStyle={{ fontSize: "12px" }} />
-              <Line
-                type="monotone"
-                dataKey="intelligence"
-                name={t("intelligence")}
-                stroke={getModelColor(0)}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-                isAnimationActive={false}
-                connectNulls={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="coding"
-                name={t("coding")}
-                stroke={getModelColor(1)}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-                isAnimationActive={false}
-                connectNulls={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="agentic"
-                name={t("agentic")}
-                stroke={getModelColor(2)}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-                isAnimationActive={false}
-                connectNulls={false}
-              />
+              <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }} />
+              <Line type="monotone" dataKey="intelligence" name={t("intelligence")} stroke={getModelColor(0)} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
+              <Line type="monotone" dataKey="coding" name={t("coding")} stroke={getModelColor(1)} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
+              <Line type="monotone" dataKey="agentic" name={t("agentic")} stroke={getModelColor(2)} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
             </LineChart>
           )}
         </div>
@@ -321,18 +277,19 @@ const StatisticsSection = memo(function StatisticsSection({
 }) {
   const { t } = useTranslation();
   return (
-    <>
-      <SectionHeader title={t("statistics")} />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <PageSection title={t("statistics")}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <RankedStatCard title={t("openSourceDownloadsStats")} source={t("huggingFaceSource")} rows={downloadStats} />
         <RankedStatCard title={t("hallucinationStats")} source={t("hallucinationSource")} rows={hallucinationStats} />
-        <Card className="hidden sm:block">
-          <CardContent>
-            <ToolUsageShareDonut total={toolUsageShare.total} rows={toolUsageShare.rows} />
-          </CardContent>
-        </Card>
+        <div className="md:col-span-1">
+          <Card accent="top" className="h-full">
+            <CardContent padding="md" className="h-full">
+              <ToolUsageShareDonut total={toolUsageShare.total} rows={toolUsageShare.rows} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </>
+    </PageSection>
   );
 });
 
@@ -356,35 +313,48 @@ function HomeContent() {
   const totalCount = healthData.length;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="hidden sm:flex items-center gap-2 flex-wrap">
+    <PageContainer>
+      <div className="flex items-center gap-2 flex-wrap mb-4">
         <ClockDisplay />
         <UptimeDisplay />
         <StatusBarPill>
-          <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${healthyCount === totalCount ? "bg-success" : "bg-destructive"}`} />
+          <span className={`inline-block w-1.5 h-1.5 rounded-full ${healthyCount === totalCount ? "bg-success" : "bg-destructive"}`} />
           {t("dataSources")}: {healthyCount}/{totalCount}
         </StatusBarPill>
-        <SearchInput />
-      </div>
-
-      <KpiStrip kpis={kpiStrip} />
-
-      <div className="hidden sm:grid grid-cols-4 gap-4">
-        <div className="col-span-3">
-          <IndexLineChart models={artificialData} />
+        <div className="ml-auto">
+          <SearchInput />
         </div>
-        <ProviderSpeedCard providerStats={providerStats} />
       </div>
-      <div className="sm:hidden">
-        <IndexLineChart models={artificialData} />
+
+      <PageHeader title="Model Observatory" description={t("artificialSource")} />
+      <div className="mb-6">
+        <KpiStrip kpis={kpiStrip} />
       </div>
+
+      <PageSection>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="lg:col-span-3">
+            <IndexLineChart models={artificialData} />
+          </div>
+          <div className="hidden lg:block">
+            <ProviderSpeedCard providerStats={providerStats} />
+          </div>
+        </div>
+        <div className="mt-4 lg:hidden">
+          <ProviderSpeedCard providerStats={providerStats} />
+        </div>
+      </PageSection>
 
       <StatisticsSection downloadStats={downloadStats} hallucinationStats={hallucinationStats} toolUsageShare={toolUsageShare} />
 
       <ArenaT2ISection models={arenaT2IModels} />
 
-      {predictions && <PredictionsSection data={predictions} />}
-    </div>
+      {predictions && (
+        <PageSection title={t("marketPredictions" as any)}>
+          <PredictionsSection data={predictions} />
+        </PageSection>
+      )}
+    </PageContainer>
   );
 }
 

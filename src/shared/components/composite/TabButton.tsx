@@ -1,33 +1,29 @@
 import { memo, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
-export const TabButton = memo(function TabButton({
-  active,
-  onClick,
-  children,
-  size = "md",
-  id,
-  "aria-controls": ariaControls,
-}: {
-  active: boolean;
+interface TabButtonProps {
+  active?: boolean;
   onClick: () => void;
   children: ReactNode;
+  className?: string;
   size?: "sm" | "md";
   id?: string;
   "aria-controls"?: string;
-}) {
+}
+
+export const TabButton = memo(function TabButton({ active, onClick, children, className, size = "md" }: TabButtonProps) {
   return (
     <button
       type="button"
-      role="tab"
-      id={id}
-      aria-controls={ariaControls}
-      aria-selected={active}
       onClick={onClick}
       className={cn(
-        "py-1 px-2 md:px-3 rounded-md text-sm font-semibold whitespace-nowrap transition-colors",
-        size === "sm" ? "min-h-[28px]" : "min-h-[36px]",
-        active ? "bg-selected text-text-primary" : "text-text-secondary hover:text-text-primary hover:bg-hover",
+        "rounded-md font-medium transition-colors duration-150 whitespace-nowrap shrink-0",
+        size === "sm" ? "px-2.5 py-1 text-xs" : "px-3 py-1.5 text-sm",
+        active
+          ? "bg-bg-card text-text-primary shadow-sm border border-border"
+          : "text-text-secondary hover:text-text-primary border border-transparent",
+        "outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-1",
+        className,
       )}
     >
       {children}

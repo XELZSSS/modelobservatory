@@ -28,7 +28,7 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
     <Sheet open={open} onClose={onClose}>
       <div className="p-3 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <p className="text-base font-bold">{t("settings")}</p>
+          <p className="text-sm font-semibold">{t("settings")}</p>
           <Button variant="ghost" size="icon" onClick={onClose} aria-label={t("close")}>
             <X className="size-4" />
           </Button>

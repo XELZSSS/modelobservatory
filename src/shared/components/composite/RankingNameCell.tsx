@@ -8,7 +8,7 @@ interface RankingNameCellProps {
 export const RankingNameCell = memo(function RankingNameCell({ name, suffix }: RankingNameCellProps) {
   return (
     <div className="flex items-center gap-2 min-w-0">
-      <p className="text-sm font-bold break-words min-w-0">{name}</p>
+      <p className="text-sm font-semibold break-words min-w-0">{name}</p>
       {suffix}
     </div>
   );

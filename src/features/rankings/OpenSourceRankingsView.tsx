@@ -13,7 +13,7 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
   return [
     {
       id: "model",
-      header: t("modelNameOrId"),
+      header: "",
       cell: (row) => (
         <>
           <RankingNameCell name={row.item.id.split("/").pop() || row.item.id} />
@@ -28,15 +28,15 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
     },
     {
       id: "downloads",
-      header: t("downloads"),
+      header: "",
       accessorFn: (r) => r.item.downloads,
       sortable: true,
       align: "right",
-      cell: (row) => <span className="text-sm font-bold">{formatShortNumber(row.item.downloads)}</span>,
+      cell: (row) => <span className="text-sm font-semibold">{formatShortNumber(row.item.downloads)}</span>,
     },
     {
       id: "likes",
-      header: t("likes"),
+      header: "",
       accessorFn: (r) => r.item.likes,
       sortable: true,
       align: "right",
@@ -45,7 +45,7 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
     },
     {
       id: "license",
-      header: t("license"),
+      header: "",
       accessorFn: (r) => r.item.license,
       sortable: true,
       align: "right",

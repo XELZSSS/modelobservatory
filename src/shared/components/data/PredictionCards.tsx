@@ -59,7 +59,7 @@ const ModelRankingTab = memo(function ModelRankingTab({ items }: { items: ModelP
                 <span className="text-xs font-extrabold w-5 text-center shrink-0" style={{ color: getModelColor(i) }}>
                   #{i + 1}
                 </span>
-                <span className="text-sm font-bold truncate">{item.company}</span>
+                <span className="text-sm font-semibold truncate">{item.company}</span>
               </div>
               <ExternalLinkButton href={item.url} iconSize={12} />
             </div>
@@ -93,7 +93,7 @@ const ReleasesTab = memo(function ReleasesTab({ items }: { items: ReleasePredict
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <Clock size={14} className="shrink-0" style={{ color: getModelColor(i + 3) }} />
-                  <span className="text-sm font-bold truncate">{item.model}</span>
+                  <span className="text-sm font-semibold truncate">{item.model}</span>
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
@@ -103,7 +103,7 @@ const ReleasesTab = memo(function ReleasesTab({ items }: { items: ReleasePredict
                   <div key={j} className="flex items-center justify-between gap-2">
                     <span className="text-xs text-text-secondary truncate">{p.window}</span>
                     <span
-                      className="text-sm font-bold shrink-0 tabular-nums font-mono"
+                      className="text-sm font-semibold shrink-0 tabular-nums font-mono"
                       style={{ color: isTopProbability(p.probability, topProb) ? getModelColor(i + 3) : "var(--text-tertiary)" }}
                     >
                       {(p.probability * 100).toFixed(0)}%
@@ -133,7 +133,7 @@ const ProvidersTab = memo(function ProvidersTab({ items }: { items: ProviderPred
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <Building2 size={14} className="shrink-0" style={{ color: getModelColor(i + 6) }} />
-                  <span className="text-sm font-bold truncate">{item.provider}</span>
+                  <span className="text-sm font-semibold truncate">{item.provider}</span>
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
@@ -143,7 +143,7 @@ const ProvidersTab = memo(function ProvidersTab({ items }: { items: ProviderPred
                   <div key={j} className="flex items-center justify-between gap-2">
                     <span className="text-xs text-text-secondary truncate">{opt.label}</span>
                     <span
-                      className="text-sm font-bold shrink-0 tabular-nums font-mono"
+                      className="text-sm font-semibold shrink-0 tabular-nums font-mono"
                       style={{ color: isTopProbability(opt.probability, topProb) ? getModelColor(i + 6) : "var(--text-tertiary)" }}
                     >
                       {(opt.probability * 100).toFixed(0)}%

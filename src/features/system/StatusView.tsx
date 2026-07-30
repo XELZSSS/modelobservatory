@@ -6,12 +6,13 @@ import { Card, CardContent } from "../../shared/components/ui/card";
 import type { HealthEntry } from "../../shared/types";
 import { useSuspenseHealthStatus } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
+import { PageContainer, PageHeader, PageSection } from "../../shared/components/layout/PageContainer";
 
 function HealthStatusBadge({ status, label }: { status: HealthEntry["status"]; label?: string }) {
   const { t } = useTranslation();
   const text = label ?? (status === "ok" ? t("statusOk") : t("statusError"));
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${status === "ok" ? "text-success" : "text-destructive"}`}>
+    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${status === "ok" ? "text-success" : "text-destructive"}`}>
       {status === "ok" ? <CheckCircle size={12} /> : <XCircle size={12} />}
       {text}
     </span>
@@ -23,13 +24,14 @@ function DataSourceCard({ entry }: { entry: HealthEntry }) {
   const ok = entry.status === "ok";
 
   return (
-    <Card className={ok ? "" : "border-destructive/40 bg-destructive/5"}>
-      <CardContent className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-bold truncate">{entry.name}</p>
+    <Card className={ok ? "" : "border-destructive/30"}>
+      {!ok && <div className="h-1 bg-destructive shrink-0" />}
+      <CardContent padding="md">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-semibold truncate">{entry.name}</p>
           {ok ? <CheckCircle size={14} className="shrink-0 text-success" /> : <XCircle size={14} className="shrink-0 text-destructive" />}
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-xs text-text-secondary">
             <Zap size={12} className="shrink-0" />
             <span>{ok ? `${entry.responseTime}ms` : t("notAvailable")}</span>
@@ -54,11 +56,10 @@ function StatusContent() {
   const errorCount = data.length - okCount;
 
   return (
-    <div className="flex flex-col gap-4">
-      <SectionHeader title={t("systemStatus")} />
-
-      <div className="flex flex-row gap-2 items-center">
-        <p className="text-sm font-bold">{t("overallStatus")}</p>
+    <PageContainer>
+      <PageHeader title={t("systemStatus")} />
+      <div className="flex items-center gap-3 mb-6 p-4 rounded-lg border border-border bg-bg-card">
+        <p className="text-sm font-semibold">{t("overallStatus")}</p>
         <HealthStatusBadge status={allOk ? "ok" : "error"} label={allOk ? t("allHealthy") : t("hasIssues")} />
         <span className="text-xs text-text-secondary">
           ({okCount}/{data.length})
@@ -66,28 +67,27 @@ function StatusContent() {
       </div>
 
       {errorCount > 0 && (
-        <div className="flex flex-col gap-2">
-          <p className="text-xs font-bold text-destructive">
-            {t("hasIssues")} ({errorCount})
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <PageSection title={t("hasIssues")}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {data
               .filter((e) => e.status !== "ok")
               .map((entry) => (
                 <DataSourceCard key={entry.name} entry={entry} />
               ))}
           </div>
-        </div>
+        </PageSection>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {data
-          .filter((e) => e.status === "ok")
-          .map((entry) => (
-            <DataSourceCard key={entry.name} entry={entry} />
-          ))}
-      </div>
-    </div>
+      <PageSection title={t("healthySources" as any)}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {data
+            .filter((e) => e.status === "ok")
+            .map((entry) => (
+              <DataSourceCard key={entry.name} entry={entry} />
+            ))}
+        </div>
+      </PageSection>
+    </PageContainer>
   );
 }
 

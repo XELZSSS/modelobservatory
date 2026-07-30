@@ -22,14 +22,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       >
         Skip to content
       </a>
+      <DesktopNav onSettingsOpen={() => setSettingsOpen(true)} />
       <main
         id="main-content"
         tabIndex={-1}
-        className="flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable] px-2 md:px-6 pt-2 md:pt-3 pb-[calc(72px+env(safe-area-inset-bottom,0px))] sm:pb-[calc(80px+env(safe-area-inset-bottom,0px))] md:pb-[80px]"
+        className="flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable] pt-0 md:pt-16 pb-14 md:pb-4"
       >
         {children}
       </main>
-      <DesktopNav onSettingsOpen={() => setSettingsOpen(true)} />
       <MobileNav onMoreOpen={() => setMobileMoreOpen(true)} />
       <SettingsSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <MobileMoreSheet open={mobileMoreOpen} onClose={() => setMobileMoreOpen(false)} onSettingsOpen={() => setSettingsOpen(true)} />

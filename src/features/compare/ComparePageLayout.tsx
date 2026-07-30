@@ -11,6 +11,7 @@ import { useArtificialRankings } from "../../shared/hooks/useApiQuery";
 import { modelId } from "../../shared/utils/modelId";
 import type { TranslationKey } from "../../shared/i18n";
 import type { ArtificialAnalysisModel } from "../../shared/types";
+import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
 
 function useCompareModels(): ArtificialAnalysisModel[] {
   const compareIds = useCompareStore((s) => s.compareIds);
@@ -38,29 +39,32 @@ export function ComparePageLayout({ backLabelKey, backTo, backState, title, chil
 
   if (models.length < 2) {
     return (
-      <div className="flex flex-col gap-4 items-center py-8">
-        <p className="text-sm text-text-secondary">{t("compareNeedsTwo")}</p>
-        <Button size="sm" variant="outline" onClick={() => navigate(backTo)}>
-          {t("backToList")}
-        </Button>
-      </div>
+      <PageContainer>
+        <div className="flex flex-col gap-4 items-center py-16">
+          <p className="text-sm text-text-secondary">{t("compareNeedsTwo")}</p>
+          <Button size="sm" variant="outline" onClick={() => navigate(backTo)}>
+            {t("backToList")}
+          </Button>
+        </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4 min-w-0">
-      <BackButton labelKey={backLabelKey} to={backTo} state={backState} />
-      <SectionHeader title={title} />
-      <p className="text-xs text-text-secondary">{t("artificialSource")}</p>
-      <CompareChipBar
-        models={models}
-        onRemove={removeCompareModel}
-        onClear={() => {
-          clearCompare();
-          navigate(backTo);
-        }}
-      />
-      {children(models)}
-    </div>
+    <PageContainer>
+      <div className="flex flex-col gap-5 min-w-0">
+        <BackButton labelKey={backLabelKey} to={backTo} state={backState} />
+        <PageHeader title={title} description={t("artificialSource")} />
+        <CompareChipBar
+          models={models}
+          onRemove={removeCompareModel}
+          onClear={() => {
+            clearCompare();
+            navigate(backTo);
+          }}
+        />
+        {children(models)}
+      </div>
+    </PageContainer>
   );
 }

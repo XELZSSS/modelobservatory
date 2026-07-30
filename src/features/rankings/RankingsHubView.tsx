@@ -8,6 +8,7 @@ import { SuspenseQuery, Spinner } from "../../shared/components/feedback/Suspens
 import { ArtificialAnalysisView } from "./ArtificialAnalysisView";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { TabContainer, type TabItem } from "../../shared/components/composite/TabContainer";
+import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
 
 const HallucinationRankingsView = lazy(() => import("./HallucinationRankingsView").then((m) => ({ default: m.HallucinationRankingsView })));
 const OpenSourceRankingsView = lazy(() => import("./OpenSourceRankingsView").then((m) => ({ default: m.OpenSourceRankingsView })));
@@ -82,12 +83,12 @@ function RankingsContent({ defaultTab }: { defaultTab: number }) {
   const tabs: TabItem[] = useMemo(() => TAB_IDS.map((id) => ({ id, label: t(id as TranslationKey) })), [t]);
 
   return (
-    <>
-      <SectionHeader title={t(activeTabId as TranslationKey)} />
+    <PageContainer>
+      <PageHeader title={t(activeTabId as TranslationKey)} description={t("artificialSource")} />
       <TabContainer tabs={tabs} activeTab={activeTabId} tabSize="md" onTabChange={(tabId) => setActiveTabId(tabId as TabId)}>
         <ActiveTabContent activeTabId={activeTabId} artificialRankings={artificialRankings} />
       </TabContainer>
-    </>
+    </PageContainer>
   );
 }
 

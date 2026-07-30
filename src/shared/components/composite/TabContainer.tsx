@@ -20,8 +20,8 @@ export function TabContainer({ tabs, activeTab, className, tabSize = "md", onTab
   const content = typeof children === "function" ? children(activeTab) : children;
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
-      <div className="flex gap-2 overflow-x-auto" role="tablist">
+    <div className={cn("flex flex-col gap-5", className)}>
+      <div className="flex gap-1 p-1 rounded-lg bg-bg-secondary w-fit max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
         {tabs.map((tab) => (
           <TabButton
             key={tab.id}
@@ -35,7 +35,7 @@ export function TabContainer({ tabs, activeTab, className, tabSize = "md", onTab
           </TabButton>
         ))}
       </div>
-      <div role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`} className="animate-[fade-in_200ms_ease-out]">
+      <div role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
         {content}
       </div>
     </div>

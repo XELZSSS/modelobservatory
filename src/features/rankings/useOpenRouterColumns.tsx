@@ -14,16 +14,16 @@ function trendClass(change?: number | null) {
 
 const tokenColumn = <T extends { totalTokens?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({
   id: "tokens",
-  header: t("totalTokens"),
+  header: "",
   accessorFn: (row) => row.totalTokens,
   sortable: true,
   align: "right",
-  cell: (item) => <span className="font-mono font-bold text-text-primary">{formatShortNumber(item.totalTokens || 0)}</span>,
+  cell: (item) => <span className="font-mono font-semibold text-text-primary">{formatShortNumber(item.totalTokens || 0)}</span>,
 });
 
 const requestColumn = <T extends { requestCount?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({
   id: "requests",
-  header: t("requests"),
+  header: "",
   accessorFn: (row) => row.requestCount,
   sortable: true,
   align: "right",
@@ -38,7 +38,7 @@ export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
   const modelColumns: DataTableColumn<OpenRouterRankEntry>[] = [
     {
       id: "model",
-      header: t("modelNameOrId"),
+      header: "",
       width: "45%",
       cell: (item) => (
         <>
@@ -64,7 +64,7 @@ export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
     requestColumn<OpenRouterRankEntry>(t),
     {
       id: "creator",
-      header: t("provider"),
+      header: "",
       accessorFn: (row) => row.creator,
       sortable: true,
       align: "right",
@@ -73,19 +73,19 @@ export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
     },
     {
       id: "trend",
-      header: t("trend"),
+      header: "",
       accessorFn: (row) => row.change,
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <span className={cn(trendClass(item.change), "border rounded-[4px] text-xs py-0 px-1 font-mono inline-block")}>{formatTrend(item.change, t)}</span>,
+      cell: (item) => <span className={cn(trendClass(item.change), "border rounded text-xs py-0 px-1 font-mono inline-block")}>{formatTrend(item.change, t)}</span>,
     },
   ];
 
   const appColumns: DataTableColumn<OpenRouterAppEntry>[] = [
     {
       id: "app",
-      header: t("openRouterApps"),
+      header: "",
       width: "45%",
       cell: (item) => (
         <>
@@ -103,7 +103,7 @@ export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
     requestColumn<OpenRouterAppEntry>(t),
     {
       id: "category",
-      header: t("category"),
+      header: "",
       accessorFn: (row) => row.categories?.join(", "),
       sortable: true,
       align: "right",

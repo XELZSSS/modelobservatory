@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "../../i18n/useTranslation";
 import { useFilteredData } from "../../hooks/useFilteredData";
 import { DataTable, type DataTableColumn } from "./DataTable";
-import { ViewLayout } from "../composite/ViewLayout";
+import { PageContainer, PageSection } from "../layout/PageContainer";
 
 import { cn } from "../../utils/cn";
 import type { TranslationKey } from "../../i18n";
@@ -33,14 +33,14 @@ export function RankingTable<T>({ data, columns, getRowId, getSearchFields, sour
   const tableColumns = useMemo<DataTableColumn<RankedRow<T>>[]>(() => columns(t), [t]);
 
   return (
-    <ViewLayout>
+    <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">{t(sourceKey)}</p>
       {extraHeader}
       {rows.length === 0 ? (
-        <p className={cn("text-sm text-text-secondary", "py-8 text-center")}>{t(emptyMessageKey ?? "noResults")}</p>
+        <p className="text-sm text-text-secondary py-8 text-center">{t(emptyMessageKey ?? "noResults")}</p>
       ) : (
-        <DataTable data={rows} columns={tableColumns} getRowId={(row) => getRowId(row.item)} />
+        <DataTable data={rows} columns={tableColumns} getRowId={(row) => getRowId(row.item)} hideHeader />
       )}
-    </ViewLayout>
+    </div>
   );
 }

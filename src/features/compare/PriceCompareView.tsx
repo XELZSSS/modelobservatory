@@ -76,20 +76,19 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
 
   return (
     <>
-      {/* Price breakdown */}
-      <Card>
-        <CardContent className="p-4">
-          <p className="text-sm font-bold mb-3">{t("priceBreakdown")}</p>
+      <Card accent="top">
+        <CardContent padding="md">
+          <p className="text-sm font-semibold mb-3">{t("priceBreakdown")}</p>
           <PriceTable priceRows={priceRows} models={models} bestPrices={bestPrices} />
         </CardContent>
       </Card>
 
-      {/* Price comparison chart */}
-      <Card>
-        <CardContent className="p-4">
+      <Card accent="top">
+        <CardContent padding="md">
+          <p className="text-sm font-semibold mb-3">{t("priceComparison")}</p>
           <div ref={chartRef} className="w-full h-[220px]">
             {chartWidth > 0 && (
-              <BarChart width={chartWidth} height={220} data={chartData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
+              <BarChart width={chartWidth} height={220} data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="var(--text-tertiary)" />
                 <YAxis tick={{ fontSize: 10 }} stroke="var(--text-tertiary)" tickFormatter={(v: number) => `$${v}`} />
@@ -110,31 +109,29 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
         </CardContent>
       </Card>
 
-      {/* Cost efficiency */}
-      <Card>
-        <CardContent className="p-4">
-          <p className="text-sm font-bold mb-3">{t("costEfficiency")}</p>
+      <Card accent="top">
+        <CardContent padding="md">
+          <p className="text-sm font-semibold mb-3">{t("costEfficiency")}</p>
           <EfficiencyTable models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
         </CardContent>
       </Card>
 
-      {/* Monthly cost estimation */}
-      <Card>
-        <CardContent className="p-4">
-          <p className="text-sm font-bold mb-3">{t("estimatedMonthlyCost")}</p>
+      <Card accent="top">
+        <CardContent padding="md">
+          <p className="text-sm font-semibold mb-3">{t("estimatedMonthlyCost")}</p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
             <div className="flex items-center gap-2">
-              <label className={cn("text-xs text-text-secondary", "whitespace-nowrap")}>{t("monthlyPromptTokens")}</label>
+              <label className="text-xs text-text-secondary whitespace-nowrap">{t("monthlyPromptTokens")}</label>
               <Input type="number" value={promptTokens} onChange={(e) => setPromptTokens(e.target.value)} className="w-24 h-9 text-sm" />
               <span className="text-xs text-text-secondary">M</span>
             </div>
             <div className="flex items-center gap-2">
-              <label className={cn("text-xs text-text-secondary", "whitespace-nowrap")}>{t("monthlyCompletionTokens")}</label>
+              <label className="text-xs text-text-secondary whitespace-nowrap">{t("monthlyCompletionTokens")}</label>
               <Input type="number" value={completionTokens} onChange={(e) => setCompletionTokens(e.target.value)} className="w-24 h-9 text-sm" />
               <span className="text-xs text-text-secondary">M</span>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             {models.map((model, index) => {
               const cost = monthlyCosts[index];
               const isBest = cost != null && bestMonthlyCost != null && approxEq(cost, bestMonthlyCost);
@@ -144,7 +141,7 @@ function PriceCompareContent({ models, chartRef, chartWidth }: { models: Artific
                     {model.short_name || model.name}
                   </span>
                   {cost != null ? (
-                    <span className={cn("font-mono text-sm", isBest && "font-bold text-success")}>
+                    <span className={cn("font-mono text-sm", isBest && "font-semibold text-success")}>
                       {formatDollar(cost)}
                       {isBest && <WinnerMark />}
                     </span>

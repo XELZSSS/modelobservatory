@@ -44,10 +44,10 @@ const MetricValueDisplay = memo(function MetricValueDisplay({
   const winnerColor = winner === "win" ? "var(--success)" : winner === "loss" ? "var(--destructive)" : undefined;
 
   return (
-    <span className={cn("tabular-nums font-mono", winner === "win" && "font-bold", className)} style={winnerColor ? { color: winnerColor } : undefined}>
+    <span className={cn("font-mono tabular-nums", winner === "win" && "font-semibold", className)} style={winnerColor ? { color: winnerColor } : undefined}>
       {value}
-      {winner === "win" && <TrendingUp size={iconSize} className="inline ml-1" style={{ color: "var(--success)" }} />}
-      {winner === "loss" && <TrendingDown size={iconSize} className="inline ml-1" style={{ color: "var(--destructive)" }} />}
+      {winner === "win" && <TrendingUp size={iconSize} className="inline ml-0.5" style={{ color: "var(--success)" }} />}
+      {winner === "loss" && <TrendingDown size={iconSize} className="inline ml-0.5" style={{ color: "var(--destructive)" }} />}
     </span>
   );
 });
@@ -75,14 +75,14 @@ const ModelMetricRow = memo(function ModelMetricRow({ model, index, metric, winn
 
 const CompactMetricCards = memo(function CompactMetricCards({ metrics, models }: { metrics: CompareMetric[]; models: ArtificialAnalysisModel[] }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       {metrics.map((metric, mIndex) => {
         const winners = computeMetricWinners(metric, models);
         return (
-          <Card key={mIndex}>
-            <CardContent className="p-3">
-              <p className="text-xs font-bold text-text-secondary mb-2">{metric.label}</p>
-              <div className="flex flex-col gap-1">
+          <Card key={mIndex} accent="top">
+            <CardContent padding="sm">
+              <p className="text-xs font-semibold text-text-secondary mb-2">{metric.label}</p>
+              <div className="flex flex-col gap-1.5">
                 {models.map((model, index) => (
                   <ModelMetricRow key={modelId(model) || index} model={model} index={index} metric={metric} winners={winners} iconSize={10} className="text-xs font-mono" />
                 ))}
@@ -102,9 +102,9 @@ const MetricTable = memo(function MetricTable({ metrics, models }: { metrics: Co
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border">
-            <th className="text-left px-2 py-2 font-bold text-text-secondary">{t("metric")}</th>
+            <th className="text-left px-3 py-2.5 font-semibold text-text-secondary">{t("metric")}</th>
             {models.map((model, index) => (
-              <th key={modelId(model) || index} className="text-right px-2 py-2 font-bold" style={{ color: getModelColor(index) }}>
+              <th key={modelId(model) || index} className="text-right px-3 py-2.5 font-semibold" style={{ color: getModelColor(index) }}>
                 {model.short_name || model.name}
               </th>
             ))}
@@ -114,10 +114,10 @@ const MetricTable = memo(function MetricTable({ metrics, models }: { metrics: Co
           {metrics.map((metric, mIndex) => {
             const winners = computeMetricWinners(metric, models);
             return (
-              <tr key={mIndex} className="border-b border-border last:border-b-0">
-                <td className="px-2 py-2 text-text-secondary">{metric.label}</td>
+              <tr key={mIndex} className="border-b border-border last:border-b-0 hover:bg-hover transition-colors">
+                <td className="px-3 py-2.5 text-text-secondary">{metric.label}</td>
                 {models.map((model, index) => (
-                  <td key={modelId(model) || index} className="px-2 py-2 text-right">
+                  <td key={modelId(model) || index} className="px-3 py-2.5 text-right">
                     <MetricValueDisplay value={metric.getValue(model)} winner={winners.get(modelId(model)) ?? null} iconSize={12} />
                   </td>
                 ))}
@@ -149,35 +149,37 @@ function CompareContent({ models, radarRef, radarSize }: { models: ArtificialAna
   const radarData = useMemo(() => buildRadarData(t, models), [models, t]);
 
   return (
-    <Card className="p-4">
-      <div className="flex flex-col md:flex-row gap-4 md:items-stretch">
-        <div ref={radarRef} className="hidden md:flex min-w-0 w-full md:w-1/2 items-center justify-center">
-          <RadarChart width={radarSize} height={320} data={radarData} outerRadius={140} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
-            <PolarGrid />
-            <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11 }} />
-            {models.map((model, index) => (
-              <Radar
-                key={modelId(model) || index}
-                name={model.short_name || model.name}
-                dataKey={`model_${index}`}
-                stroke={getModelColor(index)}
-                fill={getModelColor(index)}
-                fillOpacity={0.08}
-                isAnimationActive={false}
-              />
-            ))}
-            <Tooltip contentStyle={chartTooltipStyle} />
-          </RadarChart>
-        </div>
-        <div className="min-w-0 w-full md:w-1/2 flex items-center">
-          <div className="md:hidden w-full">
-            <CompactMetricCards metrics={metrics.filter((m) => m.mobileKey)} models={models} />
+    <Card>
+      <CardContent padding="lg">
+        <div className="flex flex-col md:flex-row gap-6 md:items-stretch">
+          <div ref={radarRef} className="hidden md:flex min-w-0 w-full md:w-1/2 items-center justify-center">
+            <RadarChart width={radarSize} height={340} data={radarData} outerRadius={140} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+              <PolarGrid stroke="var(--border)" />
+              <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
+              {models.map((model, index) => (
+                <Radar
+                  key={modelId(model) || index}
+                  name={model.short_name || model.name}
+                  dataKey={`model_${index}`}
+                  stroke={getModelColor(index)}
+                  fill={getModelColor(index)}
+                  fillOpacity={0.06}
+                  isAnimationActive={false}
+                />
+              ))}
+              <Tooltip contentStyle={chartTooltipStyle} />
+            </RadarChart>
           </div>
-          <div className="hidden md:block w-full">
-            <MetricTable metrics={metrics} models={models} />
+          <div className="min-w-0 w-full md:w-1/2 flex items-center">
+            <div className="md:hidden w-full">
+              <CompactMetricCards metrics={metrics.filter((m) => m.mobileKey)} models={models} />
+            </div>
+            <div className="hidden md:block w-full">
+              <MetricTable metrics={metrics} models={models} />
+            </div>
           </div>
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
 }

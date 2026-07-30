@@ -2,7 +2,6 @@ import type { ComponentType } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { BackButton } from "../../shared/components/composite/BackButton";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
-import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 import { NotFound } from "../system/NotFound";
 
@@ -16,6 +15,7 @@ import { TtsDetailContent } from "./detail/TtsDetailContent";
 
 import { ORDetail } from "./detail/ORDetail";
 import { HallDetail } from "./detail/HallDetail";
+import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
 
 function useModelSourceParams(): { src: ModelSource | null; decodedId: string } {
   const { source, "*": splat } = useParams<{ source: string; "*": string }>();
@@ -64,12 +64,11 @@ function ModelDetailContentInner() {
   const SourceComponent = SOURCE_COMPONENTS[src];
 
   return (
-    <ViewLayout>
+    <PageContainer>
       <BackButton labelKey={config.backLabelKey} to={config.backTo} />
-      <SectionHeader title={decodedId.split("/").pop() || decodedId} />
-      <p className="text-xs text-text-secondary">{sourceLabel}</p>
+      <PageHeader title={decodedId.split("/").pop() || decodedId} description={sourceLabel} />
       <SourceComponent decodedId={decodedId} />
-    </ViewLayout>
+    </PageContainer>
   );
 }
 

@@ -23,12 +23,13 @@ interface DataTableProps<T> {
   columns: DataTableColumn<T>[];
   getRowId?: (row: T) => string;
   pageSize?: number;
+  hideHeader?: boolean;
   expandedRowId?: string | null;
   onToggleExpand?: (rowId: string | null) => void;
   renderExpandedRow?: (row: T) => ReactNode;
 }
 
-export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedRowId, onToggleExpand, renderExpandedRow }: DataTableProps<T>) {
+export function DataTable<T>({ data, columns, getRowId, pageSize = 30, hideHeader, expandedRowId, onToggleExpand, renderExpandedRow }: DataTableProps<T>) {
   const isMobile = useIsMobile();
   const effectivePageSize = isMobile ? Math.min(pageSize, 15) : pageSize;
   const { t } = useTranslation();
@@ -52,12 +53,12 @@ export function DataTable<T>({ data, columns, getRowId, pageSize = 30, expandedR
   return (
     <div className="flex flex-col gap-2">
       {sortedData.length === 0 ? (
-        <div className={cn("py-8 text-center", "text-sm text-text-secondary")}>{t("noResults")}</div>
+        <div className="py-12 text-center text-sm text-text-secondary">{t("noResults")}</div>
       ) : (
         <>
-          <div className="rounded-md border border-border overflow-x-auto min-w-0">
-            <table className="w-full text-sm">
-              <TableHeader columns={columns} sortState={sortState} onSort={(colId) => { resetPage(); toggleSort(colId); }} />
+          <div className="rounded-lg border border-border overflow-x-auto min-w-0">
+            <table className="w-full text-sm table-auto">
+              {!hideHeader && <TableHeader columns={columns} sortState={sortState} onSort={(colId) => { resetPage(); toggleSort(colId); }} />}
               <TableBody
                 pagedData={pagedData}
                 columns={columns}

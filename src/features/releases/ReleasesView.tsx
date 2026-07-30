@@ -5,13 +5,13 @@ import { useTranslation } from "../../shared/i18n/useTranslation";
 import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 
 import { cn } from "../../shared/utils/cn";
-import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { useSuspenseOpenSourceReleases, useSuspenseArtificialRankings } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 import { TabContainer, type TabItem } from "../../shared/components/composite/TabContainer";
 import type { FeedEntry, DatedModel } from "./types";
 import { useReleaseFeedEntries, useReleaseDateRows } from "./useReleaseData";
+import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
 
 const getFeedSearchFields = (e: FeedEntry) => [e.name, e.id];
 
@@ -37,8 +37,8 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
         header: t("modelNameOrId"),
         cell: (row) => (
           <div className="min-w-0">
-            <p className="text-sm break-words overflow-wrap-anywhere">{row.name}</p>
-            <div className="flex md:hidden mt-[2px] items-center gap-1.5">
+            <p className="text-sm font-medium break-words overflow-wrap-anywhere">{row.name}</p>
+            <div className="flex md:hidden mt-1 items-center gap-1.5">
               <span className={cn("text-xs font-semibold", getTypeMeta(row.type).color)}>{getTypeMeta(row.type).label}</span>
               <span className="text-xs text-text-tertiary">{row.date}</span>
             </div>
@@ -70,7 +70,7 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
     ];
   }, [t]);
 
-  return <DataTable data={feedRows} columns={feedColumns} getRowId={(r) => r.id} />;
+  return <DataTable data={feedRows} columns={feedColumns} getRowId={(r) => r.id} hideHeader />;
 }
 
 function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {
@@ -78,32 +78,33 @@ function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {
 
   const releaseColumns = useMemo<DataTableColumn<DatedModel>[]>(
     () => [
-      { id: "model", header: t("modelNameOrId"), cell: (row) => <span className="text-sm font-bold break-words min-w-0">{row.model.name}</span> },
+      { id: "model", header: "", cell: (row) => <span className="text-sm font-semibold break-words min-w-0">{row.model.name}</span> },
       {
         id: "creator",
-        header: t("creator"),
+        header: "",
         sortable: true,
         align: "right",
         width: "24%",
         hiddenMd: true,
         cell: (row) => (
-          <span className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{row.model.model_creators?.name || t("notAvailable")}</span>
+          <span className="text-sm overflow-hidden text-ellipsis whitespace-nowrap text-right">{row.model.model_creators?.name || t("notAvailable")}</span>
         ),
       },
       {
         id: "releaseDate",
-        header: t("releaseDate"),
+        header: "",
         accessorFn: (r) => r.time,
         sortable: true,
         align: "right",
         width: "18%",
+        hiddenMd: true,
         cell: (row) => new Date(row.time).toLocaleDateString(),
       },
     ],
     [t],
   );
 
-  return <DataTable data={releaseRows} columns={releaseColumns} />;
+  return <DataTable data={releaseRows} columns={releaseColumns} hideHeader />;
 }
 
 function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "release-dates"; lockedMode: boolean }) {
@@ -124,11 +125,13 @@ function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "r
   );
 
   return (
-    <ViewLayout>
-      <div className="flex items-center justify-between mb-1">
-        <p className="text-sm text-text-secondary">{mode === "feed" ? t("events", { count: allEntries.length }) : t("modelsTotal", { count: releaseRows.length })}</p>
+    <PageContainer>
+      <PageHeader title={t(lockedMode ? "scoreRelease" : "releases")} description={mode === "feed" ? t("releaseDataSource") : t("artificialSource")} />
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-xs text-text-secondary bg-bg-secondary px-2 py-1 rounded-md">
+          {mode === "feed" ? t("events", { count: allEntries.length }) : t("modelsTotal", { count: releaseRows.length })}
+        </span>
       </div>
-      <p className="text-xs text-text-secondary">{mode === "feed" ? t("releaseDataSource") : t("artificialSource")}</p>
       {lockedMode ? (
         <ReleaseDatesTab releaseRows={releaseRows} />
       ) : (
@@ -136,7 +139,7 @@ function ReleasesContent({ defaultMode, lockedMode }: { defaultMode: "feed" | "r
           {mode === "feed" ? <FeedTab allEntries={allEntries} /> : <ReleaseDatesTab releaseRows={releaseRows} />}
         </TabContainer>
       )}
-    </ViewLayout>
+    </PageContainer>
   );
 }
 

@@ -1,6 +1,17 @@
-import { Fragment, type ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import type { DataTableColumn } from "./DataTable";
+
+interface TableBodyProps<T> {
+  pagedData: T[];
+  columns: DataTableColumn<T>[];
+  getRowId?: (row: T) => string;
+  isExpandable: boolean;
+  expandedRowId?: string | null;
+  onToggleExpand?: (rowId: string | null) => void;
+  renderExpandedRow?: (row: T) => ReactNode;
+}
 
 export function TableBody<T>({
   pagedData,
@@ -10,57 +21,92 @@ export function TableBody<T>({
   expandedRowId,
   onToggleExpand,
   renderExpandedRow,
-}: {
-  pagedData: T[];
-  columns: DataTableColumn<T>[];
-  getRowId?: (row: T) => string;
-  isExpandable: boolean;
-  expandedRowId?: string | null;
-  onToggleExpand?: (rowId: string | null) => void;
-  renderExpandedRow?: (row: T) => ReactNode;
-}) {
+}: TableBodyProps<T>) {
   return (
     <tbody>
-      {pagedData.map((record, idx) => {
-        const rowId = getRowId?.(record) ?? String(idx);
-        const isExpanded = isExpandable && rowId === expandedRowId;
-        const isLast = idx === pagedData.length - 1;
+      {pagedData.map((row, rowIndex) => {
+        const rowId = getRowId?.(row) ?? String(rowIndex);
+        const isExpanded = expandedRowId === rowId;
         return (
-          <Fragment key={rowId}>
-            <tr
-              className={cn(!isLast && "border-b border-border", "transition-[background-color] hover:bg-hover", isExpandable && "cursor-pointer")}
-              tabIndex={isExpandable ? 0 : undefined}
-              aria-expanded={isExpandable ? isExpanded : undefined}
-              onClick={() => {
-                if (isExpandable) onToggleExpand!(expandedRowId === rowId ? null : rowId);
-              }}
-              onKeyDown={(e) => {
-                if ((e.key === "Enter" || e.key === " ") && isExpandable) {
-                  e.preventDefault();
-                  onToggleExpand!(expandedRowId === rowId ? null : rowId);
-                }
-              }}
-            >
-              {columns.map((col) => (
-                <td
-                  key={col.id}
-                  className={cn("py-2 px-2.5 break-words min-w-0", col.align === "right" && "tabular-nums font-mono", col.hiddenMd && "hidden md:table-cell")}
-                  style={{ width: col.width, textAlign: col.align || "left" }}
-                >
-                  {col.cell(record)}
-                </td>
-              ))}
-            </tr>
-            {isExpanded && (
-              <tr>
-                <td colSpan={columns.length} className="p-0 bg-bg-secondary border-t border-border">
-                  {renderExpandedRow?.(record)}
-                </td>
-              </tr>
-            )}
-          </Fragment>
+          <MemoizedTableRow
+            key={rowId}
+            row={row}
+            columns={columns}
+            rowIndex={rowIndex}
+            isExpandable={isExpandable}
+            isExpanded={isExpanded}
+            onToggle={() => onToggleExpand?.(isExpanded ? null : rowId)}
+            renderExpandedRow={renderExpandedRow}
+          />
         );
       })}
     </tbody>
   );
 }
+
+interface TableRowProps<T> {
+  row: T;
+  columns: DataTableColumn<T>[];
+  rowIndex: number;
+  isExpandable: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
+  renderExpandedRow?: (row: T) => ReactNode;
+}
+
+function TableRow<T>({
+  row,
+  columns,
+  rowIndex,
+  isExpandable,
+  isExpanded,
+  onToggle,
+  renderExpandedRow,
+}: TableRowProps<T>) {
+  return (
+    <>
+      <tr
+        className={cn(
+          "border-b border-border transition-colors",
+          rowIndex % 2 === 0 ? "bg-bg-card" : "bg-bg-primary",
+          "hover:bg-hover",
+          isExpanded && "bg-accent-light",
+        )}
+        onClick={isExpandable ? onToggle : undefined}
+      >
+        {columns.map((col) => {
+          const isHidden = col.hiddenMd;
+          return (
+            <td
+              key={col.id}
+              className={cn(
+                "px-3 py-3",
+                col.align === "right" && "text-right",
+                col.align === "center" && "text-center",
+                isHidden && "hidden md:table-cell",
+                isExpandable && "cursor-pointer",
+              )}
+              style={{ width: col.width }}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                {isExpandable && col === columns[0] && (
+                  <span className="shrink-0 text-text-secondary">{isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}</span>
+                )}
+                {col.cell(row)}
+              </div>
+            </td>
+          );
+        })}
+      </tr>
+      {isExpanded && renderExpandedRow && (
+        <tr className="border-b border-border bg-bg-secondary/50">
+          <td colSpan={columns.length} className="p-0">
+            {renderExpandedRow(row)}
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+const MemoizedTableRow = memo(TableRow) as typeof TableRow;

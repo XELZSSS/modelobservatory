@@ -20,7 +20,7 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
   return [
     {
       id: "model",
-      header: t("modelNameOrId"),
+      header: "",
       cell: (row) => (
         <>
           <RankingNameCell name={row.item.model} />
@@ -40,15 +40,15 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
     },
     {
       id: "hallucinationRate",
-      header: t("hallucinationRate"),
+      header: "",
       accessorFn: (r) => r.item.hallucinationRate,
       sortable: true,
       align: "right",
-      cell: (row) => <span className="text-sm font-bold">{fmtRate(row.item.hallucinationRate)}</span>,
+      cell: (row) => <span className="text-sm font-semibold">{fmtRate(row.item.hallucinationRate)}</span>,
     },
     {
       id: "accuracy",
-      header: t("accuracy"),
+      header: "",
       accessorFn: (r) => r.item.accuracy,
       sortable: true,
       align: "right",
@@ -57,7 +57,7 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
     },
     {
       id: "attemptRate",
-      header: t("attemptRate"),
+      header: "",
       accessorFn: (r) => r.item.attemptRate,
       sortable: true,
       align: "right",
@@ -66,7 +66,7 @@ function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<Ranke
     },
     {
       id: "omniscienceIndex",
-      header: t("omniscienceIndex"),
+      header: "",
       accessorFn: (r) => r.item.omniscienceIndex,
       sortable: true,
       align: "right",

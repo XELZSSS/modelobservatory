@@ -3,7 +3,7 @@ import type { DataTableColumn } from "./DataTable";
 
 type SortDir = "asc" | "desc" | null;
 
-interface SortState {
+export interface SortState {
   col: string | null;
   dir: SortDir;
 }

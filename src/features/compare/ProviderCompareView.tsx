@@ -20,12 +20,12 @@ export function ProviderCompareView() {
         accessorFn: (p) => p.name,
         cell: (p) => (
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
-            <span className="font-medium">{p.name}</span>
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.color }} />
+            <span className="font-medium text-sm">{p.name}</span>
           </div>
         ),
       },
-      { id: "count", header: t("modelCount"), accessorFn: (p) => p.count, sortable: true, align: "right", cell: (p) => p.count },
+      { id: "count", header: t("modelCount"), accessorFn: (p) => p.count, sortable: true, align: "right", cell: (p) => <span className="font-medium">{p.count}</span> },
       {
         id: "avgIntelligence",
         header: t("avgIntelligence"),
@@ -59,7 +59,7 @@ export function ProviderCompareView() {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">{t("artificialSource")}</p>
-      <DataTable columns={columns} data={providerStats} getRowId={(p) => p.name} />
+      <DataTable columns={columns} data={providerStats} getRowId={(p) => p.name} hideHeader />
     </div>
   );
 }

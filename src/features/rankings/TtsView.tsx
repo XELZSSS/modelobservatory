@@ -5,7 +5,6 @@ import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
-import { ViewLayout } from "../../shared/components/composite/ViewLayout";
 
 import { cn } from "../../shared/utils/cn";
 import { formatDollar } from "../../shared/utils/format";
@@ -23,7 +22,7 @@ export function TtsView() {
     () => [
       {
         id: "model",
-        header: t("modelNameOrId"),
+        header: "",
         cell: (model) => (
           <>
             <RankingNameCell name={model.name} />
@@ -41,23 +40,23 @@ export function TtsView() {
       },
       {
         id: "provider",
-        header: t("creator"),
+        header: "",
         accessorFn: (row) => row.provider,
         hiddenMd: true,
         align: "right",
-        cell: (model) => <p className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{model.provider || t("notAvailable")}</p>,
+        cell: (model) => <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap text-right">{model.provider || t("notAvailable")}</p>,
       },
       {
         id: "quality",
-        header: t("ttsQualityElo"),
+        header: "",
         accessorFn: (row) => row.quality_elo,
         sortable: true,
         align: "right",
-        cell: (model) => <span className="text-sm font-bold">{model.quality_elo != null ? model.quality_elo.toFixed(0) : t("notAvailable")}</span>,
+        cell: (model) => <span className="text-sm font-semibold">{model.quality_elo != null ? model.quality_elo.toFixed(0) : t("notAvailable")}</span>,
       },
       {
         id: "speed",
-        header: t("ttsSpeed"),
+        header: "",
         accessorFn: (row) => row.speed_chars_per_sec,
         sortable: true,
         align: "right",
@@ -66,7 +65,7 @@ export function TtsView() {
       },
       {
         id: "price",
-        header: t("ttsPrice"),
+        header: "",
         accessorFn: (row) => row.price_per_1m_chars,
         sortable: true,
         align: "right",
@@ -78,13 +77,13 @@ export function TtsView() {
   );
 
   return (
-    <ViewLayout>
+    <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">{t("ttsSource")}</p>
       {filtered.length === 0 ? (
-        <p className={cn("text-sm text-text-secondary", "py-8 text-center")}>{t("noResults")}</p>
+        <p className="text-sm text-text-secondary py-8 text-center">{t("noResults")}</p>
       ) : (
-        <DataTable data={filtered} columns={columns} getRowId={getRowId} />
+        <DataTable data={filtered} columns={columns} getRowId={getRowId} hideHeader />
       )}
-    </ViewLayout>
+    </div>
   );
 }

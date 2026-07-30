@@ -66,42 +66,27 @@ function FilterToolbar({
     <div className="flex flex-col gap-4 min-w-0">
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-end min-w-0">
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-text-secondary">{t("artificialSource")}</p>
-          <div className="flex flex-row gap-1 mt-1 flex-wrap items-center">
-            <TabButton active={viewMode === "rankings"} onClick={() => onViewModeChange("rankings")}>
-              {t("modelRankings")}
-            </TabButton>
-            <TabButton active={viewMode === "pricing"} onClick={() => onViewModeChange("pricing")}>
-              {t("pricing")}
-            </TabButton>
-            <TabButton active={viewMode === "benchmarks"} onClick={() => onViewModeChange("benchmarks")}>
-              {t("benchmarks")}
-            </TabButton>
+          <p className="text-xs text-text-secondary mb-1">{t("artificialSource")}</p>
+          <div className="flex flex-wrap gap-1.5 items-center">
+            <div className="flex gap-1 p-0.5 rounded-lg bg-bg-secondary">
+              <TabButton active={viewMode === "rankings"} onClick={() => onViewModeChange("rankings")}>{t("modelRankings")}</TabButton>
+              <TabButton active={viewMode === "pricing"} onClick={() => onViewModeChange("pricing")}>{t("pricing")}</TabButton>
+              <TabButton active={viewMode === "benchmarks"} onClick={() => onViewModeChange("benchmarks")}>{t("benchmarks")}</TabButton>
+            </div>
             {viewMode !== "benchmarks" && (
               <>
-                <span className="w-[1px] h-4 bg-border mx-1" />
-                {[
-                  { key: "all" as const, label: t("all") },
-                  { key: "reasoning" as const, label: t("reasoning") },
-                  { key: "non-reasoning" as const, label: t("nonReasoning") },
-                ].map((tab) => (
-                  <TabButton key={tab.key} active={reasoningFilter === tab.key} onClick={() => onReasoningFilterChange(tab.key)}>
-                    {tab.label}
-                  </TabButton>
-                ))}
-                <span className="w-[1px] h-4 bg-border mx-1 hidden sm:block" />
-                <div className="hidden sm:flex flex-row gap-1 items-center">
-                  {[
-                    { key: "all" as const, label: t("allModalities") },
-                    { key: "text" as const, label: t("textOnly") },
-                    { key: "image" as const, label: t("imageInput") },
-                    { key: "speech" as const, label: t("speechInput") },
-                    { key: "video" as const, label: t("videoInput") },
-                  ].map((tab) => (
-                    <TabButton key={tab.key} active={modalityFilter === tab.key} onClick={() => onModalityFilterChange(tab.key)}>
-                      {tab.label}
-                    </TabButton>
-                  ))}
+                <div className="w-px h-4 bg-border mx-1" />
+                <div className="flex gap-1 p-0.5 rounded-lg bg-bg-secondary">
+                  <TabButton active={reasoningFilter === "all"} onClick={() => onReasoningFilterChange("all")}>{t("all")}</TabButton>
+                  <TabButton active={reasoningFilter === "reasoning"} onClick={() => onReasoningFilterChange("reasoning")}>{t("reasoning")}</TabButton>
+                  <TabButton active={reasoningFilter === "non-reasoning"} onClick={() => onReasoningFilterChange("non-reasoning")}>{t("nonReasoning")}</TabButton>
+                </div>
+                <div className="hidden sm:flex gap-1 p-0.5 rounded-lg bg-bg-secondary">
+                  <TabButton active={modalityFilter === "all"} onClick={() => onModalityFilterChange("all")}>{t("allModalities")}</TabButton>
+                  <TabButton active={modalityFilter === "text"} onClick={() => onModalityFilterChange("text")}>{t("textOnly")}</TabButton>
+                  <TabButton active={modalityFilter === "image"} onClick={() => onModalityFilterChange("image")}>{t("imageInput")}</TabButton>
+                  <TabButton active={modalityFilter === "speech"} onClick={() => onModalityFilterChange("speech")}>{t("speechInput")}</TabButton>
+                  <TabButton active={modalityFilter === "video"} onClick={() => onModalityFilterChange("video")}>{t("videoInput")}</TabButton>
                 </div>
               </>
             )}
@@ -109,7 +94,7 @@ function FilterToolbar({
         </div>
       </div>
       {viewMode === "benchmarks" && onBenchmarkChange && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex gap-1 p-0.5 rounded-lg bg-bg-secondary w-fit">
           {BENCHMARK_KEYS.map((key) => (
             <TabButton key={key} active={selectedBenchmark === key} onClick={() => onBenchmarkChange(key)}>
               {t(BENCHMARK_LABELS[key])}
@@ -136,25 +121,25 @@ function PricingInputs({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="flex gap-2 flex-wrap items-center p-2 rounded-md border border-border">
+    <div className="flex gap-3 flex-wrap items-center p-3 rounded-lg border border-border bg-bg-secondary">
       <Input
         type="number"
         value={promptTokens}
         onChange={(e) => onPromptTokensChange(e.target.value)}
-        className="w-full sm:w-44 border-border"
+        className="w-full sm:w-44"
         placeholder={t("monthlyPromptTokens")}
       />
       <Input
         type="number"
         value={completionTokens}
         onChange={(e) => onCompletionTokensChange(e.target.value)}
-        className="w-full sm:w-44 border-border"
+        className="w-full sm:w-44"
         placeholder={t("monthlyCompletionTokens")}
       />
-      <div className="flex items-center">
-        <span className="text-sm text-text-secondary">{t("estimatedMonthlyCost")}: </span>
-        <span className="text-base font-bold ml-1">{formatDollar(avgCost)}</span>
-        <span className="text-xs text-text-secondary ml-[2px]">{t("perModelAvg")}</span>
+      <div className="flex items-center gap-1">
+        <span className="text-sm text-text-secondary">{t("estimatedMonthlyCost")}:</span>
+        <span className="text-base font-bold font-mono">{formatDollar(avgCost)}</span>
+        <span className="text-xs text-text-secondary">{t("perModelAvg")}</span>
       </div>
     </div>
   );
@@ -227,11 +212,12 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
             expandedRowId={expandedRowId}
             onToggleExpand={setExpandedRowId}
             renderExpandedRow={(model) => <ModelExpandedDetail model={model} />}
+            hideHeader
           />
         </>
       )}
 
-      {viewMode === "benchmarks" && <DataTable data={benchmarkFiltered} columns={benchmarkColumns} getRowId={(row) => row.id} />}
+      {viewMode === "benchmarks" && <DataTable data={benchmarkFiltered} columns={benchmarkColumns} getRowId={(row) => row.id} hideHeader />}
     </div>
   );
 }

@@ -1,44 +1,44 @@
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { memo } from "react";
 import { cn } from "../../utils/cn";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import type { DataTableColumn } from "./DataTable";
+import type { SortState } from "./useTableState";
 
-export function TableHeader<T>({
-  columns,
-  sortState,
-  onSort,
-}: {
+interface TableHeaderProps<T> {
   columns: DataTableColumn<T>[];
-  sortState: { col: string | null; dir: "asc" | "desc" | null };
+  sortState: SortState;
   onSort: (colId: string) => void;
-}) {
+}
+
+export function TableHeader<T>({ columns, sortState, onSort }: TableHeaderProps<T>) {
   return (
     <thead>
-      <tr className="bg-bg-secondary">
-        {columns.map((col) => (
-          <th
-            key={col.id}
-            className={cn("py-2 px-2.5 font-semibold text-text-secondary whitespace-nowrap border-b border-border", col.hiddenMd && "hidden md:table-cell")}
-            style={{ width: col.width, textAlign: col.align || "left" }}
-            aria-sort={col.sortable ? (sortState.col === col.id ? (sortState.dir === "asc" ? "ascending" : "descending") : "none") : undefined}
-          >
-            {col.sortable ? (
-              <button
-                type="button"
-                className="inline-flex items-center gap-1 hover:text-text-primary transition-colors cursor-pointer"
-                style={{ textAlign: col.align || "left" }}
-                onClick={() => onSort(col.id)}
-              >
+      <tr className="border-b border-border bg-bg-secondary">
+        {columns.map((col) => {
+          const isSorted = sortState.col === col.id;
+          const isHidden = col.hiddenMd;
+          return (
+            <th
+              key={col.id}
+              className={cn(
+                "px-3 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider",
+                col.align === "right" && "text-right",
+                col.align === "center" && "text-center",
+                isHidden && "hidden md:table-cell",
+                col.sortable && "cursor-pointer hover:text-text-primary select-none",
+              )}
+              style={{ width: col.width }}
+              onClick={() => col.sortable && onSort(col.id)}
+            >
+              <span className="inline-flex items-center gap-1">
                 {col.header}
-                <span className="inline-flex flex-col leading-none">
-                  <ChevronUp size={10} className={sortState.col === col.id && sortState.dir === "asc" ? "text-text-primary" : "opacity-30"} />
-                  <ChevronDown size={10} className={cn("-mt-0.5", sortState.col === col.id && sortState.dir === "desc" ? "text-text-primary" : "opacity-30")} />
-                </span>
-              </button>
-            ) : (
-              col.header
-            )}
-          </th>
-        ))}
+                {col.sortable && isSorted && (
+                  sortState.dir === "asc" ? <ArrowUp size={12} /> : <ArrowDown size={12} />
+                )}
+              </span>
+            </th>
+          );
+        })}
       </tr>
     </thead>
   );
