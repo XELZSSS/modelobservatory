@@ -31,17 +31,15 @@ class MemoryCache implements CacheBackend {
 
   private evict() {
     const now = Date.now();
-    let staleCount = 0;
     for (const [k, v] of this.store) {
-      if (v.expires <= now) { this.store.delete(k); staleCount++; }
+      if (v.expires <= now) this.store.delete(k);
     }
     if (this.store.size > MAX_ENTRIES) {
+      const entries = [...this.store.entries()].sort((a, b) => a[1].expires - b[1].expires);
       const toDelete = this.store.size - MAX_ENTRIES;
-      let deleted = 0;
-      for (const k of this.store.keys()) {
-        if (deleted >= toDelete) break;
-        this.store.delete(k);
-        deleted++;
+      for (let i = 0; i < toDelete && i < entries.length; i++) {
+        const key = entries[i]?.[0];
+        if (key) this.store.delete(key);
       }
     }
   }

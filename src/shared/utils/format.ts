@@ -63,9 +63,9 @@ export function formatDollar(v: number | null | undefined, t?: TFunction): strin
   return `$${v.toFixed(2)}`;
 }
 
-export function formatPricePerMillion(t: TFunction, v?: number | null) {
-  if (typeof v === "number") return `$${v.toFixed(2)}${t("perMTokens")}`;
-  return t("notAvailable");
+export function formatPricePerMillion(v: number | null | undefined, t?: TFunction): string {
+  if (typeof v === "number") return `$${v.toFixed(2)}${t ? t("perMTokens") : "/M tokens"}`;
+  return t ? t("notAvailable") : "N/A";
 }
 
 export function formatTrend(change?: number | null, t?: TFunction): string {

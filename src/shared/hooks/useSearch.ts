@@ -4,7 +4,7 @@ import type { NewsItem } from "../types";
 import { FIVE_MINUTES } from "../config";
 import { apiFetch, api } from "../../api/client";
 import type { SearchResult } from "../types/search";
-import { useArtificialRankings, useSuspenseHomeDashboard, useSuspenseTtsLeaderboard, useOpenRouterRankings, useHallucinationRankings } from "./useApiQuery";
+import { useArtificialRankings, useHomeDashboard, useTts, useOpenRouterRankings, useHallucinationRankings } from "./useApiQuery";
 
 export function useNewsByCategory(category: string) {
   return useQuery<NewsItem[]>({
@@ -26,12 +26,12 @@ function searchDataset<T>(data: T[], term: string, fields: (item: T) => (string 
 export function useSearchAllRankings(searchTerm: string): SearchResult[] {
   const enabled = searchTerm.length >= 2;
   const artificialQ = useArtificialRankings(enabled);
-  const dashboardQ = useSuspenseHomeDashboard();
-  const ttsQ = useSuspenseTtsLeaderboard();
+  const dashboardQ = useHomeDashboard(enabled);
+  const ttsQ = useTts(enabled);
   const orQ = useOpenRouterRankings(enabled);
 
   const artificialData = artificialQ.data ?? [];
-  const openSourceRankings = dashboardQ.data.opensource ?? [];
+  const openSourceRankings = dashboardQ.data?.opensource ?? [];
   const ttsData = ttsQ.data ?? [];
   const openRouterData = orQ.data?.tokenUsageRankings ?? [];
   const hallucinationRankings = useHallucinationRankings(artificialData, enabled);

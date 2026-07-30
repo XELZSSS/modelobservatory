@@ -14,7 +14,7 @@ export interface RankedRow<T> {
 
 interface RankingTableProps<T> {
   data: T[];
-  columns: (t: (key: TranslationKey) => string, row: RankedRow<T>) => DataTableColumn<RankedRow<T>>[];
+  columns: (t: (key: TranslationKey) => string) => DataTableColumn<RankedRow<T>>[];
   getRowId: (item: T) => string;
   getSearchFields: (item: T) => string[];
   sourceKey: TranslationKey;
@@ -30,12 +30,7 @@ export function RankingTable<T>({ data, columns, getRowId, getSearchFields, sour
 
   const rows = useMemo(() => filtered.map((item, index) => ({ rank: getRank ? getRank(item, index) : index + 1, item })), [filtered, getRank]);
 
-  const sampleRow = useMemo(() => {
-    const first = data[0];
-    return first ? { rank: 1, item: first } : null;
-  }, [data]);
-
-  const tableColumns = useMemo<DataTableColumn<RankedRow<T>>[]>(() => columns(t, sampleRow ?? { rank: 0, item: undefined! }), [t, sampleRow]);
+  const tableColumns = useMemo<DataTableColumn<RankedRow<T>>[]>(() => columns(t), [t]);
 
   return (
     <ViewLayout>

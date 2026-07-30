@@ -41,7 +41,7 @@ export function ProviderCompareView() {
         sortable: true,
         align: "right",
         hiddenMd: true,
-        cell: (p) => formatPricePerMillion(t, p.avgPrice),
+        cell: (p) => formatPricePerMillion(p.avgPrice, t),
       },
       {
         id: "avgSpeed",

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 
+const DEFAULT_WIDTH = 300;
+
 export function useElementWidth(): [RefObject<HTMLDivElement | null>, number] {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(0);
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
 
   useEffect(() => {
     const el = ref.current;

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
@@ -23,8 +23,10 @@ import { useBenchmarkColumns } from "./useBenchmarkColumns";
 function useCostEstimator(filteredRankings: ArtificialAnalysisModel[]) {
   const [promptTokens, setPromptTokens] = useState("100000");
   const [completionTokens, setCompletionTokens] = useState("30000");
-  const calcPrompt = Number(promptTokens) || 0;
-  const calcCompletion = Number(completionTokens) || 0;
+  const deferredPrompt = useDeferredValue(promptTokens);
+  const deferredCompletion = useDeferredValue(completionTokens);
+  const calcPrompt = Number(deferredPrompt) || 0;
+  const calcCompletion = Number(deferredCompletion) || 0;
   const avgCost = useMemo(() => {
     let total = 0,
       count = 0;
@@ -37,7 +39,7 @@ function useCostEstimator(filteredRankings: ArtificialAnalysisModel[]) {
     }
     return count > 0 ? total / count : 0;
   }, [filteredRankings, calcPrompt, calcCompletion]);
-  return { promptTokens, setPromptTokens, completionTokens, setCompletionTokens, calcPrompt, calcCompletion, avgCost };
+  return { promptTokens, setPromptTokens, completionTokens, setCompletionTokens, calcPrompt: calcPrompt, calcCompletion: calcCompletion, avgCost };
 }
 
 function FilterToolbar({

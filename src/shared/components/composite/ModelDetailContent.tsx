@@ -51,9 +51,9 @@ export function ModelDetailContent({ model }: { model: ArtificialAnalysisModel }
           <InfoRow compact label={t("openWeights")} value={formatBoolean(t, model.is_open_weights)} />
         </InfoCard>
         <InfoCard title={t("pricing")}>
-          <InfoRow compact label={t("promptPrice")} value={formatPricePerMillion(t, pricing?.input)} />
-          <InfoRow compact label={t("completionPrice")} value={formatPricePerMillion(t, pricing?.output)} />
-          <InfoRow compact label={t("blendedPrice")} value={formatPricePerMillion(t, pricing?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1])} />
+          <InfoRow compact label={t("promptPrice")} value={formatPricePerMillion(pricing?.input, t)} />
+          <InfoRow compact label={t("completionPrice")} value={formatPricePerMillion(pricing?.output, t)} />
+          <InfoRow compact label={t("blendedPrice")} value={formatPricePerMillion(pricing?.blended?.[PRICING_BLENDS.INPUT_7_OUTPUT_2_1], t)} />
         </InfoCard>
       </div>
       {model.benchmarks && Object.values(model.benchmarks).some((v) => v != null) && (

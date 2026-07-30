@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useTtsLeaderboard } from "../../shared/hooks/useApiQuery";
+import { useTts } from "../../shared/hooks/useApiQuery";
 import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
@@ -16,7 +16,7 @@ const getSearchFields = (m: TtsModel) => [m.name, m.provider || ""];
 
 export function TtsView() {
   const { t } = useTranslation();
-  const { data } = useTtsLeaderboard();
+  const { data } = useTts();
   const filtered = useFilteredData(data ?? [], getSearchFields);
 
   const columns = useMemo<DataTableColumn<TtsModel>[]>(

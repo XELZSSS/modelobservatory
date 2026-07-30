@@ -42,11 +42,12 @@ const qHomeDashboard = createApiQuery<HomeDashboardData>(api.homeDashboard, { st
 
 export const useArtificialRankings = qArtificial.use;
 export const useSuspenseArtificialRankings = qArtificial.useSuspense;
-export const useTtsLeaderboard = qTts.use;
+export const useTts = qTts.use;
 export const useSuspenseTtsLeaderboard = qTts.useSuspense;
 export const useSuspenseOpenSourceReleases = qOpenSourceReleases.useSuspense;
 export const useSuspenseHealthStatus = qHealth.useSuspense;
 export const useSystemStats = qSystemStats.use;
+export const useHomeDashboard = qHomeDashboard.use;
 export const useSuspenseHomeDashboard = qHomeDashboard.useSuspense;
 export const useOpenRouterRankings = qOpenRouter.use;
 export const useSuspenseOpenRouterRankings = qOpenRouter.useSuspense;
