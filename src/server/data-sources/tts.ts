@@ -2,7 +2,7 @@ import { withCache } from "../cache";
 import { DEFAULT_TTL_MS } from "../../shared/config";
 import { fetchAndParseRsc, dfsCollect } from "../parsers/rsc";
 import { num } from "../parsers/coerce";
-import { deduplicateBy } from "../cache";
+import { deduplicateBy } from "../utils";
 import type { TtsModel } from "../../shared/types";
 
 export async function getTtsLeaderboard(): Promise<TtsModel[]> {
@@ -30,6 +30,6 @@ export async function getTtsLeaderboard(): Promise<TtsModel[]> {
         };
       }),
     );
-    return deduplicateBy(entries, (e) => e.id).sort((a, b) => (b.quality_elo ?? 0) - (a.quality_elo ?? 0));
+    return deduplicateBy(entries, (e) => e.id).sort((a: TtsModel, b: TtsModel) => (b.quality_elo ?? 0) - (a.quality_elo ?? 0));
   });
 }

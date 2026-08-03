@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect } from "react";
 import { useThemeStore } from "../../stores/themeStore";
+import { useTranslation } from "../../i18n/useTranslation";
 import { DesktopNav } from "./DesktopNav";
 import { MobileNav } from "./MobileNav";
 import { SettingsSheet } from "./SettingsSheet";
@@ -9,18 +10,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const themeMode = useThemeStore((s) => s.themeMode);
+  const { t } = useTranslation();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.classList.toggle("dark", themeMode === "dark");
   }, [themeMode]);
 
   return (
-    <div className="h-screen flex flex-col bg-bg-primary overflow-x-hidden">
+    <div className="h-dvh flex flex-col bg-bg-primary overflow-x-hidden">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-bg-primary focus:border focus:border-border focus:rounded-md focus:text-sm"
       >
-        Skip to content
+        {t("skipToContent")}
       </a>
       <DesktopNav onSettingsOpen={() => setSettingsOpen(true)} />
       <main

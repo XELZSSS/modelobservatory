@@ -15,10 +15,12 @@ import { calcModelCost } from "../../shared/utils/math";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { buildRankingColumns, buildPricingColumns, ModelExpandedDetail } from "./aaColumns";
 
-import { useAARankingFilters, type ViewMode, type ReasoningFilter } from "./aa/useAARankingFilters";
+import { useAARankingFilters, type ViewMode, type ReasoningFilter } from "./useAARankingFilters";
 import { CompareChipBar } from "../../shared/components/composite/CompareChipBar";
 import { BENCHMARK_KEYS, BENCHMARK_LABELS } from "../../shared/config/benchmarks";
-import { useBenchmarkColumns } from "./useBenchmarkColumns";
+import { buildBenchmarkColumns } from "./benchmarkColumns";
+
+const getRowId = (model: ArtificialAnalysisModel) => model.id;
 
 function useCostEstimator(filteredRankings: ArtificialAnalysisModel[]) {
   const [promptTokens, setPromptTokens] = useState("100000");
@@ -39,7 +41,7 @@ function useCostEstimator(filteredRankings: ArtificialAnalysisModel[]) {
     }
     return count > 0 ? total / count : 0;
   }, [filteredRankings, calcPrompt, calcCompletion]);
-  return { promptTokens, setPromptTokens, completionTokens, setCompletionTokens, calcPrompt: calcPrompt, calcCompletion: calcCompletion, avgCost };
+  return { promptTokens, setPromptTokens, completionTokens, setCompletionTokens, calcPrompt, calcCompletion, avgCost };
 }
 
 function FilterToolbar({
@@ -169,7 +171,7 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
       : buildRankingColumns(t);
   }, [t, viewMode, calcPrompt, calcCompletion]);
 
-  const benchmarkColumns = useBenchmarkColumns(t, selectedBenchmark);
+  const benchmarkColumns = useMemo(() => buildBenchmarkColumns(t, selectedBenchmark), [t, selectedBenchmark]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -217,7 +219,7 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
         </>
       )}
 
-      {viewMode === "benchmarks" && <DataTable data={benchmarkFiltered} columns={benchmarkColumns} getRowId={(row) => row.id} hideHeader />}
+      {viewMode === "benchmarks" && <DataTable data={benchmarkFiltered} columns={benchmarkColumns} getRowId={getRowId} hideHeader />}
     </div>
   );
 }

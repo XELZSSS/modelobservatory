@@ -4,7 +4,7 @@ import { InfoRow } from "../../../shared/components/composite/InfoRow";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
 import { ModelDetailContent } from "../../../shared/components/composite/ModelDetailContent";
 import { useSuspenseArtificialRankings, useHallucinationRankings } from "../../../shared/hooks/useApiQuery";
-import { useModelLookup } from "../../../shared/hooks/useModelLookup";
+import { findModel } from "../../../shared/utils/lookup";
 import { NotFound } from "../../system/NotFound";
 import { DetailLayout, StatGrid } from "../../../shared/components/composite/DetailLayout";
 import type { HallucinationRankingEntry, ArtificialAnalysisModel } from "../../../shared/types";
@@ -21,7 +21,7 @@ function HallDetailContent({ model, aaModel }: { model: HallucinationRankingEntr
       </StatGrid>
       <InfoCard title={t("modelInfo")}>
         <InfoRow compact label={t("modelNameOrId")} value={model.model} />
-        <InfoRow compact label="Slug" value={model.slug} />
+        <InfoRow compact label={t("slug")} value={model.slug} />
         {aaModel?.model_creators?.name && <InfoRow compact label={t("creator")} value={aaModel.model_creators.name} />}
         {aaModel?.release_date && <InfoRow compact label={t("releaseDate")} value={aaModel.release_date} />}
       </InfoCard>
@@ -38,8 +38,8 @@ function HallDetailContent({ model, aaModel }: { model: HallucinationRankingEntr
 export function HallDetail({ decodedId }: { decodedId: string }) {
   const { data: aaData } = useSuspenseArtificialRankings();
   const hallucinationRankings = useHallucinationRankings(aaData);
-  const entry = useModelLookup(hallucinationRankings, decodedId, "id", "slug");
-  const aaModel = useModelLookup(aaData, decodedId, "id", "slug");
+  const entry = findModel(hallucinationRankings, decodedId, "id", "slug");
+  const aaModel = findModel(aaData, decodedId, "id", "slug");
   if (!entry) return <NotFound />;
   return <HallDetailContent model={entry} aaModel={aaModel} />;
 }

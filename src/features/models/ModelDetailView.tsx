@@ -7,13 +7,13 @@ import { NotFound } from "../system/NotFound";
 
 import { MODEL_SOURCES, type ModelSource } from "../../shared/config";
 import { useParams } from "react-router-dom";
-import { useModelLookup } from "../../shared/hooks/useModelLookup";
+import { findModel } from "../../shared/utils/lookup";
 import { useSuspenseArtificialRankings, useSuspenseOpenSourceReleases, useSuspenseTtsLeaderboard } from "../../shared/hooks/useApiQuery";
 import { ModelDetailContent } from "../../shared/components/composite/ModelDetailContent";
-import { OsDetailContent } from "./detail/OsDetailContent";
-import { TtsDetailContent } from "./detail/TtsDetailContent";
+import { OsDetail } from "./detail/OsDetail";
+import { TtsDetail } from "./detail/TtsDetail";
 
-import { ORDetail } from "./detail/ORDetail";
+import { OrDetail } from "./detail/OrDetail";
 import { HallDetail } from "./detail/HallDetail";
 import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
 
@@ -27,15 +27,15 @@ function useModelSourceParams(): { src: ModelSource | null; decodedId: string } 
 function createDetailView<T>(useQuery: () => { data: T[] }, Content: ComponentType<{ model: T }>, ...keys: (keyof T & string)[]): ComponentType<{ decodedId: string }> {
   return function DetailView({ decodedId }: { decodedId: string }) {
     const { data } = useQuery();
-    const model = useModelLookup(data, decodedId, ...keys);
+    const model = findModel(data, decodedId, ...keys);
     if (!model) return <NotFound />;
     return <Content model={model} />;
   };
 }
 
 const AADetail = createDetailView(useSuspenseArtificialRankings, ModelDetailContent, "id", "slug");
-const OSDetail = createDetailView(useSuspenseOpenSourceReleases, OsDetailContent, "id");
-const TTSDetail = createDetailView(useSuspenseTtsLeaderboard, TtsDetailContent, "id", "name");
+const OSDetail = createDetailView(useSuspenseOpenSourceReleases, OsDetail, "id");
+const TTSDetail = createDetailView(useSuspenseTtsLeaderboard, TtsDetail, "id", "name");
 
 const SOURCE_LABELS: Record<ModelSource, string> = {
   aa: "artificialSource",
@@ -47,7 +47,7 @@ const SOURCE_LABELS: Record<ModelSource, string> = {
 
 const SOURCE_COMPONENTS: Record<ModelSource, ComponentType<{ decodedId: string }>> = {
   aa: AADetail,
-  or: ORDetail,
+  or: OrDetail,
   os: OSDetail,
   hall: HallDetail,
   tts: TTSDetail,

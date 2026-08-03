@@ -22,7 +22,6 @@ function resolveTemplate(key: TranslationKey, lang: Lang): string {
 
 function syncDocumentMeta(lang: Lang) {
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
-  document.title = "Model Observatory";
   const desc = document.querySelector('meta[name="description"]');
   if (desc) {
     desc.setAttribute(

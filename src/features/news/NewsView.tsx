@@ -6,7 +6,7 @@ import type { TranslationKey } from "../../shared/i18n";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { Card } from "../../shared/components/ui/card";
 import { Pagination } from "../../shared/components/ui/pagination";
-import { useNewsByCategory } from "../../shared/hooks/useSearch";
+import { useNewsByCategory } from "../../shared/hooks/useApiQuery";
 import { Spinner } from "../../shared/components/feedback/SuspenseQuery";
 import { safeHref, formatRelativeTime } from "../../shared/utils/format";
 import { COOL_COLORS } from "../../shared/components/rankColor";

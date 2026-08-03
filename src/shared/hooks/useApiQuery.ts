@@ -3,6 +3,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import type {
   ArtificialAnalysisModel,
   HallucinationRankingEntry,
+  NewsItem,
   OpenSourceModelEntry,
   OpenRouterRankingsPayload,
   HealthEntry,
@@ -11,7 +12,7 @@ import type {
   HomeDashboardData,
 } from "../types";
 import { HEALTH_CHECK_INTERVAL, SYSTEM_STATS_INTERVAL, FIVE_MINUTES, THIRTY_MINUTES } from "../config";
-import { apiFetch, api } from "../../client/api/client";
+import { apiFetch, api } from "../api/client";
 import { normalizePercent } from "../utils/math";
 
 interface QueryCtx {
@@ -23,8 +24,7 @@ const fetcher =
   ({ signal }: QueryCtx) =>
     apiFetch<T>(path, signal);
 
-function createApiQuery<T>(path: string, opts?: { staleTime?: number; refetchInterval?: number | false }) {
-  const key = [path.split("?")[0]!.replace(/\//g, ":")];
+function createApiQuery<T>(key: string[], path: string, opts?: { staleTime?: number; refetchInterval?: number | false }) {
   const qf = fetcher<T>(path);
   return {
     use: (enabled = true) => useQuery<T>({ queryKey: key, queryFn: qf, ...opts, enabled }),
@@ -32,13 +32,14 @@ function createApiQuery<T>(path: string, opts?: { staleTime?: number; refetchInt
   };
 }
 
-const qArtificial = createApiQuery<ArtificialAnalysisModel[]>(api.artificialIndex, { staleTime: THIRTY_MINUTES });
-const qTts = createApiQuery<TtsModel[]>(api.ttsLeaderboard, { staleTime: THIRTY_MINUTES });
-const qOpenSourceReleases = createApiQuery<OpenSourceModelEntry[]>(api.openSourceReleases, { staleTime: THIRTY_MINUTES });
-const qOpenRouter = createApiQuery<OpenRouterRankingsPayload>(api.openRouterRankings, { staleTime: FIVE_MINUTES });
-const qHealth = createApiQuery<HealthEntry[]>(api.health, { staleTime: 0, refetchInterval: HEALTH_CHECK_INTERVAL });
-const qSystemStats = createApiQuery<SystemStats>(api.systemStats, { staleTime: 0, refetchInterval: SYSTEM_STATS_INTERVAL });
-const qHomeDashboard = createApiQuery<HomeDashboardData>(api.homeDashboard, { staleTime: FIVE_MINUTES });
+const qArtificial = createApiQuery<ArtificialAnalysisModel[]>(["api", "artificial-analysis-index"], api.artificialIndex, { staleTime: THIRTY_MINUTES });
+const qTts = createApiQuery<TtsModel[]>(["api", "tts-leaderboard"], api.ttsLeaderboard, { staleTime: THIRTY_MINUTES });
+const qOpenSourceReleases = createApiQuery<OpenSourceModelEntry[]>(["api", "open-source-releases"], api.openSourceReleases, { staleTime: THIRTY_MINUTES });
+const qOpenRouter = createApiQuery<OpenRouterRankingsPayload>(["api", "openrouter-rankings"], api.openRouterRankings, { staleTime: FIVE_MINUTES });
+const qHealth = createApiQuery<HealthEntry[]>(["api", "health"], api.health, { staleTime: 0, refetchInterval: HEALTH_CHECK_INTERVAL });
+const qSystemStats = createApiQuery<SystemStats>(["api", "system-stats"], api.systemStats, { staleTime: 0, refetchInterval: SYSTEM_STATS_INTERVAL });
+const qHomeDashboard = createApiQuery<HomeDashboardData>(["api", "home-dashboard"], api.homeDashboard, { staleTime: FIVE_MINUTES });
+const qOpenSourceModels = createApiQuery<OpenSourceModelEntry[]>(["api", "open-source-models"], api.openSourceModels(), { staleTime: FIVE_MINUTES });
 
 export const useArtificialRankings = qArtificial.use;
 export const useSuspenseArtificialRankings = qArtificial.useSuspense;
@@ -51,10 +52,11 @@ export const useHomeDashboard = qHomeDashboard.use;
 export const useSuspenseHomeDashboard = qHomeDashboard.useSuspense;
 export const useOpenRouterRankings = qOpenRouter.use;
 export const useSuspenseOpenRouterRankings = qOpenRouter.useSuspense;
-
-export const qOpenSourceModels = createApiQuery<OpenSourceModelEntry[]>(api.openSourceModels(), { staleTime: FIVE_MINUTES });
 export const useOpenSourceModels = qOpenSourceModels.use;
 export const useSuspenseOpenSourceModels = qOpenSourceModels.useSuspense;
+
+export const useNewsByCategory = (category: string) =>
+  createApiQuery<NewsItem[]>(["api", "news", category], api.news(category), { staleTime: FIVE_MINUTES, refetchInterval: FIVE_MINUTES }).use();
 
 function buildHallucinationRankings(models: ArtificialAnalysisModel[]): HallucinationRankingEntry[] {
   return models

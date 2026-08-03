@@ -15,7 +15,7 @@ export function MobileMoreSheet({ open, onClose, onSettingsOpen }: { open: boole
   return (
     <Sheet open={open} onClose={onClose}>
       <div className="px-2 pt-[5px] pb-[3px]">
-          <p className="text-sm font-semibold">{t("more")}</p>
+        <p className="text-sm font-semibold">{t("more")}</p>
         <p className="text-xs text-text-secondary">{currentNavLabel}</p>
       </div>
       <nav className="py-1 overflow-y-auto">

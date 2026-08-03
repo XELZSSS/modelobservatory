@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ShieldAlert } from "lucide-react";
 import { DataTable } from "../../shared/components/data/DataTable";
 
-import { cn } from "../../shared/utils/cn";
 import { StatCard } from "../../shared/components/composite/StatCard";
-import { Card, CardContent } from "../../shared/components/ui/card";
+import { Card } from "../../shared/components/ui/card";
 import type { OpenRouterAppEntry, OpenRouterRankingsPayload, OpenRouterRankEntry } from "../../shared/types";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { formatShortNumber, categoryLabel } from "../../shared/utils/format";
-import { getRecommendation } from "../../shared/utils/recommendation";
-import { useOpenRouterColumns } from "./useOpenRouterColumns";
+import { getRecommendation } from "../../shared/config/recommendations";
+import { buildOpenRouterColumns } from "./openRouterColumns";
+
+const getModelRowId = (r: OpenRouterRankEntry) => r.id;
+const getAppRowId = (r: OpenRouterAppEntry) => r.id;
 
 function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
   const { t, lang } = useTranslation();
@@ -19,7 +21,7 @@ function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
         <StatCard label={t("creatorOrVendor")} value={item.creator} />
         <StatCard label={t("inputTokens")} value={formatShortNumber(item.promptTokens || 0)} />
         <StatCard label={t("outputTokens")} value={formatShortNumber(item.completionTokens || 0)} />
-        {item.reasoningTokens ? <StatCard label={t("reasoningTokens") || "Reasoning"} value={formatShortNumber(item.reasoningTokens)} /> : null}
+        {item.reasoningTokens ? <StatCard label={t("reasoningTokens")} value={formatShortNumber(item.reasoningTokens)} /> : null}
       </div>
       <div className="flex flex-col gap-1.5 p-4 rounded-lg bg-bg-secondary">
         <p className="text-xs font-semibold text-text-primary">{t("techSelectionAdvice")}</p>
@@ -61,7 +63,7 @@ export function OpenRouterRankingsView({ data }: { data?: OpenRouterRankingsPayl
   const { t } = useTranslation();
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [expandedAppRowId, setExpandedAppRowId] = useState<string | null>(null);
-  const { modelColumns, appColumns } = useOpenRouterColumns(t);
+  const { modelColumns, appColumns } = useMemo(() => buildOpenRouterColumns(t), [t]);
 
   if (!data) {
     return (
@@ -79,7 +81,7 @@ export function OpenRouterRankingsView({ data }: { data?: OpenRouterRankingsPayl
         <DataTable
           data={data.tokenUsageRankings ?? []}
           columns={modelColumns}
-          getRowId={(r) => r.id}
+          getRowId={getModelRowId}
           expandedRowId={expandedRowId}
           onToggleExpand={setExpandedRowId}
           renderExpandedRow={(item) => <ModelExpandedDetail item={item} />}
@@ -91,7 +93,7 @@ export function OpenRouterRankingsView({ data }: { data?: OpenRouterRankingsPayl
         <DataTable
           data={data.appUsageRankings ?? []}
           columns={appColumns}
-          getRowId={(r) => r.id}
+          getRowId={getAppRowId}
           expandedRowId={expandedAppRowId}
           onToggleExpand={setExpandedAppRowId}
           renderExpandedRow={(item) => <AppExpandedDetail item={item} />}

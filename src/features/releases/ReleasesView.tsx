@@ -14,6 +14,7 @@ import { useReleaseFeedEntries, useReleaseDateRows } from "./useReleaseData";
 import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
 
 const getFeedSearchFields = (e: FeedEntry) => [e.name, e.id];
+const getFeedRowId = (e: FeedEntry) => e.id;
 
 function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
   const { t } = useTranslation();
@@ -70,7 +71,7 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
     ];
   }, [t]);
 
-  return <DataTable data={feedRows} columns={feedColumns} getRowId={(r) => r.id} hideHeader />;
+  return <DataTable data={feedRows} columns={feedColumns} getRowId={getFeedRowId} hideHeader />;
 }
 
 function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {

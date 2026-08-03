@@ -1,19 +1,6 @@
 import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import type { NewsItem } from "../types";
-import { FIVE_MINUTES } from "../config";
-import { apiFetch, api } from "../../client/api/client";
 import type { SearchResult } from "../types/search";
 import { useArtificialRankings, useHomeDashboard, useTts, useOpenRouterRankings, useHallucinationRankings } from "./useApiQuery";
-
-export function useNewsByCategory(category: string) {
-  return useQuery<NewsItem[]>({
-    queryKey: ["news", category],
-    queryFn: ({ signal }: { signal?: AbortSignal }) => apiFetch<NewsItem[]>(api.news(category), signal),
-    staleTime: FIVE_MINUTES,
-    refetchInterval: FIVE_MINUTES,
-  });
-}
 
 function searchDataset<T>(data: T[], term: string, fields: (item: T) => (string | undefined | null)[], mapResult: (item: T) => SearchResult): SearchResult[] {
   const results: SearchResult[] = [];

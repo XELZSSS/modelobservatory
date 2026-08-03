@@ -20,6 +20,7 @@ function TableHeaderInner<T>({ columns, sortState, onSort }: TableHeaderProps<T>
           return (
             <th
               key={col.id}
+              aria-sort={isSorted ? (sortState.dir === "asc" ? "ascending" : "descending") : undefined}
               className={cn(
                 "px-3 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider",
                 col.align === "right" && "text-right",

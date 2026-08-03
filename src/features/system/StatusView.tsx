@@ -58,7 +58,7 @@ function StatusContent() {
   return (
     <PageContainer>
       <PageHeader title={t("systemStatus")} />
-      <div className="flex items-center gap-3 mb-6 p-4 rounded-lg border border-border bg-bg-card">
+      <div className="flex flex-wrap items-center gap-3 mb-6 p-4 rounded-lg border border-border bg-bg-card">
         <p className="text-sm font-semibold">{t("overallStatus")}</p>
         <HealthStatusBadge status={allOk ? "ok" : "error"} label={allOk ? t("allHealthy") : t("hasIssues")} />
         <span className="text-xs text-text-secondary">

@@ -153,7 +153,7 @@ function CompareContent({ models, radarRef, radarSize }: { models: ArtificialAna
       <CardContent padding="lg">
         <div className="flex flex-col md:flex-row gap-6 md:items-stretch">
           <div ref={radarRef} className="hidden md:flex min-w-0 w-full md:w-1/2 items-center justify-center">
-            <RadarChart width={radarSize} height={340} data={radarData} outerRadius={140} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+            <RadarChart width={radarSize} height={340} data={radarData} outerRadius={Math.max(60, Math.min(140, radarSize / 2 - 24))} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
               <PolarGrid stroke="var(--border)" />
               <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} />
               {models.map((model, index) => (

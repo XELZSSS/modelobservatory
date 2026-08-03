@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { I18nProvider } from "./shared/i18n";
-import { AppShell } from "./shared/components/layout/AppShell";
+import { I18nProvider } from "../shared/i18n";
+import { AppShell } from "../shared/components/layout/AppShell";
+import { Spinner } from "../shared/components/feedback/SuspenseQuery";
 import { AppRoutes } from "./routes";
 import { useAppStartup } from "./startup";
 
@@ -17,7 +19,9 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AppShell>
-            <AppRoutes />
+            <Suspense fallback={<Spinner />}>
+              <AppRoutes />
+            </Suspense>
           </AppShell>
         </BrowserRouter>
       </QueryClientProvider>

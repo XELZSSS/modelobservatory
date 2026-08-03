@@ -5,7 +5,6 @@ import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { Button } from "../../shared/components/ui/button";
 import { ModelDetailContent } from "../../shared/components/composite/ModelDetailContent";
 
-import { cn } from "../../shared/utils/cn";
 import { formatContext, formatScore, formatDollar } from "../../shared/utils/format";
 import { calcModelCost } from "../../shared/utils/math";
 import type { ArtificialAnalysisModel } from "../../shared/types";
@@ -110,7 +109,7 @@ export function buildRankingColumns(t: TFunction): DataTableColumn<ArtificialAna
       accessorFn: (row) => row.model_creators?.name || null,
       hiddenMd: true,
       align: "right",
-      cell: (model) => <p className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
+      cell: (model) => <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap text-right">{model.model_creators?.name || t("notAvailable")}</p>,
     },
     scoreColumn("intelligence", "", (m) => m.intelligence_index, t),
     scoreColumn("coding", "", (m) => m.coding_index, t),
@@ -164,7 +163,7 @@ export function buildPricingColumns(
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (model) => <p className={cn("text-sm", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{model.model_creators?.name || t("notAvailable")}</p>,
+      cell: (model) => <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap text-right">{model.model_creators?.name || t("notAvailable")}</p>,
     },
     {
       id: "context",

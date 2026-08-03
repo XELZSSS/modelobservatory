@@ -1,6 +1,5 @@
 import { memo, useCallback, useMemo, useState, useEffect, type ReactNode } from "react";
 import { useTranslation } from "../../shared/i18n/useTranslation";
-import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 import { useSuspenseArtificialRankings, useSuspenseHomeDashboard, useHallucinationRankings, useSuspenseHealthStatus, useSystemStats } from "../../shared/hooks/useApiQuery";
 import { SuspenseQuery } from "../../shared/components/feedback/SuspenseQuery";
 import { PredictionsSection } from "../../shared/components/data/PredictionCards";
@@ -8,7 +7,7 @@ import { StatCard } from "../../shared/components/composite/StatCard";
 import { SectionHeader } from "../../shared/components/composite/SectionHeader";
 import { InfoRow } from "../../shared/components/composite/InfoRow";
 import { Card, CardContent } from "../../shared/components/ui/card";
-import { PageContainer, PageSection, PageHeader } from "../../shared/components/layout/PageContainer";
+import { PageContainer, PageSection } from "../../shared/components/layout/PageContainer";
 import { getModelColor, COOL_COLORS } from "../../shared/components/rankColor";
 import { Cell, Pie, PieChart, ResponsiveContainer, Line, LineChart, CartesianGrid, Tooltip, XAxis, YAxis, Legend } from "recharts";
 import { chartTooltipStyle } from "../../shared/utils/format";
@@ -62,11 +61,12 @@ const KpiStrip = memo(function KpiStrip({ kpis }: { kpis: HomeKpi[] }) {
 });
 
 const ProviderSpeedCard = memo(function ProviderSpeedCard({ providerStats }: { providerStats: HomeProviderStat[] }) {
+  const { t } = useTranslation();
   return (
-    <Card accent="top">
-      <CardContent padding="md">
-        <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Provider Speed</p>
-        <div className="flex flex-col gap-2.5">
+    <Card accent="top" className="h-full">
+      <CardContent padding="md" className="flex flex-col h-full">
+        <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">{t("providerSpeed")}</p>
+        <div className="flex flex-col gap-2.5 flex-1 justify-center">
           {providerStats.slice(0, 6).map((p) => (
             <div key={p.name} className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
@@ -326,7 +326,6 @@ const HomeContent = memo(function HomeContent() {
         </div>
       </div>
 
-      <PageHeader title="Model Observatory" description={t("artificialSource")} />
       <div className="mb-6">
         <KpiStrip kpis={kpiStrip} />
       </div>
@@ -359,8 +358,6 @@ const HomeContent = memo(function HomeContent() {
 });
 
 export function HomeView() {
-  const { t } = useTranslation();
-  useDocumentTitle("Model Observatory");
   return (
     <SuspenseQuery>
       <HomeContent />

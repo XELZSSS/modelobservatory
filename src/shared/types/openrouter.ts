@@ -16,6 +16,12 @@ export interface OpenRouterRankEntry {
   mediaPrompts?: number;
   mediaCompletions?: number;
   audioPrompts?: number;
+  imageOutputRequests?: number;
+  videoPrompts?: number;
+  videoOutputSeconds?: number;
+  rerankDocuments?: number;
+  sttTranscriptCharacters?: number;
+  toolCallErrors?: number;
   change?: number | null;
   pricing?: {
     prompt: number;
@@ -32,7 +38,10 @@ export interface OpenRouterAppEntry {
   description?: string;
   slug?: string;
   url?: string | null;
+  sourceCodeUrl?: string | null;
+  faviconUrl?: string | null;
   categories: string[];
+  relatedApps?: number[];
   totalTokens: number;
   requestCount: number;
 }

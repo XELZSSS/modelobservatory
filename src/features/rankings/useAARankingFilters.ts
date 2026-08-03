@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useSearchStore } from "../../../shared/stores/searchStore";
-import { PRICING_BLENDS } from "../../../shared/config";
-import type { ArtificialAnalysisModel } from "../../../shared/types";
+import { useSearchStore } from "../../shared/stores/searchStore";
+import { PRICING_BLENDS } from "../../shared/config";
+import type { ArtificialAnalysisModel } from "../../shared/types";
 
 export type ViewMode = "rankings" | "pricing" | "benchmarks";
 export type ReasoningFilter = "all" | "reasoning" | "non-reasoning";

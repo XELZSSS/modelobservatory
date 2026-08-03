@@ -6,6 +6,8 @@ import { formatScore, formatPricePerMillion } from "../../shared/utils/format";
 
 import { computeProviderStats, type ProviderStats } from "../../shared/utils/providerStats";
 
+const getRowId = (p: ProviderStats) => p.name;
+
 export function ProviderCompareView() {
   const { t } = useTranslation();
   const { data } = useSuspenseArtificialRankings();
@@ -59,7 +61,7 @@ export function ProviderCompareView() {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-text-secondary">{t("artificialSource")}</p>
-      <DataTable columns={columns} data={providerStats} getRowId={(p) => p.name} hideHeader />
+      <DataTable columns={columns} data={providerStats} getRowId={getRowId} hideHeader />
     </div>
   );
 }

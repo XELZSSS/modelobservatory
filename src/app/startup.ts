@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { STORAGE_KEYS } from "./shared/config";
+import { STORAGE_KEYS } from "../shared/config";
 
 function writeStorage(key: string, value: string) {
   try {
@@ -32,10 +32,8 @@ function migrateCacheVersion() {
   if (cacheMigrated) return;
   cacheMigrated = true;
 
-  const stored = readStorageJson<string>(STORAGE_KEYS.cacheVersion, "");
-  if (stored === "1") return;
+  if (readStorageJson<string>(STORAGE_KEYS.cacheVersion, "") === "1") return;
 
-  removeStorage(STORAGE_KEYS.trendSnapshots);
   if (typeof caches !== "undefined") {
     caches
       .keys()

@@ -6,7 +6,6 @@ import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
 
-import { cn } from "../../shared/utils/cn";
 import { formatDollar } from "../../shared/utils/format";
 import type { TtsModel } from "../../shared/types";
 
@@ -61,7 +60,7 @@ export function TtsView() {
         sortable: true,
         align: "right",
         hiddenMd: true,
-        cell: (model) => <span className="text-sm">{model.speed_chars_per_sec != null ? `${model.speed_chars_per_sec.toFixed(1)}` : t("notAvailable")}</span>,
+        cell: (model) => <span className="text-sm">{model.speed_chars_per_sec != null ? model.speed_chars_per_sec.toFixed(1) : t("notAvailable")}</span>,
       },
       {
         id: "price",

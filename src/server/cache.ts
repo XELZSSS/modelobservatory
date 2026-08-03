@@ -114,20 +114,3 @@ export async function withCacheTtl<T>(key: string, defaultTtl: number, fn: () =>
     }
   });
 }
-
-export function deduplicateBy<T>(arr: T[], keyFn: (item: T) => string): T[] {
-  const seen = new Set<string>();
-  return arr.filter((item) => {
-    const key = keyFn(item);
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
-export function formatSettleErrors(results: PromiseSettledResult<unknown>[], labels: string[]): string {
-  return results
-    .map((r, i) => (r.status === "rejected" ? `${labels[i] ?? i}: ${r.reason instanceof Error ? r.reason.message : r.reason}` : null))
-    .filter(Boolean)
-    .join("; ");
-}

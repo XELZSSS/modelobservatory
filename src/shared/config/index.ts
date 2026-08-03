@@ -7,7 +7,6 @@ export const STORAGE_KEYS = {
   lang: "lang",
   theme: "theme",
   compare: "compare-store",
-  trendSnapshots: "trend_snapshots",
   cacheVersion: "app_cache_ver",
 } as const;
 

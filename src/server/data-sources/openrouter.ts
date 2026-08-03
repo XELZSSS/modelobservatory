@@ -1,6 +1,7 @@
-import { withCache, formatSettleErrors } from "../cache";
+import { withCache } from "../cache";
 import { fetchJSON } from "../fetch";
 import { numOr } from "../parsers/coerce";
+import { formatSettleErrors } from "../utils";
 import { upstreamConfig, DEFAULT_TTL_MS } from "../../shared/config";
 import type { OpenRouterAppEntry, OpenRouterRankingsPayload, OpenRouterRankEntry } from "../../shared/types";
 
@@ -33,6 +34,12 @@ interface ModelRow {
   num_media_prompt: number;
   num_media_completion: number;
   num_audio_prompt: number;
+  image_output_requests: number;
+  num_video_prompt: number;
+  video_output_seconds: number;
+  rerank_documents: number;
+  stt_transcript_characters: number;
+  requests_with_tool_call_errors: number;
   change: number | null;
 }
 
@@ -40,7 +47,19 @@ interface AppRow {
   app_id: number;
   total_tokens: string;
   total_requests: number;
-  app: { id: number; title: string; description: string; slug: string; main_url: string | null; origin_url: string; categories: string[] };
+  rank: number;
+  app: {
+    id: number;
+    title: string;
+    description: string;
+    slug: string;
+    main_url: string | null;
+    origin_url: string;
+    source_code_url: string | null;
+    favicon_url: string | null;
+    categories: string[];
+    related_apps: number[];
+  };
 }
 
 interface AppResponse {
@@ -80,6 +99,12 @@ const SUM_KEYS = [
   "num_media_prompt",
   "num_media_completion",
   "num_audio_prompt",
+  "image_output_requests",
+  "num_video_prompt",
+  "video_output_seconds",
+  "rerank_documents",
+  "stt_transcript_characters",
+  "requests_with_tool_call_errors",
 ] as const;
 
 function mergeRows(rows: ModelRow[]): ModelRow[] {
@@ -126,6 +151,12 @@ function mapModels(rows: ModelRow[]): OpenRouterRankEntry[] {
         mediaPrompts: numOr(row.num_media_prompt),
         mediaCompletions: numOr(row.num_media_completion),
         audioPrompts: numOr(row.num_audio_prompt),
+        imageOutputRequests: numOr(row.image_output_requests),
+        videoPrompts: numOr(row.num_video_prompt),
+        videoOutputSeconds: numOr(row.video_output_seconds),
+        rerankDocuments: numOr(row.rerank_documents),
+        sttTranscriptCharacters: numOr(row.stt_transcript_characters),
+        toolCallErrors: numOr(row.requests_with_tool_call_errors),
         change: row.change ?? null,
       };
     });
@@ -137,13 +168,16 @@ function mapApps(rows: AppRow[]): OpenRouterAppEntry[] {
     .filter((r) => r.app_id && !seen.has(r.app_id) && (seen.add(r.app_id), true))
     .sort((a, b) => numOr(b.total_tokens) - numOr(a.total_tokens))
     .map((row, i) => ({
-      rank: i + 1,
+      rank: row.rank ?? i + 1,
       id: String(row.app_id),
       name: row.app?.title || row.app?.slug || `App ${row.app_id}`,
       description: row.app?.description,
       slug: row.app?.slug,
       url: row.app?.origin_url || row.app?.main_url || null,
+      sourceCodeUrl: row.app?.source_code_url || null,
+      faviconUrl: row.app?.favicon_url || null,
       categories: row.app?.categories || [],
+      relatedApps: row.app?.related_apps || [],
       totalTokens: numOr(row.total_tokens),
       requestCount: numOr(row.total_requests),
     }));

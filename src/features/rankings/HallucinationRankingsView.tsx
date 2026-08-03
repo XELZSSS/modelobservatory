@@ -1,9 +1,10 @@
-import { RankingTable, type RankedRow } from "../../shared/components/data/RankingTable";
+import { useMemo } from "react";
+import { useTranslation } from "../../shared/i18n/useTranslation";
+import { useFilteredData } from "../../shared/hooks/useFilteredData";
+import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
 import { TagBadge } from "../../shared/components/ui/tag-badge";
-import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import type { HallucinationRankingEntry } from "../../shared/types";
-import type { TranslationKey } from "../../shared/i18n";
 
 function fmtRate(v: number) {
   return `${v.toFixed(1)}%`;
@@ -16,66 +17,79 @@ function fmtScore(v: number) {
 const getRowId = (entry: HallucinationRankingEntry) => entry.id || entry.slug || entry.model;
 const getSearchFields = (entry: HallucinationRankingEntry) => [entry.model];
 
-function buildColumns(t: (key: TranslationKey) => string): DataTableColumn<RankedRow<HallucinationRankingEntry>>[] {
-  return [
-    {
-      id: "model",
-      header: "",
-      cell: (row) => (
-        <>
-          <RankingNameCell name={row.item.model} />
-          <div className="flex flex-wrap gap-1 mt-1 md:hidden">
-            <TagBadge>
-              {t("accuracy")}: {fmtRate(row.item.accuracy)}
-            </TagBadge>
-            <TagBadge>
-              {t("attemptRate")}: {fmtRate(row.item.attemptRate)}
-            </TagBadge>
-            <TagBadge>
-              {t("omniscienceIndex")}: {fmtScore(row.item.omniscienceIndex)}
-            </TagBadge>
-          </div>
-        </>
-      ),
-    },
-    {
-      id: "hallucinationRate",
-      header: "",
-      accessorFn: (r) => r.item.hallucinationRate,
-      sortable: true,
-      align: "right",
-      cell: (row) => <span className="text-sm font-semibold">{fmtRate(row.item.hallucinationRate)}</span>,
-    },
-    {
-      id: "accuracy",
-      header: "",
-      accessorFn: (r) => r.item.accuracy,
-      sortable: true,
-      align: "right",
-      hiddenMd: true,
-      cell: (row) => <span className="text-sm">{fmtRate(row.item.accuracy)}</span>,
-    },
-    {
-      id: "attemptRate",
-      header: "",
-      accessorFn: (r) => r.item.attemptRate,
-      sortable: true,
-      align: "right",
-      hiddenMd: true,
-      cell: (row) => <span className="text-sm">{fmtRate(row.item.attemptRate)}</span>,
-    },
-    {
-      id: "omniscienceIndex",
-      header: "",
-      accessorFn: (r) => r.item.omniscienceIndex,
-      sortable: true,
-      align: "right",
-      hiddenMd: true,
-      cell: (row) => <span className="text-sm">{fmtScore(row.item.omniscienceIndex)}</span>,
-    },
-  ];
-}
-
 export function HallucinationRankingsView({ rankings }: { rankings: HallucinationRankingEntry[] }) {
-  return <RankingTable data={rankings} columns={buildColumns} getRowId={getRowId} getSearchFields={getSearchFields} sourceKey="hallucinationSource" />;
+  const { t } = useTranslation();
+  const filtered = useFilteredData(rankings, getSearchFields);
+
+  const columns = useMemo<DataTableColumn<HallucinationRankingEntry>[]>(
+    () => [
+      {
+        id: "model",
+        header: "",
+        cell: (item) => (
+          <>
+            <RankingNameCell name={item.model} />
+            <div className="flex flex-wrap gap-1 mt-1 md:hidden">
+              <TagBadge>
+                {t("accuracy")}: {fmtRate(item.accuracy)}
+              </TagBadge>
+              <TagBadge>
+                {t("attemptRate")}: {fmtRate(item.attemptRate)}
+              </TagBadge>
+              <TagBadge>
+                {t("omniscienceIndex")}: {fmtScore(item.omniscienceIndex)}
+              </TagBadge>
+            </div>
+          </>
+        ),
+      },
+      {
+        id: "hallucinationRate",
+        header: "",
+        accessorFn: (r) => r.hallucinationRate,
+        sortable: true,
+        align: "right",
+        cell: (item) => <span className="text-sm font-semibold">{fmtRate(item.hallucinationRate)}</span>,
+      },
+      {
+        id: "accuracy",
+        header: "",
+        accessorFn: (r) => r.accuracy,
+        sortable: true,
+        align: "right",
+        hiddenMd: true,
+        cell: (item) => <span className="text-sm">{fmtRate(item.accuracy)}</span>,
+      },
+      {
+        id: "attemptRate",
+        header: "",
+        accessorFn: (r) => r.attemptRate,
+        sortable: true,
+        align: "right",
+        hiddenMd: true,
+        cell: (item) => <span className="text-sm">{fmtRate(item.attemptRate)}</span>,
+      },
+      {
+        id: "omniscienceIndex",
+        header: "",
+        accessorFn: (r) => r.omniscienceIndex,
+        sortable: true,
+        align: "right",
+        hiddenMd: true,
+        cell: (item) => <span className="text-sm">{fmtScore(item.omniscienceIndex)}</span>,
+      },
+    ],
+    [t],
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-xs text-text-secondary">{t("hallucinationSource")}</p>
+      {filtered.length === 0 ? (
+        <p className="text-sm text-text-secondary py-8 text-center">{t("noResults")}</p>
+      ) : (
+        <DataTable data={filtered} columns={columns} getRowId={getRowId} hideHeader />
+      )}
+    </div>
+  );
 }

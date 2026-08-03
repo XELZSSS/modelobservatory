@@ -16,14 +16,20 @@
     <script>
       (function() {
         try {
+          var stored = null;
           var theme = JSON.parse(localStorage.getItem('theme') || '{}');
-          if (theme.state && theme.state.themeMode === 'dark') {
+          if (theme.state && (theme.state.themeMode === 'dark' || theme.state.themeMode === 'light')) {
+            stored = theme.state.themeMode;
+          }
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var dark = stored === 'dark' || (stored == null && prefersDark);
+          if (dark) {
             document.documentElement.classList.add('dark');
           }
         } catch(e) {}
       })();
     </script>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/app/main.tsx"></script>
   </body>
 </html>

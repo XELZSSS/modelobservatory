@@ -31,7 +31,27 @@ const requestColumn = <T extends { requestCount?: number | null }>(t: (key: Tran
   cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.requestCount || 0)}</span>,
 });
 
-export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
+const imageColumn = <T extends { imageOutputRequests?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({
+  id: "images",
+  header: "",
+  accessorFn: (row) => row.imageOutputRequests,
+  sortable: true,
+  align: "right",
+  hiddenMd: true,
+  cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.imageOutputRequests || 0)}</span>,
+});
+
+const videoColumn = <T extends { videoOutputSeconds?: number | null }>(t: (key: TranslationKey) => string): DataTableColumn<T> => ({
+  id: "video",
+  header: "",
+  accessorFn: (row) => row.videoOutputSeconds,
+  sortable: true,
+  align: "right",
+  hiddenMd: true,
+  cell: (item) => <span className="font-mono text-text-secondary">{formatShortNumber(item.videoOutputSeconds || 0)}</span>,
+});
+
+export function buildOpenRouterColumns(t: (key: TranslationKey) => string): {
   modelColumns: DataTableColumn<OpenRouterRankEntry>[];
   appColumns: DataTableColumn<OpenRouterAppEntry>[];
 } {
@@ -47,6 +67,16 @@ export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
             <TagBadge>
               {t("requests")}: {formatShortNumber(item.requestCount || 0)}
             </TagBadge>
+            {item.imageOutputRequests ? (
+              <TagBadge>
+                {t("images")}: {formatShortNumber(item.imageOutputRequests)}
+              </TagBadge>
+            ) : null}
+            {item.videoOutputSeconds ? (
+              <TagBadge>
+                {t("videoSeconds")}: {formatShortNumber(item.videoOutputSeconds)}
+              </TagBadge>
+            ) : null}
             {item.creator && <TagBadge>{item.creator}</TagBadge>}
             <span
               className={cn(
@@ -62,6 +92,8 @@ export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
     },
     tokenColumn<OpenRouterRankEntry>(t),
     requestColumn<OpenRouterRankEntry>(t),
+    imageColumn<OpenRouterRankEntry>(t),
+    videoColumn<OpenRouterRankEntry>(t),
     {
       id: "creator",
       header: "",
@@ -69,7 +101,7 @@ export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <p className={cn("text-xs", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{item.creator || t("unknown")}</p>,
+      cell: (item) => <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap text-right">{item.creator || t("unknown")}</p>,
     },
     {
       id: "trend",
@@ -109,7 +141,7 @@ export function useOpenRouterColumns(t: (key: TranslationKey) => string): {
       align: "right",
       hiddenMd: true,
       cell: (item) => (
-        <p className={cn("text-xs", "overflow-hidden text-ellipsis whitespace-nowrap", "text-right")}>{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>
+        <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap text-right">{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>
       ),
     },
   ];

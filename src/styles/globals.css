@@ -129,7 +129,7 @@ iframe {
   }
 }
 
-@media (max-width: 899px) {
+@media (max-width: 767px) {
   *::-webkit-scrollbar {
     display: none;
     width: 0;

@@ -7,7 +7,7 @@ import { formatShortNumber, orNA } from "../../../shared/utils/format";
 import type { OpenSourceModelEntry } from "../../../shared/types";
 import { DetailLayout, StatGrid, InfoGrid } from "../../../shared/components/composite/DetailLayout";
 
-export function OsDetailContent({ model }: { model: OpenSourceModelEntry }) {
+export function OsDetail({ model }: { model: OpenSourceModelEntry }) {
   const { t } = useTranslation();
   return (
     <DetailLayout>

@@ -6,7 +6,7 @@ import { formatDollar, orNA } from "../../../shared/utils/format";
 import type { TtsModel } from "../../../shared/types";
 import { DetailLayout, StatGrid } from "../../../shared/components/composite/DetailLayout";
 
-export function TtsDetailContent({ model }: { model: TtsModel }) {
+export function TtsDetail({ model }: { model: TtsModel }) {
   const { t } = useTranslation();
   return (
     <DetailLayout>

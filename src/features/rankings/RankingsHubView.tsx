@@ -16,18 +16,17 @@ const OpenRouterRankingsView = lazy(() => import("./OpenRouterRankingsView").the
 const TtsView = lazy(() => import("./TtsView").then((m) => ({ default: m.TtsView })));
 const ProviderCompareView = lazy(() => import("../compare/ProviderCompareView").then((m) => ({ default: m.ProviderCompareView })));
 
+import { RANKING_TABS, type RankingTabId } from "./constants";
+
 interface RankingsHubProps {
   defaultTab?: number;
 }
-
-const TAB_IDS = ["modelRankings", "openRouterRankings", "openSourceRankings", "hallucinationRankings", "tts", "providerCompare"] as const;
-type TabId = (typeof TAB_IDS)[number];
 
 const TabPanel = memo(function TabPanel({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<Spinner />}>{children}</Suspense>;
 });
 
-function ActiveTabContent({ activeTabId, artificialRankings }: { activeTabId: TabId; artificialRankings: import("../../shared/types").ArtificialAnalysisModel[] }) {
+function ActiveTabContent({ activeTabId, artificialRankings }: { activeTabId: RankingTabId; artificialRankings: import("../../shared/types").ArtificialAnalysisModel[] }) {
   const hallucinationRankings = useHallucinationRankings(artificialRankings, activeTabId === "hallucinationRankings");
   const openSourceQ = useOpenSourceModels(activeTabId === "openSourceRankings");
   const orQ = useOpenRouterRankings(activeTabId === "openRouterRankings");
@@ -76,16 +75,16 @@ function ActiveTabContent({ activeTabId, artificialRankings }: { activeTabId: Ta
 
 function RankingsContent({ defaultTab }: { defaultTab: number }) {
   const { t } = useTranslation();
-  const [activeTabId, setActiveTabId] = useState<TabId>(() => TAB_IDS[defaultTab] ?? TAB_IDS[0]);
+  const [activeTabId, setActiveTabId] = useState<RankingTabId>(() => RANKING_TABS[defaultTab] ?? RANKING_TABS[0]);
 
   const { data: artificialRankings } = useSuspenseArtificialRankings();
 
-  const tabs: TabItem[] = useMemo(() => TAB_IDS.map((id) => ({ id, label: t(id as TranslationKey) })), [t]);
+  const tabs: TabItem[] = useMemo(() => RANKING_TABS.map((id) => ({ id, label: t(id as TranslationKey) })), [t]);
 
   return (
     <PageContainer>
       <PageHeader title={t(activeTabId as TranslationKey)} description={t("artificialSource")} />
-      <TabContainer tabs={tabs} activeTab={activeTabId} tabSize="md" onTabChange={(tabId) => setActiveTabId(tabId as TabId)}>
+      <TabContainer tabs={tabs} activeTab={activeTabId} tabSize="md" onTabChange={(tabId) => setActiveTabId(tabId as RankingTabId)}>
         <ActiveTabContent activeTabId={activeTabId} artificialRankings={artificialRankings} />
       </TabContainer>
     </PageContainer>

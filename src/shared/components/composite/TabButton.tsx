@@ -8,13 +8,19 @@ interface TabButtonProps {
   className?: string;
   size?: "sm" | "md";
   id?: string;
+  tabIndex?: number;
   "aria-controls"?: string;
 }
 
-export const TabButton = memo(function TabButton({ active, onClick, children, className, size = "md" }: TabButtonProps) {
+export const TabButton = memo(function TabButton({ active, onClick, children, className, size = "md", id, tabIndex, "aria-controls": ariaControls }: TabButtonProps) {
   return (
     <button
       type="button"
+      role="tab"
+      id={id}
+      aria-selected={active}
+      aria-controls={ariaControls}
+      tabIndex={tabIndex ?? (active ? 0 : -1)}
       onClick={onClick}
       className={cn(
         "rounded-md font-medium transition-colors duration-150 whitespace-nowrap shrink-0",

@@ -1,18 +1,11 @@
 import { withCache } from "../cache";
-import { HEALTH_TIMEOUT_MS, USER_AGENT, upstreamConfig, HEALTH_TTL_MS } from "../../shared/config";
+import { probeUrl } from "../fetch";
+import { HEALTH_TIMEOUT_MS, upstreamConfig, HEALTH_TTL_MS } from "../../shared/config";
 import type { HealthEntry } from "../../shared/types";
-
-async function ping(url: string): Promise<{ responseTime: number; statusCode: number }> {
-  const start = Date.now();
-  const res = await fetch(url, { method: "GET", headers: { "user-agent": USER_AGENT }, signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS) });
-  const responseTime = Date.now() - start;
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return { responseTime, statusCode: res.status };
-}
 
 async function probe(name: string, url: string, apiPath?: string): Promise<HealthEntry> {
   try {
-    const { responseTime, statusCode } = await ping(url);
+    const { responseTime, statusCode } = await probeUrl(url, HEALTH_TIMEOUT_MS);
     return { name, status: "ok", detail: "reachable", responseTime, statusCode, url: apiPath || url };
   } catch (e: unknown) {
     return { name, status: "error", detail: e instanceof Error ? e.message : "unknown error", responseTime: 0, statusCode: null, url: apiPath || url };

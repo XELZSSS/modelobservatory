@@ -63,7 +63,7 @@ const ModelRankingTab = memo(function ModelRankingTab({ items }: { items: ModelP
               </div>
               <ExternalLinkButton href={item.url} iconSize={12} />
             </div>
-            <p className={"text-xs text-text-secondary mb-2 " + LINE_CLAMP}>{item.question}</p>
+            <p className={cn("text-xs text-text-secondary mb-2", LINE_CLAMP)}>{item.question}</p>
             <div className="flex items-center justify-between">
               <span className="text-lg font-extrabold tabular-nums font-mono" style={{ color: getModelColor(i) }}>
                 {(item.probability * 100).toFixed(1)}%
@@ -97,7 +97,7 @@ const ReleasesTab = memo(function ReleasesTab({ items }: { items: ReleasePredict
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
-              <p className={"text-xs text-text-secondary mb-2 " + LINE_CLAMP}>{item.question}</p>
+              <p className={cn("text-xs text-text-secondary mb-2", LINE_CLAMP)}>{item.question}</p>
               <div className="flex flex-col gap-1">
                 {item.predictions.map((p, j) => (
                   <div key={j} className="flex items-center justify-between gap-2">
@@ -137,7 +137,7 @@ const ProvidersTab = memo(function ProvidersTab({ items }: { items: ProviderPred
                 </div>
                 <ExternalLinkButton href={item.url} iconSize={12} />
               </div>
-              <p className={"text-xs text-text-secondary mb-2 " + LINE_CLAMP}>{item.question}</p>
+              <p className={cn("text-xs text-text-secondary mb-2", LINE_CLAMP)}>{item.question}</p>
               <div className="flex flex-col gap-1">
                 {item.options.slice(0, 3).map((opt, j) => (
                   <div key={j} className="flex items-center justify-between gap-2">

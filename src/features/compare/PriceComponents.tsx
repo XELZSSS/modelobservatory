@@ -101,7 +101,7 @@ function PriceTableMobile({ priceRows, models, bestPrices }: { priceRows: PriceR
         return (
           <Card key={row.label}>
             <CardContent className="p-3">
-              <p className={cn("text-xs font-bold", "text-text-secondary mb-2")}>{row.label}</p>
+              <p className="text-xs font-bold text-text-secondary mb-2">{row.label}</p>
               <div className="flex flex-col gap-1">
                 {models.map((model, index) => {
                   const v = row.getValue(model);
@@ -195,7 +195,7 @@ function EfficiencyTableMobile({ models, costEfficiency, bestEfficiency }: { mod
         return (
           <Card key={model.id ?? index}>
             <CardContent className="p-3">
-              <p className={cn("text-xs font-bold", "mb-2")} style={{ color: getModelColor(index) }}>
+              <p className="text-xs font-bold mb-2" style={{ color: getModelColor(index) }}>
                 {model.short_name || model.name}
               </p>
               <div className="flex flex-col gap-1">
@@ -209,7 +209,16 @@ function EfficiencyTableMobile({ models, costEfficiency, bestEfficiency }: { mod
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-text-secondary">{t("intelligencePerDollar")}</span>
-                  <span className={cn("text-xs font-mono", isBest && "font-bold text-success")}>{eff != null ? `${eff.toFixed(2)}${isBest ? " ★" : ""}` : t("notAvailable")}</span>
+                  <span className={cn("text-xs font-mono", isBest && "font-bold text-success")}>
+                    {eff != null ? (
+                      <>
+                        {eff.toFixed(2)}
+                        {isBest && <WinnerMark />}
+                      </>
+                    ) : (
+                      t("notAvailable")
+                    )}
+                  </span>
                 </div>
               </div>
             </CardContent>

@@ -4,14 +4,14 @@ import { InfoRow } from "../../../shared/components/composite/InfoRow";
 import { Badge } from "../../../shared/components/ui/badge";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
 import { formatShortNumber, formatTrend, formatDollar, categoryLabel } from "../../../shared/utils/format";
-import { getRecommendation } from "../../../shared/utils/recommendation";
+import { getRecommendation } from "../../../shared/config/recommendations";
 import { useSuspenseOpenRouterRankings } from "../../../shared/hooks/useApiQuery";
-import { useModelLookup } from "../../../shared/hooks/useModelLookup";
+import { findModel } from "../../../shared/utils/lookup";
 import { NotFound } from "../../system/NotFound";
 import { DetailLayout, StatGrid, InfoGrid } from "../../../shared/components/composite/DetailLayout";
 import type { OpenRouterRankEntry } from "../../../shared/types";
 
-function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
+function OrDetailInner({ model }: { model: OpenRouterRankEntry }) {
   const { t, lang } = useTranslation();
   return (
     <DetailLayout>
@@ -44,7 +44,7 @@ function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
         <Badge variant="outline">{model.variant || model.category}</Badge>
         {model.isFree && (
           <Badge variant="outline" className="text-success">
-            Free
+            {t("free")}
           </Badge>
         )}
       </div>
@@ -52,10 +52,10 @@ function OrDetailContent({ model }: { model: OpenRouterRankEntry }) {
   );
 }
 
-export function ORDetail({ decodedId }: { decodedId: string }) {
+export function OrDetail({ decodedId }: { decodedId: string }) {
   const { data: orPayload } = useSuspenseOpenRouterRankings();
   const orData = orPayload?.tokenUsageRankings ?? [];
-  const model = useModelLookup(orData, decodedId, "id");
+  const model = findModel(orData, decodedId, "id");
   if (!model) return <NotFound />;
-  return <OrDetailContent model={model} />;
+  return <OrDetailInner model={model} />;
 }
