@@ -43,6 +43,14 @@ function compactSpeed(m: Record<string, unknown>, td: Record<string, unknown> | 
   };
 }
 
+function compactCodingIndex(m: Record<string, unknown>): number | null {
+  const tb = num(m.terminalbench_v2_1);
+  const sc = num(m.scicode);
+  if (tb == null && sc == null) return null;
+  const values = [tb, sc].filter((v): v is number => v != null);
+  return (values.reduce((a, b) => a + b, 0) / values.length) * 100;
+}
+
 function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
   const mc = obj(m.model_creators);
   const omn = obj(m.omniscience_breakdown);
@@ -59,7 +67,7 @@ function compact(m: Record<string, unknown>): ArtificialAnalysisModel {
     intelligence_index: num(m.intelligence_index),
     intelligence_index_is_estimated: bool(m.intelligence_index_is_estimated),
     estimated_intelligence_index: num(m.estimated_intelligence_index),
-    coding_index: num(m.coding_index),
+    coding_index: compactCodingIndex(m),
     agentic_index: num(m.agentic_index),
     context_window_tokens: num(m.context_window_tokens),
     contextWindowFormatted: strOr(m.contextWindowFormatted),

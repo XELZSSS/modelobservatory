@@ -2,7 +2,7 @@ import { ApiError } from "./errors";
 
 // Bump when parsing/mapping changes so stale old-shape payloads in KV are
 // never served after a deploy.
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 
 const MAX_ENTRIES = 500;
 const NEG_TTL_MS = 5_000;
