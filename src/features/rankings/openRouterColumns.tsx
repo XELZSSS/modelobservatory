@@ -2,6 +2,7 @@ import type { TranslationKey } from "../../shared/i18n";
 import type { DataTableColumn } from "../../shared/components/data/DataTable";
 import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
+import { RightAlignedText } from "../../shared/components/composite/RightAlignedText";
 
 import { cn } from "../../shared/utils/cn";
 import { formatShortNumber, formatTrend } from "../../shared/utils/format";
@@ -101,7 +102,7 @@ export function buildOpenRouterColumns(t: (key: TranslationKey) => string): {
       sortable: true,
       align: "right",
       hiddenMd: true,
-      cell: (item) => <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap text-right">{item.creator || t("unknown")}</p>,
+      cell: (item) => <RightAlignedText className="text-xs">{item.creator || t("unknown")}</RightAlignedText>,
     },
     {
       id: "trend",
@@ -141,7 +142,7 @@ export function buildOpenRouterColumns(t: (key: TranslationKey) => string): {
       align: "right",
       hiddenMd: true,
       cell: (item) => (
-        <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap text-right">{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</p>
+        <RightAlignedText className="text-xs">{item.categories?.length ? item.categories.join(", ") : t("notAvailable")}</RightAlignedText>
       ),
     },
   ];

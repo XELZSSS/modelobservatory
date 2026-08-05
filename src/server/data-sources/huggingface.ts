@@ -50,11 +50,7 @@ export async function getReleases(): Promise<OpenSourceModelEntry[]> {
     const items = await fetchJSON<HFModel[]>(`${HF_API}?sort=createdAt&direction=-1&limit=500&full=true`);
     return items
       .filter((m) => Array.isArray(m.tags) && getOpenLicense(m.tags) !== null && typeof m.createdAt === "string" && m.createdAt.length > 0)
-      .map((m) => {
-        const entry = mapModel(m);
-        if (!m.createdAt) throw new Error(`HF model createdAt is required for ${m.id}`);
-        return entry;
-      })
+      .map(mapModel)
       .sort((a, b) => {
         const da = Date.parse(a.createdAt!);
         const db = Date.parse(b.createdAt!);

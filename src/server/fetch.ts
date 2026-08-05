@@ -26,12 +26,18 @@ async function doFetch(url: string, init: FetchOptions, accept: string): Promise
       const signal = externalSignal ? AbortSignal.any([externalSignal, timeoutSignal]) : timeoutSignal;
       const res = await fetch(url, { headers, signal });
       if (!res.ok) {
-        const body = accept.includes("json") ? await res.text().catch(() => "") : "";
-        throw new Error(`HTTP ${res.status} for ${url}${body ? `: ${body.slice(0, 200)}` : ""}`);
+        // Only transient statuses are worth retrying; 4xx is permanent and
+        // retrying just wastes time and upstream requests.
+        if (res.status >= 400 && res.status < 500 && res.status !== 429) {
+          const body = accept.includes("json") ? await res.text().catch(() => "") : "";
+          throw new Error(`HTTP ${res.status} for ${url}${body ? `: ${body.slice(0, 200)}` : ""}`);
+        }
+        throw new RetryableHttpError(res.status, url);
       }
       return res;
     } catch (e) {
       lastErr = e;
+      if (!(e instanceof RetryableHttpError)) throw e;
       if (attempt < retries) {
         const delay = BASE_DELAY_MS * (1 << attempt) + Math.random() * BASE_DELAY_MS;
         await new Promise((r) => setTimeout(r, delay));
@@ -39,6 +45,13 @@ async function doFetch(url: string, init: FetchOptions, accept: string): Promise
     }
   }
   throw lastErr;
+}
+
+class RetryableHttpError extends Error {
+  constructor(status: number, url: string) {
+    super(`HTTP ${status} for ${url}`);
+    this.name = "RetryableHttpError";
+  }
 }
 
 export async function fetchJSON<T>(url: string, init?: FetchOptions): Promise<T> {

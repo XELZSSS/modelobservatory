@@ -34,11 +34,11 @@ function DataSourceCard({ entry }: { entry: HealthEntry }) {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-xs text-text-secondary">
             <Zap size={12} className="shrink-0" />
-            <span>{ok ? `${entry.responseTime}ms` : t("notAvailable")}</span>
+            <span>{ok ? t("responseTimeMs", { value: entry.responseTime }) : t("notAvailable")}</span>
           </div>
           <div className="flex items-center gap-2 text-xs text-text-secondary">
             <Clock size={12} className="shrink-0" />
-            <span>{ok ? `HTTP ${entry.statusCode}` : t("statusError")}</span>
+            <span>{ok ? t("httpStatus", { value: String(entry.statusCode) }) : t("statusError")}</span>
           </div>
           {!ok && entry.detail && <p className="text-xs text-destructive mt-1 truncate">{entry.detail}</p>}
         </div>

@@ -8,7 +8,7 @@ export function registerRoutes(app: Hono, routeArrays: RouteDef[][]): void {
       app.get(entry.path, async (c) => {
         const args: string[] = [];
         for (const p of entry.params) {
-          args.push(c.req.query(p) ?? entry.defaults?.[p] ?? "");
+          args.push(c.req.query(p) || entry.defaults?.[p] || "");
         }
         startTime(c, "upstream");
         const data = await entry.handler(...args);

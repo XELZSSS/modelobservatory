@@ -56,7 +56,7 @@ export const useOpenSourceModels = qOpenSourceModels.use;
 export const useSuspenseOpenSourceModels = qOpenSourceModels.useSuspense;
 
 export const useNewsByCategory = (category: string) =>
-  createApiQuery<NewsItem[]>(["api", "news", category], api.news(category), { staleTime: FIVE_MINUTES, refetchInterval: FIVE_MINUTES }).use();
+  createApiQuery<NewsItem[]>(["api", "news", category], api.news(category), { staleTime: THIRTY_MINUTES, refetchInterval: THIRTY_MINUTES }).use();
 
 function buildHallucinationRankings(models: ArtificialAnalysisModel[]): HallucinationRankingEntry[] {
   return models

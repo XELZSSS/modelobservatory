@@ -70,7 +70,8 @@ export function formatPricePerMillion(v: number | null | undefined, t?: TFunctio
 
 export function formatTrend(change?: number | null, t?: TFunction): string {
   if (change == null) return t ? t("notAvailable") : "N/A";
-  return `${change >= 0 ? "+" : ""}${(change * 100).toFixed(1)}%`;
+  if (change === 0) return "0.0%";
+  return `${change > 0 ? "+" : ""}${(change * 100).toFixed(1)}%`;
 }
 
 const CAT_MAP: Record<string, TranslationKey> = { coding: "catCoding", reasoning: "catReasoning" };
@@ -92,6 +93,30 @@ export function formatRelativeTime(isoString: string, t: TFunction): string {
   if (diffMins < 60) return t("timeMinutesAgo", { value: diffMins });
   if (diffHours < 24) return t("timeHoursAgo", { value: diffHours });
   return t("timeDaysAgo", { value: diffDays });
+}
+
+// Locale-aware date formatting that follows the app language rather than the
+// browser locale (e.g. zh-CN gives "2026/08/05" while en-US gives "08/05/2026").
+export function localeOf(lang: string): string {
+  return lang === "zh" ? "zh-CN" : "en-US";
+}
+
+export function formatDate(isoString: string | number | Date, lang: string): string {
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return String(isoString);
+  return date.toLocaleDateString(localeOf(lang));
+}
+
+export function formatDateTime(isoString: string | number | Date, lang: string): string {
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return String(isoString);
+  return date.toLocaleString(localeOf(lang), {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 export function orNA(value: string | null | undefined, t: TFunction): string {

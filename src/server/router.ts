@@ -1,5 +1,4 @@
 import { cors } from "hono/cors";
-import { etag } from "hono/etag";
 import { timeout } from "hono/timeout";
 import { timing } from "hono/timing";
 import { Hono } from "hono";
@@ -14,7 +13,6 @@ export const app = new Hono();
 
 app.use("*", logger());
 app.use("*", timing());
-app.use("*", etag());
 app.use("/api/*", timeout(45_000));
 
 app.use(
@@ -26,6 +24,17 @@ app.use(
     maxAge: 86400,
   }),
 );
+
+// Data changes at most once per cache TTL (5 min). Allow shared caches (CDN /
+// edge) to serve it for that window; the upstream TTLs are the source of truth.
+// No etag()/If-None-Match round-trip is needed since responses are immutable
+// for the TTL period.
+app.use("/api/*", async (c, next) => {
+  await next();
+  if (c.req.method === "GET" && c.res.status === 200) {
+    c.header("Cache-Control", "public, max-age=60, s-maxage=300");
+  }
+});
 
 registerRoutes(app, [routeDefs]);
 

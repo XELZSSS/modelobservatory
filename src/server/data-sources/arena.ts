@@ -1,10 +1,21 @@
 import { withCache } from "../cache";
 import { fetchText } from "../fetch";
 import { parseRscScriptArray } from "../parsers/rsc";
+import { ValidationError } from "../errors";
 import { DEFAULT_TTL_MS } from "../../shared/config";
 import type { ArenaModel } from "../../shared/types";
 
 const BASE = "https://arena.ai/leaderboard";
+
+// Category is user-controlled and feeds both the cache key and the upstream
+// URL; an allowlist keeps the key space bounded and prevents arbitrary fetches.
+const ALLOWED_CATEGORIES = new Set(["text", "text-to-image", "image-editing", "video", "audio"]);
+
+function assertValidCategory(category: string): void {
+  if (!ALLOWED_CATEGORIES.has(category)) {
+    throw new ValidationError(`Invalid arena category "${category}". Valid: ${Array.from(ALLOWED_CATEGORIES).join(", ")}`);
+  }
+}
 
 interface RawEntry {
   rank: number;
@@ -50,6 +61,7 @@ function mapEntry(e: RawEntry): ArenaModel | null {
 }
 
 export async function getLeaderboard(category: string): Promise<{ category: string; fetched_at: unknown; models: ArenaModel[] }> {
+  assertValidCategory(category);
   return withCache(`arena-leaderboard:${category}`, DEFAULT_TTL_MS, async () => {
     const html = await fetchText(`${BASE}/${encodeURIComponent(category)}`);
     const raw = parseRscScriptArray<RawEntry>(html, "entries");

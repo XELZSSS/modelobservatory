@@ -3,12 +3,12 @@ import { InfoCard } from "../../../shared/components/composite/InfoCard";
 import { InfoRow } from "../../../shared/components/composite/InfoRow";
 import { Badge } from "../../../shared/components/ui/badge";
 import { useTranslation } from "../../../shared/i18n/useTranslation";
-import { formatShortNumber, orNA } from "../../../shared/utils/format";
+import { formatShortNumber, formatDate, orNA } from "../../../shared/utils/format";
 import type { OpenSourceModelEntry } from "../../../shared/types";
 import { DetailLayout, StatGrid, InfoGrid } from "../../../shared/components/composite/DetailLayout";
 
 export function OsDetail({ model }: { model: OpenSourceModelEntry }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   return (
     <DetailLayout>
       <StatGrid columns={2}>
@@ -20,8 +20,8 @@ export function OsDetail({ model }: { model: OpenSourceModelEntry }) {
           <InfoRow compact label={t("creator")} value={orNA(model.author, t)} />
           <InfoRow compact label={t("license")} value={orNA(model.license, t)} />
           <InfoRow compact label={t("task")} value={orNA(model.task, t)} />
-          <InfoRow compact label={t("releaseDate")} value={model.createdAt ? new Date(model.createdAt).toLocaleDateString() : t("notAvailable")} />
-          <InfoRow compact label={t("lastUpdated")} value={model.lastModified ? new Date(model.lastModified).toLocaleDateString() : t("notAvailable")} />
+          <InfoRow compact label={t("releaseDate")} value={model.createdAt ? formatDate(model.createdAt, lang) : t("notAvailable")} />
+          <InfoRow compact label={t("lastUpdated")} value={model.lastModified ? formatDate(model.lastModified, lang) : t("notAvailable")} />
         </InfoCard>
         <InfoCard title={t("repository")}>
           <a href={`https://huggingface.co/${model.id.replace(/^\//, "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-info hover:underline break-all">

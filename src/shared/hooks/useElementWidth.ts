@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useLayoutEffect, useRef, useState, type RefObject } from "react";
 
-const DEFAULT_WIDTH = 300;
-
+// Start at 0 so consumers can guard rendering (charts render at 0 width) and
+// measure synchronously before first paint via useLayoutEffect to avoid a
+// wrong-size flash.
 export function useElementWidth(): [RefObject<HTMLDivElement | null>, number] {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(DEFAULT_WIDTH);
+  const [width, setWidth] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const update = () => setWidth(Math.floor(el.getBoundingClientRect().width));

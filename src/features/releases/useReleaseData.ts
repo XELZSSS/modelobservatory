@@ -11,14 +11,14 @@ export function useReleaseFeedEntries(openSourceReleases: OpenSourceModelEntry[]
         const ts = Date.parse(m.createdAt);
         if (Number.isFinite(ts)) {
           const key = `${m.id}|opensource|${ts}`;
-          if (!seen.has(key)) seen.set(key, { id: m.id, name, date: new Date(ts).toLocaleDateString(), ts, type: "opensource", source: "huggingface" });
+          if (!seen.has(key)) seen.set(key, { id: m.id, name, date: new Date(ts).toISOString().split("T")[0]!, ts, type: "opensource", source: "huggingface" });
         }
       }
       if (m.lastModified && m.lastModified !== m.createdAt) {
         const ts = Date.parse(m.lastModified);
         if (Number.isFinite(ts)) {
           const key = `${m.id}_mod|update|${ts}`;
-          if (!seen.has(key)) seen.set(key, { id: m.id + "_mod", name, date: new Date(ts).toLocaleDateString(), ts, type: "update", source: "huggingface" });
+          if (!seen.has(key)) seen.set(key, { id: m.id + "_mod", name, date: new Date(ts).toISOString().split("T")[0]!, ts, type: "update", source: "huggingface" });
         }
       }
     }

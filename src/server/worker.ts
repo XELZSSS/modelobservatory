@@ -1,16 +1,7 @@
 import app from "./router";
 import { initCache, KVCache, globalCache } from "./cache";
-import { setCloudflareInfo } from "./data-sources/system";
-
-interface CfProperties {
-  country?: string;
-  city?: string;
-  continent?: string;
-  latitude?: string;
-  longitude?: string;
-  timezone?: string;
-  [key: string]: unknown;
-}
+import { setCloudflareRuntime } from "./data-sources/system";
+import { routeDefs } from "./routes";
 
 interface Env {
   METRICS?: KVNamespace;
@@ -35,9 +26,21 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     await ensureCacheInit(env);
 
-    const cf = (request as Request & { cf?: CfProperties }).cf;
-    if (cf && typeof cf === "object") setCloudflareInfo(cf as Record<string, unknown>);
+    setCloudflareRuntime(true);
 
     return app.fetch(request, env);
+  },
+
+  // Keep the shared cache warm so users never pay cold-start upstream latency;
+  // runs via the cron trigger in wrangler.toml (every 4 minutes by default).
+  async scheduled(env: Env): Promise<void> {
+    await ensureCacheInit(env);
+    setCloudflareRuntime(true);
+    await Promise.allSettled(
+      routeDefs.map((route) => {
+        const args = route.params.map((p) => route.defaults?.[p] ?? "");
+        return route.handler(...args);
+      }),
+    );
   },
 };

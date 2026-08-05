@@ -5,6 +5,7 @@ import { useFilteredData } from "../../shared/hooks/useFilteredData";
 import { TagBadge } from "../../shared/components/ui/tag-badge";
 import { DataTable, type DataTableColumn } from "../../shared/components/data/DataTable";
 import { RankingNameCell } from "../../shared/components/composite/RankingNameCell";
+import { RightAlignedText } from "../../shared/components/composite/RightAlignedText";
 
 import { formatDollar } from "../../shared/utils/format";
 import type { TtsModel } from "../../shared/types";
@@ -43,7 +44,7 @@ export function TtsView() {
         accessorFn: (row) => row.provider,
         hiddenMd: true,
         align: "right",
-        cell: (model) => <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap text-right">{model.provider || t("notAvailable")}</p>,
+        cell: (model) => <RightAlignedText>{model.provider || t("notAvailable")}</RightAlignedText>,
       },
       {
         id: "quality",

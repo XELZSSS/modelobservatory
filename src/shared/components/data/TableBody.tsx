@@ -13,7 +13,7 @@ interface TableBodyProps<T> {
   renderExpandedRow?: (row: T) => ReactNode;
 }
 
-export function TableBody<T>({
+function TableBodyInner<T>({
   pagedData,
   columns,
   getRowId,
@@ -35,7 +35,8 @@ export function TableBody<T>({
             rowIndex={rowIndex}
             isExpandable={isExpandable}
             isExpanded={isExpanded}
-            onToggle={() => onToggleExpand?.(isExpanded ? null : rowId)}
+            rowId={rowId}
+            onToggleExpand={onToggleExpand}
             renderExpandedRow={renderExpandedRow}
           />
         );
@@ -50,7 +51,8 @@ interface TableRowProps<T> {
   rowIndex: number;
   isExpandable: boolean;
   isExpanded: boolean;
-  onToggle: () => void;
+  rowId: string;
+  onToggleExpand?: (rowId: string | null) => void;
   renderExpandedRow?: (row: T) => ReactNode;
 }
 
@@ -60,19 +62,34 @@ function TableRow<T>({
   rowIndex,
   isExpandable,
   isExpanded,
-  onToggle,
+  rowId,
+  onToggleExpand,
   renderExpandedRow,
 }: TableRowProps<T>) {
+  const toggle = () => onToggleExpand?.(isExpanded ? null : rowId);
   return (
     <>
       <tr
+        aria-expanded={isExpandable ? isExpanded : undefined}
         className={cn(
           "border-b border-border transition-colors",
           rowIndex % 2 === 0 ? "bg-bg-card" : "bg-bg-primary",
           "hover:bg-hover",
           isExpanded && "bg-accent-light",
         )}
-        onClick={isExpandable ? onToggle : undefined}
+        onClick={isExpandable ? toggle : undefined}
+        onKeyDown={
+          isExpandable
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggle();
+                }
+              }
+            : undefined
+        }
+        role={isExpandable ? "button" : undefined}
+        tabIndex={isExpandable ? 0 : undefined}
       >
         {columns.map((col) => {
           const isHidden = col.hiddenMd;
@@ -110,3 +127,4 @@ function TableRow<T>({
 }
 
 const MemoizedTableRow = memo(TableRow) as typeof TableRow;
+export const TableBody = memo(TableBodyInner) as typeof TableBodyInner;

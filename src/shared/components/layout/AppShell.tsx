@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useCallback } from "react";
 import { useThemeStore } from "../../stores/themeStore";
 import { useTranslation } from "../../i18n/useTranslation";
 import { DesktopNav } from "./DesktopNav";
@@ -11,6 +11,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const themeMode = useThemeStore((s) => s.themeMode);
   const { t } = useTranslation();
+
+  const closeSettings = useCallback(() => setSettingsOpen(false), []);
+  const closeMore = useCallback(() => setMobileMoreOpen(false), []);
 
   useLayoutEffect(() => {
     document.documentElement.classList.toggle("dark", themeMode === "dark");
@@ -33,8 +36,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <MobileNav onMoreOpen={() => setMobileMoreOpen(true)} />
-      <SettingsSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      <MobileMoreSheet open={mobileMoreOpen} onClose={() => setMobileMoreOpen(false)} onSettingsOpen={() => setSettingsOpen(true)} />
+      <SettingsSheet open={settingsOpen} onClose={closeSettings} />
+      <MobileMoreSheet open={mobileMoreOpen} onClose={closeMore} onSettingsOpen={() => setSettingsOpen(true)} />
     </div>
   );
 }

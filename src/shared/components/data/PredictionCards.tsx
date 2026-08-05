@@ -163,7 +163,7 @@ const ProvidersTab = memo(function ProvidersTab({ items }: { items: ProviderPred
   );
 });
 
-export function PredictionsSection({ data }: { data: PredictionsPayload }) {
+export const PredictionsSection = memo(function PredictionsSection({ data }: { data: PredictionsPayload }) {
   const { t } = useTranslation();
 
   const [activePredictionTab, setActivePredictionTab] = useState("rankings");
@@ -191,4 +191,4 @@ export function PredictionsSection({ data }: { data: PredictionsPayload }) {
       </TabContainer>
     </div>
   );
-}
+});

@@ -71,8 +71,9 @@ export const routeDefs: RouteDef[] = [
     path: "/api/home-dashboard",
     params: [],
     handler: async () => {
-      const [aaIndex, orRankings, arena, opensource, tts, predictions] = await Promise.allSettled([
-        getIntelligenceIndex(),
+      // NOTE: the artificial-analysis index is intentionally NOT included here;
+      // the home view fetches it separately via /api/artificial-analysis-index.
+      const [orRankings, arena, opensource, tts, predictions] = await Promise.allSettled([
         getOpenRouterRankings(),
         getArenaLeaderboard("text-to-image"),
         getModels("trendingScore", "-1", 12),
@@ -80,7 +81,6 @@ export const routeDefs: RouteDef[] = [
         getPredictions(),
       ]);
       return {
-        aaIndex: settled(aaIndex, null),
         orRankings: settled(orRankings, null),
         arena: settled(arena, null),
         opensource: settled(opensource, null),

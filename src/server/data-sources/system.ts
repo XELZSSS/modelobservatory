@@ -1,31 +1,20 @@
 import { globalCache } from "../cache";
-import type { CloudflareInfo } from "../../shared/types";
 import { START_TTL_MS } from "../../shared/config";
 
 const START_KEY = "metrics:start";
 const START_TTL = START_TTL_MS;
 
-let cachedCf: CloudflareInfo | null = null;
+let cloudflareRuntime = false;
 const appStartTime = Date.now();
 
-export function setCloudflareInfo(cf: Record<string, unknown> | null | undefined) {
-  if (!cf) return;
-  cachedCf = {
-    colo: (cf.colo as string) ?? "",
-    city: (cf.city as string | null) ?? null,
-    country: (cf.country as string | null) ?? null,
-    continent: (cf.continent as string | null) ?? null,
-    latitude: (cf.latitude as string | null) ?? null,
-    longitude: (cf.longitude as string | null) ?? null,
-    postalCode: (cf.postalCode as string | null) ?? null,
-    timezone: (cf.timezone as string | null) ?? null,
-    isEUCountry: (cf.isEUCountry as string | null) ?? null,
-    httpProtocol: (cf.httpProtocol as string | null) ?? null,
-    tlsVersion: (cf.tlsVersion as string | null) ?? null,
-    tlsCipher: (cf.tlsCipher as string | null) ?? null,
-    asOrganization: (cf.asOrganization as string | null) ?? null,
-    asn: typeof cf.asn === "number" ? cf.asn : cf.asn != null ? Number(cf.asn) : null,
-  };
+/**
+ * Marks the runtime as Cloudflare Workers. Deliberately does NOT capture any
+ * per-request data (city, lat/long, ASN, ...): the `/api/system-stats`
+ * endpoint is public, and reflecting another visitor's geolocation back to
+ * everyone would be a privacy leak.
+ */
+export function setCloudflareRuntime(onCloudflare: boolean) {
+  cloudflareRuntime = onCloudflare;
 }
 
 export async function getSystemStats() {
@@ -36,8 +25,8 @@ export async function getSystemStats() {
   }
 
   return {
-    runtime: cachedCf ? ("cloudflare" as const) : ("standard" as const),
-    cloudflare: cachedCf,
+    runtime: cloudflareRuntime ? ("cloudflare" as const) : ("standard" as const),
+    cloudflare: null,
     uptime: Math.floor((Date.now() - startTime) / 1000),
   };
 }

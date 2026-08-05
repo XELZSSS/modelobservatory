@@ -39,8 +39,11 @@ function DataTableInner<T>({ data, columns, getRowId, pageSize = 30, hideHeader,
   const dedupedData = useMemo(() => {
     if (!getRowId) return data;
     const seen = new Set<string>();
-    return data.filter((record) => {
+    return data.filter((record, index) => {
       const key = getRowId(record);
+      // Empty ids are shared by every id-less row; fall back to the array
+      // index so rows are never silently collapsed together.
+      if (!key) return true;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;

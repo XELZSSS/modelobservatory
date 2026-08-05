@@ -13,6 +13,7 @@ import { modelId } from "../../shared/utils/modelId";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import type { CompareMetric } from "../../shared/utils/compareMetrics";
 import { approxEq } from "../../shared/utils/math";
+import { useIsMobile } from "../../shared/hooks/useIsMobile";
 import { ComparePageLayout } from "./ComparePageLayout";
 
 function computeMetricWinners(metric: CompareMetric, models: ArtificialAnalysisModel[]): Map<string, "win" | "loss"> {
@@ -76,10 +77,10 @@ const ModelMetricRow = memo(function ModelMetricRow({ model, index, metric, winn
 const CompactMetricCards = memo(function CompactMetricCards({ metrics, models }: { metrics: CompareMetric[]; models: ArtificialAnalysisModel[] }) {
   return (
     <div className="flex flex-col gap-3">
-      {metrics.map((metric, mIndex) => {
+      {metrics.map((metric) => {
         const winners = computeMetricWinners(metric, models);
         return (
-          <Card key={mIndex} accent="top">
+          <Card key={metric.label} accent="top">
             <CardContent padding="sm">
               <p className="text-xs font-semibold text-text-secondary mb-2">{metric.label}</p>
               <div className="flex flex-col gap-1.5">
@@ -111,10 +112,10 @@ const MetricTable = memo(function MetricTable({ metrics, models }: { metrics: Co
           </tr>
         </thead>
         <tbody>
-          {metrics.map((metric, mIndex) => {
+          {metrics.map((metric) => {
             const winners = computeMetricWinners(metric, models);
             return (
-              <tr key={mIndex} className="border-b border-border last:border-b-0 hover:bg-hover transition-colors">
+              <tr key={metric.label} className="border-b border-border last:border-b-0 hover:bg-hover transition-colors">
                 <td className="px-3 py-2.5 text-text-secondary">{metric.label}</td>
                 {models.map((model, index) => (
                   <td key={modelId(model) || index} className="px-3 py-2.5 text-right">
@@ -145,6 +146,7 @@ export function CompareView() {
 
 function CompareContent({ models, radarRef, radarSize }: { models: ArtificialAnalysisModel[]; radarRef: React.RefObject<HTMLDivElement | null>; radarSize: number }) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const metrics = useMemo(() => buildCompareMetrics(t), [t]);
   const radarData = useMemo(() => buildRadarData(t, models), [models, t]);
 
@@ -171,12 +173,7 @@ function CompareContent({ models, radarRef, radarSize }: { models: ArtificialAna
             </RadarChart>
           </div>
           <div className="min-w-0 w-full md:w-1/2 flex items-center">
-            <div className="md:hidden w-full">
-              <CompactMetricCards metrics={metrics.filter((m) => m.mobileKey)} models={models} />
-            </div>
-            <div className="hidden md:block w-full">
-              <MetricTable metrics={metrics} models={models} />
-            </div>
+            {isMobile ? <CompactMetricCards metrics={metrics.filter((m) => m.mobileKey)} models={models} /> : <MetricTable metrics={metrics} models={models} />}
           </div>
         </div>
       </CardContent>

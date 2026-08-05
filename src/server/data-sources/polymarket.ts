@@ -15,7 +15,8 @@ const TOP_N = 6;
 // by tag_id (tag_slug silently falls back to unrelated default markets).
 const TAGS_TTL_MS = 24 * 60 * 60 * 1_000;
 const TAGS_PAGE_LIMIT = 100;
-const TAGS_MAX_OFFSET = 3_000;
+const TAGS_MAX_PAGES = 5;
+const TAGS_CONCURRENCY = 3;
 const MAX_AI_TAGS = 15;
 
 const AI_TAG_PATTERN = /(^|[^a-z0-9])(ai|gpt|llm)([^a-z0-9]|$)|openai|chatgpt|claude|gemini|grok|deepseek|anthropic|qwen|mistral|llama|alibaba|nvidia|xiaomi|artificial|machine|agent|big-tech|tech-release|\btech\b|\bipo\b|\bxai\b|\bgoogle\b|\bamazon\b|\bmeta\b/i;
@@ -35,26 +36,39 @@ interface Tag {
 async function discoverAiTags(): Promise<Tag[]> {
   return withCacheTtl("polymarket:ai-tags", TAGS_TTL_MS, async () => {
     const found: Tag[] = [];
-    for (let offset = 0; offset <= TAGS_MAX_OFFSET; offset += TAGS_PAGE_LIMIT) {
-      let page: Tag[] | null = null;
-      try {
-        page = await fetchJSON<Tag[]>(`${API}/tags?limit=${TAGS_PAGE_LIMIT}&offset=${offset}`);
-      } catch {
-        break;
-      }
-      if (!Array.isArray(page) || page.length === 0) break;
-      for (const t of page) {
-        if (typeof t.id === "string" && typeof t.slug === "string" && AI_TAG_PATTERN.test(t.slug.toLowerCase())) {
-          found.push({ id: t.id, slug: t.slug });
+    let pageNumber = 0;
+    let failed = false;
+
+    while (pageNumber < TAGS_MAX_PAGES && found.length < MAX_AI_TAGS) {
+      // Fetch a small batch of pages concurrently instead of walking the
+      // pagination serially (which could take 30+ sequential round-trips).
+      const batchOffsets = Array.from({ length: TAGS_CONCURRENCY }, (_, i) => (pageNumber + i) * TAGS_PAGE_LIMIT);
+      const pageResults = await Promise.allSettled(
+        batchOffsets.map((offset) => fetchJSON<Tag[]>(`${API}/tags?limit=${TAGS_PAGE_LIMIT}&offset=${offset}`)),
+      );
+      let batchProgress = false;
+      for (const r of pageResults) {
+        if (r.status !== "fulfilled" || !Array.isArray(r.value) || r.value.length === 0) {
+          failed = true;
+          continue;
+        }
+        batchProgress = true;
+        for (const t of r.value) {
+          if (typeof t.id === "string" && typeof t.slug === "string" && AI_TAG_PATTERN.test(t.slug.toLowerCase())) {
+            found.push({ id: t.id, slug: t.slug });
+          }
         }
       }
-      if (found.length >= MAX_AI_TAGS) break;
+      if (!batchProgress) break;
+      pageNumber += TAGS_CONCURRENCY;
     }
+
     const unique = deduplicateBy(found, (t) => t.id);
-    if (unique.length === 0) {
-      // Discovery failed (API down/restructured): fall back to known-good ids,
-      // with a short TTL so we retry discovery soon.
-      console.warn("[polymarket] tag discovery returned nothing, using fallback tags");
+    if (unique.length === 0 || failed) {
+      // Discovery failed (API down/restructured or a page errored): a partial
+      // tag list must NOT be cached for 24h — fall back to known-good ids with
+      // a short TTL so we retry discovery soon.
+      console.warn(`[polymarket] tag discovery ${unique.length === 0 ? "returned nothing" : "incomplete"}, using fallback tags`);
       return { data: FALLBACK_TAGS, ttl: 60_000 };
     }
     return { data: unique, ttl: TAGS_TTL_MS };

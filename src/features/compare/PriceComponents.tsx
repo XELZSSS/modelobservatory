@@ -9,6 +9,7 @@ import { cn } from "../../shared/utils/cn";
 import type { TFunction } from "../../shared/i18n";
 import { useTranslation } from "../../shared/i18n/useTranslation";
 import { PRICING_BLENDS } from "../../shared/config";
+import { useIsMobile } from "../../shared/hooks/useIsMobile";
 
 interface PriceRow {
   label: string;
@@ -134,11 +135,11 @@ export const PriceTable = memo(function PriceTable({
   models: ArtificialAnalysisModel[];
   bestPrices: Map<string, number>;
 }) {
-  return (
-    <>
-      <PriceTableDesktop priceRows={priceRows} models={models} bestPrices={bestPrices} />
-      <PriceTableMobile priceRows={priceRows} models={models} bestPrices={bestPrices} />
-    </>
+  const isMobile = useIsMobile();
+  return isMobile ? (
+    <PriceTableMobile priceRows={priceRows} models={models} bestPrices={bestPrices} />
+  ) : (
+    <PriceTableDesktop priceRows={priceRows} models={models} bestPrices={bestPrices} />
   );
 });
 
@@ -238,10 +239,10 @@ export const EfficiencyTable = memo(function EfficiencyTable({
   costEfficiency: (number | null)[];
   bestEfficiency: number | null;
 }) {
-  return (
-    <>
-      <EfficiencyTableDesktop models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
-      <EfficiencyTableMobile models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
-    </>
+  const isMobile = useIsMobile();
+  return isMobile ? (
+    <EfficiencyTableMobile models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
+  ) : (
+    <EfficiencyTableDesktop models={models} costEfficiency={costEfficiency} bestEfficiency={bestEfficiency} />
   );
 });

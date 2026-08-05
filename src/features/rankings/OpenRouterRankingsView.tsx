@@ -13,6 +13,9 @@ import { buildOpenRouterColumns } from "./openRouterColumns";
 const getModelRowId = (r: OpenRouterRankEntry) => r.id;
 const getAppRowId = (r: OpenRouterAppEntry) => r.id;
 
+const renderModelExpandedRow = (item: OpenRouterRankEntry) => <ModelExpandedDetail item={item} />;
+const renderAppExpandedRow = (item: OpenRouterAppEntry) => <AppExpandedDetail item={item} />;
+
 function ModelExpandedDetail({ item }: { item: OpenRouterRankEntry }) {
   const { t, lang } = useTranslation();
   return (
@@ -51,7 +54,7 @@ function AppExpandedDetail({ item }: { item: OpenRouterAppEntry }) {
       {item.description && <p className="text-xs text-text-secondary leading-relaxed p-3 rounded-lg bg-bg-secondary">{item.description}</p>}
       <div className="flex flex-row justify-between items-center text-xs text-text-secondary">
         <span>
-          ID: <code className="font-mono bg-bg-tertiary px-1.5 py-0.5 rounded">{item.id}</code>
+          {t("apiModelId")}: <code className="font-mono bg-bg-tertiary px-1.5 py-0.5 rounded">{item.id}</code>
         </span>
         {item.url && <span className="truncate max-w-[60%]">{item.url}</span>}
       </div>
@@ -84,7 +87,7 @@ export function OpenRouterRankingsView({ data }: { data?: OpenRouterRankingsPayl
           getRowId={getModelRowId}
           expandedRowId={expandedRowId}
           onToggleExpand={setExpandedRowId}
-          renderExpandedRow={(item) => <ModelExpandedDetail item={item} />}
+          renderExpandedRow={renderModelExpandedRow}
           hideHeader
         />
       </div>
@@ -96,7 +99,7 @@ export function OpenRouterRankingsView({ data }: { data?: OpenRouterRankingsPayl
           getRowId={getAppRowId}
           expandedRowId={expandedAppRowId}
           onToggleExpand={setExpandedAppRowId}
-          renderExpandedRow={(item) => <AppExpandedDetail item={item} />}
+          renderExpandedRow={renderAppExpandedRow}
           hideHeader
         />
       </div>

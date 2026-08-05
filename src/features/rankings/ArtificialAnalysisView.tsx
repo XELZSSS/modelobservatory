@@ -22,6 +22,8 @@ import { buildBenchmarkColumns } from "./benchmarkColumns";
 
 const getRowId = (model: ArtificialAnalysisModel) => model.id;
 
+const renderAAExpandedRow = (model: ArtificialAnalysisModel) => <ModelExpandedDetail model={model} />;
+
 function useCostEstimator(filteredRankings: ArtificialAnalysisModel[]) {
   const [promptTokens, setPromptTokens] = useState("100000");
   const [completionTokens, setCompletionTokens] = useState("30000");
@@ -213,7 +215,7 @@ export function ArtificialAnalysisView({ rankings }: { rankings: ArtificialAnaly
             getRowId={modelId}
             expandedRowId={expandedRowId}
             onToggleExpand={setExpandedRowId}
-            renderExpandedRow={(model) => <ModelExpandedDetail model={model} />}
+            renderExpandedRow={renderAAExpandedRow}
             hideHeader
           />
         </>

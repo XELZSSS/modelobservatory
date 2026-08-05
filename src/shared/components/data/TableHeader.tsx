@@ -31,12 +31,27 @@ function TableHeaderInner<T>({ columns, sortState, onSort }: TableHeaderProps<T>
               style={{ width: col.width }}
               onClick={() => col.sortable && onSort(col.id)}
             >
-              <span className="inline-flex items-center gap-1">
+              <button
+                type="button"
+                className={cn("inline-flex items-center gap-1", col.sortable ? "cursor-pointer hover:text-text-primary" : "cursor-default")}
+                onClick={(e) => {
+                  if (!col.sortable) return;
+                  e.stopPropagation();
+                  onSort(col.id);
+                }}
+                onKeyDown={(e) => {
+                  if (!col.sortable) return;
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSort(col.id);
+                  }
+                }}
+                disabled={!col.sortable}
+                tabIndex={col.sortable ? 0 : -1}
+              >
                 {col.header}
-                {col.sortable && isSorted && (
-                  sortState.dir === "asc" ? <ArrowUp size={12} /> : <ArrowDown size={12} />
-                )}
-              </span>
+                {col.sortable && isSorted && (sortState.dir === "asc" ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
+              </button>
             </th>
           );
         })}

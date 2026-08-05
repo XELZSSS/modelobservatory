@@ -12,7 +12,6 @@ export async function apiFetch<T>(path: string, signal?: AbortSignal): Promise<T
   const timeout = AbortSignal.timeout(FETCH_TIMEOUT_MS);
   const merged = signal ? AbortSignal.any([signal, timeout]) : timeout;
   const res = await fetch(url, {
-    cache: "no-store",
     headers: { accept: "application/json" },
     signal: merged,
   });

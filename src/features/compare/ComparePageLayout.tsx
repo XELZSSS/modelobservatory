@@ -13,13 +13,15 @@ import type { TranslationKey } from "../../shared/i18n";
 import type { ArtificialAnalysisModel } from "../../shared/types";
 import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
 
-function useCompareModels(): ArtificialAnalysisModel[] {
+function useCompareModels(): ArtificialAnalysisModel[] | null {
   const compareIds = useCompareStore((s) => s.compareIds);
   const rankingsQ = useArtificialRankings();
   return useMemo(() => {
-    if (!rankingsQ.data) return [];
-    return compareIds.map((id) => rankingsQ.data!.find((m) => modelId(m) === id)).filter((m): m is ArtificialAnalysisModel => !!m);
-  }, [compareIds, rankingsQ.data]);
+    // null while rankings are still loading — avoids flashing the
+    // "select at least 2 models" empty state before data arrives.
+    if (rankingsQ.isPending || !rankingsQ.data) return null;
+    return compareIds.map((id) => rankingsQ.data.find((m) => modelId(m) === id)).filter((m): m is ArtificialAnalysisModel => !!m);
+  }, [compareIds, rankingsQ.data, rankingsQ.isPending]);
 }
 
 interface ComparePageLayoutProps {
@@ -36,6 +38,8 @@ export function ComparePageLayout({ backLabelKey, backTo, backState, title, chil
   const removeCompareModel = useCompareStore((s) => s.removeCompareModel);
   const clearCompare = useCompareStore((s) => s.clearCompare);
   const models = useCompareModels();
+
+  if (models === null) return null;
 
   if (models.length < 2) {
     return (

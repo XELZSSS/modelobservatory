@@ -1,4 +1,4 @@
-import { withCache } from "../cache";
+import { withCacheTtl } from "../cache";
 import { fetchJSON } from "../fetch";
 import { numOr } from "../parsers/coerce";
 import { formatSettleErrors } from "../utils";
@@ -183,8 +183,12 @@ function mapApps(rows: AppRow[]): OpenRouterAppEntry[] {
     }));
 }
 
+// A failed endpoint must not be cached for the full TTL (users would see an
+// empty section for minutes after recovery); mirror the news.ts pattern.
+const PARTIAL_FAIL_TTL_MS = 60_000;
+
 export async function getOpenRouterRankings(): Promise<OpenRouterRankingsPayload> {
-  return withCache("openrouter-rankings", DEFAULT_TTL_MS, async () => {
+  return withCacheTtl("openrouter-rankings", DEFAULT_TTL_MS, async () => {
     const [modelResult, appResult] = await Promise.allSettled([
       fetchJSON<{ data: ModelRow[] }>(`${OPENROUTER}/api/frontend/v1/rankings/models`),
       fetchJSON<{ data: AppResponse }>(`${OPENROUTER}/api/frontend/v1/rankings/apps`),
@@ -195,6 +199,10 @@ export async function getOpenRouterRankings(): Promise<OpenRouterRankingsPayload
       const reasons = formatSettleErrors([modelResult, appResult], ["models", "apps"]);
       throw new Error(`OpenRouter: all upstream requests failed${reasons ? ` (${reasons})` : ""}`);
     }
-    return { tokenUsageRankings: mapModels(modelRows), appUsageRankings: mapApps(appRows), fetchedAt: new Date().toISOString() };
+    const partialFailure = modelResult.status !== "fulfilled" || appResult.status !== "fulfilled";
+    return {
+      data: { tokenUsageRankings: mapModels(modelRows), appUsageRankings: mapApps(appRows), fetchedAt: new Date().toISOString() },
+      ttl: partialFailure ? PARTIAL_FAIL_TTL_MS : DEFAULT_TTL_MS,
+    };
   });
 }

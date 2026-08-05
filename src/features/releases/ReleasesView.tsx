@@ -12,12 +12,14 @@ import { TabContainer, type TabItem } from "../../shared/components/composite/Ta
 import type { FeedEntry, DatedModel } from "./types";
 import { useReleaseFeedEntries, useReleaseDateRows } from "./useReleaseData";
 import { PageContainer, PageHeader } from "../../shared/components/layout/PageContainer";
+import { RightAlignedText } from "../../shared/components/composite/RightAlignedText";
+import { formatDate } from "../../shared/utils/format";
 
 const getFeedSearchFields = (e: FeedEntry) => [e.name, e.id];
 const getFeedRowId = (e: FeedEntry) => e.id;
 
 function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const feedRows = useFilteredData(allEntries, getFeedSearchFields);
 
   const feedColumns = useMemo<DataTableColumn<FeedEntry>[]>(() => {
@@ -41,7 +43,7 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
             <p className="text-sm font-medium break-words overflow-wrap-anywhere">{row.name}</p>
             <div className="flex md:hidden mt-1 items-center gap-1.5">
               <span className={cn("text-xs font-semibold", getTypeMeta(row.type).color)}>{getTypeMeta(row.type).label}</span>
-              <span className="text-xs text-text-tertiary">{row.date}</span>
+              <span className="text-xs text-text-tertiary">{formatDate(row.ts, lang)}</span>
             </div>
           </div>
         ),
@@ -54,7 +56,7 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
         align: "right",
         width: 100,
         hiddenMd: true,
-        cell: (row) => <span className="text-xs">{row.date}</span>,
+        cell: (row) => <span className="text-xs">{formatDate(row.ts, lang)}</span>,
       },
       {
         id: "type",
@@ -69,13 +71,13 @@ function FeedTab({ allEntries }: { allEntries: FeedEntry[] }) {
         },
       },
     ];
-  }, [t]);
+  }, [t, lang]);
 
   return <DataTable data={feedRows} columns={feedColumns} getRowId={getFeedRowId} hideHeader />;
 }
 
 function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const releaseColumns = useMemo<DataTableColumn<DatedModel>[]>(
     () => [
@@ -88,7 +90,7 @@ function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {
         width: "24%",
         hiddenMd: true,
         cell: (row) => (
-          <span className="text-sm overflow-hidden text-ellipsis whitespace-nowrap text-right">{row.model.model_creators?.name || t("notAvailable")}</span>
+          <RightAlignedText>{row.model.model_creators?.name || t("notAvailable")}</RightAlignedText>
         ),
       },
       {
@@ -99,7 +101,7 @@ function ReleaseDatesTab({ releaseRows }: { releaseRows: DatedModel[] }) {
         align: "right",
         width: "18%",
         hiddenMd: true,
-        cell: (row) => new Date(row.time).toLocaleDateString(),
+        cell: (row) => <span className="text-sm">{formatDate(row.time, lang)}</span>,
       },
     ],
     [t],
