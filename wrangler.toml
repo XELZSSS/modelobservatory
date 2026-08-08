@@ -3,6 +3,9 @@ main = "src/server/worker.ts"
 compatibility_date = "2026-07-14"
 keep_vars = true
 
+[vars]
+CACHE_VERSION = "v3"
+
 [assets]
 directory = "dist/client"
 not_found_handling = "single-page-application"

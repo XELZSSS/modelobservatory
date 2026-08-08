@@ -1,17 +1,17 @@
 import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import { useSearchResetOnNavigate } from "../shared/hooks/useSearchResetOnNavigate";
-import { RANKING_TAB_INDEX } from "../features/rankings/constants";
+import { useSearchResetOnNavigate } from "./hooks/useSearchResetOnNavigate";
+import { RANKING_TAB_INDEX } from "./features/rankings/constants";
 
-const HomeView = lazy(() => import("../features/home/HomeView").then((m) => ({ default: m.HomeView })));
-const RankingsHubView = lazy(() => import("../features/rankings/RankingsHubView").then((m) => ({ default: m.RankingsHubView })));
-const ReleasesView = lazy(() => import("../features/releases/ReleasesView").then((m) => ({ default: m.ReleasesView })));
-const StatusView = lazy(() => import("../features/system/StatusView").then((m) => ({ default: m.StatusView })));
-const CompareView = lazy(() => import("../features/compare/CompareView").then((m) => ({ default: m.CompareView })));
-const PriceCompareView = lazy(() => import("../features/compare/PriceCompareView").then((m) => ({ default: m.PriceCompareView })));
-const NewsView = lazy(() => import("../features/news/NewsView").then((m) => ({ default: m.NewsView })));
-const ModelDetailView = lazy(() => import("../features/models/ModelDetailView").then((m) => ({ default: m.ModelDetailView })));
-const NotFound = lazy(() => import("../features/system/NotFound").then((m) => ({ default: m.NotFound })));
+const HomeView = lazy(() => import("./features/home/HomeView").then((m) => ({ default: m.HomeView })));
+const RankingsHubView = lazy(() => import("./features/rankings/RankingsHubView").then((m) => ({ default: m.RankingsHubView })));
+const ReleasesView = lazy(() => import("./features/releases/ReleasesView").then((m) => ({ default: m.ReleasesView })));
+const StatusView = lazy(() => import("./features/system/StatusView").then((m) => ({ default: m.StatusView })));
+const CompareView = lazy(() => import("./features/compare/CompareView").then((m) => ({ default: m.CompareView })));
+const PriceCompareView = lazy(() => import("./features/compare/PriceCompareView").then((m) => ({ default: m.PriceCompareView })));
+const NewsView = lazy(() => import("./features/news/NewsView").then((m) => ({ default: m.NewsView })));
+const ModelDetailView = lazy(() => import("./features/models/ModelDetailView").then((m) => ({ default: m.ModelDetailView })));
+const NotFound = lazy(() => import("./features/system/NotFound").then((m) => ({ default: m.NotFound })));
 
 export function AppRoutes() {
   useSearchResetOnNavigate();

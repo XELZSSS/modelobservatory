@@ -1,84 +1,74 @@
-import type { RouteDef } from "../schema";
-import { getLeaderboard as getArenaLeaderboard } from "../data-sources/arena";
-import { getIntelligenceIndex } from "../data-sources/artificial";
-import { getModels, getReleases } from "../data-sources/huggingface";
-import { getNews } from "../data-sources/news";
-import { getOpenRouterRankings } from "../data-sources/openrouter";
-import { getPredictions } from "../data-sources/polymarket";
-import { checkAllUpstreams } from "../data-sources/status";
-import { getSystemStats } from "../data-sources/system";
-import { getTtsLeaderboard } from "../data-sources/tts";
-import { settled } from "../utils";
+import type { RouteDef } from "./schema";
+import type { AppContext } from "../context";
+import { getArenaLeaderboard } from "../sources/arena";
+import { getIntelligenceIndex } from "../sources/artificial";
+import { getModels, getReleases } from "../sources/huggingface";
+import { getNews } from "../sources/news";
+import { getOpenRouterRankings } from "../sources/openrouter";
+import { getPredictions } from "../sources/polymarket";
+import { checkAllUpstreams } from "../sources/status";
+import { getSystemStats } from "../sources/system";
+import { getTtsLeaderboard } from "../sources/tts";
+import { settled } from "../sources/types";
 
 export const routeDefs: RouteDef[] = [
   {
     path: "/api/arena-leaderboard",
-    params: ["category"],
-    defaults: { category: "text" },
-    handler: (category) => getArenaLeaderboard(category),
+    query: { category: { type: "enum", values: ["text", "text-to-image", "image-editing", "video", "audio"], default: "text" } },
+    handler: (ctx, params) => getArenaLeaderboard(ctx, { category: params.category ?? "text" }),
   },
   {
     path: "/api/artificial-analysis-index",
-    params: [],
-    handler: () => getIntelligenceIndex(),
+    handler: (ctx) => getIntelligenceIndex(ctx, {}),
   },
   {
     path: "/api/open-source-models",
-    params: ["sort", "direction", "limit"],
-    defaults: { sort: "trendingScore", direction: "-1", limit: "500" },
-    handler: (sort, direction, limit) => {
-      const n = Number(limit);
-      return getModels(sort, direction, n > 0 ? n : 200);
+    query: {
+      sort: { type: "enum", values: ["trendingScore", "downloads", "likes", "createdAt", "lastModified"], default: "trendingScore" },
+      direction: { type: "enum", values: ["-1", "1"], default: "-1" },
+      limit: { type: "number", default: "500", min: 1, max: 500 },
     },
+    handler: (ctx, params) =>
+      getModels(ctx, { sort: params.sort ?? "trendingScore", direction: params.direction ?? "-1", limit: Number(params.limit ?? 200) }),
   },
   {
     path: "/api/open-source-releases",
-    params: [],
-    handler: () => getReleases(),
+    handler: (ctx) => getReleases(ctx, {}),
   },
   {
     path: "/api/news",
-    params: ["category"],
-    defaults: { category: "industry" },
-    handler: (category) => getNews(category),
+    query: { category: { type: "enum", values: ["industry", "opensource", "hardware", "funding"], default: "industry" } },
+    handler: (ctx, params) => getNews(ctx, { category: params.category ?? "industry" }),
   },
   {
     path: "/api/openrouter-rankings",
-    params: [],
-    handler: () => getOpenRouterRankings(),
+    handler: (ctx) => getOpenRouterRankings(ctx, {}),
   },
   {
     path: "/api/predictions",
-    params: [],
-    handler: () => getPredictions(),
+    handler: (ctx) => getPredictions(ctx, {}),
   },
   {
     path: "/api/tts-leaderboard",
-    params: [],
-    handler: () => getTtsLeaderboard(),
+    handler: (ctx) => getTtsLeaderboard(ctx, {}),
   },
   {
     path: "/api/health",
-    params: [],
-    handler: () => checkAllUpstreams(),
+    handler: (ctx) => checkAllUpstreams(ctx, {}),
   },
   {
     path: "/api/system-stats",
-    params: [],
-    handler: () => getSystemStats(),
+    handler: (ctx) => getSystemStats(ctx, {}),
   },
   {
     path: "/api/home-dashboard",
-    params: [],
-    handler: async () => {
-      // NOTE: the artificial-analysis index is intentionally NOT included here;
-      // the home view fetches it separately via /api/artificial-analysis-index.
+    handler: async (ctx: AppContext) => {
       const [orRankings, arena, opensource, tts, predictions] = await Promise.allSettled([
-        getOpenRouterRankings(),
-        getArenaLeaderboard("text-to-image"),
-        getModels("trendingScore", "-1", 12),
-        getTtsLeaderboard(),
-        getPredictions(),
+        getOpenRouterRankings(ctx, {}),
+        getArenaLeaderboard(ctx, { category: "text-to-image" }),
+        getModels(ctx, { sort: "trendingScore", direction: "-1", limit: 12 }),
+        getTtsLeaderboard(ctx, {}),
+        getPredictions(ctx, {}),
       ]);
       return {
         orRankings: settled(orRankings, null),

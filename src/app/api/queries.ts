@@ -1,0 +1,78 @@
+import { useMemo } from "react";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import type {
+  ArtificialAnalysisModel,
+  HallucinationRankingEntry,
+  NewsItem,
+  OpenSourceModelEntry,
+  OpenRouterRankingsPayload,
+  HealthEntry,
+  SystemStats,
+  TtsModel,
+  HomeDashboardData,
+} from "../../shared/types";
+import { HEALTH_CHECK_INTERVAL, SYSTEM_STATS_INTERVAL, FIVE_MINUTES, THIRTY_MINUTES } from "../../shared/config";
+import { apiFetch, api } from "./client";
+import { normalizePercent } from "../../shared/utils/math";
+
+interface QueryCtx {
+  signal?: AbortSignal;
+}
+
+const fetcher =
+  <T>(path: string) =>
+  ({ signal }: QueryCtx) =>
+    apiFetch<T>(path, signal);
+
+function createApiQuery<T>(key: string[], path: string, opts?: { staleTime?: number; refetchInterval?: number | false }) {
+  const qf = fetcher<T>(path);
+  return {
+    use: (enabled = true) => useQuery<T>({ queryKey: key, queryFn: qf, ...opts, enabled }),
+    useSuspense: () => useSuspenseQuery<T>({ queryKey: key, queryFn: qf, ...opts }),
+  };
+}
+
+const qArtificial = createApiQuery<ArtificialAnalysisModel[]>(["api", "artificial-analysis-index"], api.artificialIndex, { staleTime: THIRTY_MINUTES });
+const qTts = createApiQuery<TtsModel[]>(["api", "tts-leaderboard"], api.ttsLeaderboard, { staleTime: THIRTY_MINUTES });
+const qOpenSourceReleases = createApiQuery<OpenSourceModelEntry[]>(["api", "open-source-releases"], api.openSourceReleases, { staleTime: THIRTY_MINUTES });
+const qOpenRouter = createApiQuery<OpenRouterRankingsPayload>(["api", "openrouter-rankings"], api.openRouterRankings, { staleTime: FIVE_MINUTES });
+const qHealth = createApiQuery<HealthEntry[]>(["api", "health"], api.health, { staleTime: 0, refetchInterval: HEALTH_CHECK_INTERVAL });
+const qSystemStats = createApiQuery<SystemStats>(["api", "system-stats"], api.systemStats, { staleTime: 0, refetchInterval: SYSTEM_STATS_INTERVAL });
+const qHomeDashboard = createApiQuery<HomeDashboardData>(["api", "home-dashboard"], api.homeDashboard, { staleTime: FIVE_MINUTES });
+const qOpenSourceModels = createApiQuery<OpenSourceModelEntry[]>(["api", "open-source-models"], api.openSourceModels(), { staleTime: FIVE_MINUTES });
+
+export const useArtificialRankings = qArtificial.use;
+export const useSuspenseArtificialRankings = qArtificial.useSuspense;
+export const useTts = qTts.use;
+export const useSuspenseTtsLeaderboard = qTts.useSuspense;
+export const useSuspenseOpenSourceReleases = qOpenSourceReleases.useSuspense;
+export const useSuspenseHealthStatus = qHealth.useSuspense;
+export const useSystemStats = qSystemStats.use;
+export const useHomeDashboard = qHomeDashboard.use;
+export const useSuspenseHomeDashboard = qHomeDashboard.useSuspense;
+export const useOpenRouterRankings = qOpenRouter.use;
+export const useSuspenseOpenRouterRankings = qOpenRouter.useSuspense;
+export const useOpenSourceModels = qOpenSourceModels.use;
+export const useSuspenseOpenSourceModels = qOpenSourceModels.useSuspense;
+
+export function useNewsByCategory(category: string) {
+  return createApiQuery<NewsItem[]>(["api", "news", category], api.news(category), { staleTime: THIRTY_MINUTES, refetchInterval: THIRTY_MINUTES }).use();
+}
+
+function buildHallucinationRankings(models: ArtificialAnalysisModel[]): HallucinationRankingEntry[] {
+  return models
+    .flatMap((model) => {
+      const total = model.omniscience_breakdown?.total;
+      const rate = normalizePercent(total?.hallucination_rate);
+      const acc = normalizePercent(total?.accuracy);
+      const attempt = normalizePercent(total?.attempt_rate);
+      const idx = normalizePercent(total?.omniscience);
+      if (rate == null || acc == null || attempt == null || idx == null) return [];
+      return [{ id: model.id, slug: model.slug, model: model.name, hallucinationRate: rate, accuracy: acc, attemptRate: attempt, omniscienceIndex: idx }];
+    })
+    .sort((a, b) => a.hallucinationRate - b.hallucinationRate);
+}
+
+export function useHallucinationRankings(data: ArtificialAnalysisModel[], enabled = true): HallucinationRankingEntry[] {
+  return useMemo(() => (enabled && data.length > 0 ? buildHallucinationRankings(data) : []), [data, enabled]);
+}

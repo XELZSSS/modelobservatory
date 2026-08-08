@@ -1,6 +1,27 @@
 import type { TFunction, TranslationKey } from "../i18n";
 import type { ArtificialAnalysisModel } from "../types";
-import { BENCHMARK_LABELS } from "../config/benchmarks";
+import { BENCHMARK_KEYS } from "../config";
+
+const BENCHMARK_LABELS: Record<string, TranslationKey> = {
+  aime25: "benchmarkAime25",
+  gpqa: "benchmarkGpqa",
+  hle: "benchmarkHle",
+  mmlu_pro: "benchmarkMmluPro",
+  math_500: "benchmarkMath500",
+  humaneval: "benchmarkHumaneval",
+  livecodebench: "benchmarkLivecodebench",
+  gdpval: "benchmarkGdpval",
+  scicode: "benchmarkScicode",
+  ifbench: "benchmarkIfbench",
+  lcr: "benchmarkLcr",
+  tau2: "benchmarkTau2",
+  "tau-banking": "benchmarkTauBanking",
+  "terminalbench-v2-1": "benchmarkTerminalbenchV2_1",
+  "terminalbench-hard": "benchmarkTerminalbenchHard",
+  critpt: "benchmarkCritpt",
+  "apex-agents": "benchmarkApexAgents",
+  omniscience: "benchmarkOmniscience",
+};
 
 export function safeHref(url: string | null | undefined): string | undefined {
   if (!url) return undefined;
@@ -8,7 +29,7 @@ export function safeHref(url: string | null | undefined): string | undefined {
     const parsed = new URL(url);
     if (parsed.protocol === "https:" || parsed.protocol === "http:") return url;
   } catch {
-    /* invalid URL */
+    return undefined;
   }
   return undefined;
 }
@@ -89,15 +110,12 @@ export function formatRelativeTime(isoString: string, t: TFunction): string {
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
-
   if (diffMins < 60) return t("timeMinutesAgo", { value: diffMins });
   if (diffHours < 24) return t("timeHoursAgo", { value: diffHours });
   return t("timeDaysAgo", { value: diffDays });
 }
 
-// Locale-aware date formatting that follows the app language rather than the
-// browser locale (e.g. zh-CN gives "2026/08/05" while en-US gives "08/05/2026").
-export function localeOf(lang: string): string {
+function localeOf(lang: string): string {
   return lang === "zh" ? "zh-CN" : "en-US";
 }
 
@@ -123,6 +141,15 @@ export function orNA(value: string | null | undefined, t: TFunction): string {
   return value || t("notAvailable");
 }
 
+export function benchmarkLabel(key: string, t: TFunction): string {
+  const labelKey = BENCHMARK_LABELS[key];
+  return labelKey ? t(labelKey) : key;
+}
+
+export function benchmarkKeys(): string[] {
+  return [...BENCHMARK_KEYS];
+}
+
 export const chartTooltipStyle = {
   background: "var(--bg-secondary)",
   border: "1px solid var(--border)",
@@ -130,8 +157,3 @@ export const chartTooltipStyle = {
   fontSize: "12px",
   borderRadius: "6px",
 } as const;
-
-export function benchmarkLabel(key: string, t: TFunction): string {
-  const labelKey = BENCHMARK_LABELS[key as keyof typeof BENCHMARK_LABELS];
-  return labelKey ? t(labelKey) : key;
-}

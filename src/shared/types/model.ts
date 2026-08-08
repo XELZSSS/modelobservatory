@@ -62,16 +62,12 @@ export interface ArtificialAnalysisModel {
   commercial_allowed?: boolean;
   knowledge_cutoff_date?: string | null;
   frontier_model?: boolean;
-
   coding_index?: number | null;
   agentic_index?: number | null;
-
   benchmarks?: Record<string, number | null>;
-
   pricing?: ModelPricing;
   speed?: ModelSpeed;
   token_counts?: ModelTokenCounts;
-
   input_modality_text?: boolean;
   input_modality_image?: boolean;
   input_modality_speech?: boolean;
@@ -80,7 +76,6 @@ export interface ArtificialAnalysisModel {
   output_modality_image?: boolean;
   output_modality_speech?: boolean;
   output_modality_video?: boolean;
-
   model_url?: string | null;
   hosts_url?: string | null;
   model_weights_source_url?: string | null;
@@ -89,7 +84,6 @@ export interface ArtificialAnalysisModel {
   display_order?: number | null;
   deprecated?: boolean;
   deleted?: boolean;
-
   omniscience_breakdown?: ModelOmniscienceBreakdown;
 }
 

@@ -2,6 +2,7 @@ import type { TFunction } from "../i18n";
 import type { ArtificialAnalysisModel } from "../types";
 import { formatBoolean, formatContext, formatCost, formatScore } from "./format";
 import { clampPercent, normalizePercent } from "./math";
+import { getOutputSpeed } from "./providerStats";
 
 export interface CompareMetric {
   label: string;
@@ -10,8 +11,6 @@ export interface CompareMetric {
   higherIsBetter?: boolean;
   mobileKey?: boolean;
 }
-
-import { getOutputSpeed } from "./providerStats";
 
 function scoreMetric(t: TFunction, labelKey: Parameters<TFunction>[0], getScore: (m: ArtificialAnalysisModel) => number | null | undefined, mobileKey?: boolean): CompareMetric {
   return {

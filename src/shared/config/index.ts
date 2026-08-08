@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
 } as const;
 
 const DEFAULT_BACK = "backToModelRankings" as const;
+
 export const MODEL_SOURCES = {
   aa: { labelKey: "modelRankings" as const, backTo: "/models", backLabelKey: DEFAULT_BACK },
   or: { labelKey: "openRouterRankings" as const, backTo: "/models", backLabelKey: DEFAULT_BACK },
@@ -21,20 +22,18 @@ export const MODEL_SOURCES = {
 
 export type ModelSource = keyof typeof MODEL_SOURCES;
 
-// ── upstream URLs ──────────────────────────────────────────────
 export const upstreamConfig = {
   arena: "https://arena.ai/leaderboard",
+  arenaRoot: "https://arena.ai",
   artificialAnalysis: "https://artificialanalysis.ai",
   huggingface: "https://huggingface.co/api/models",
   openrouter: "https://openrouter.ai",
   polymarket: "https://gamma-api.polymarket.com",
 } as const;
 
-// ── HTTP constants ─────────────────────────────────────────────
 export const HEALTH_TIMEOUT_MS = 15_000;
-export const USER_AGENT = "ModelObservatory/1.0 (+https://github.com/model-observatory)";
+export const USER_AGENT = "ModelObservatory/3.0 (fresh-build)";
 
-// ── Pricing blend keys ─────────────────────────────────────────
 export const PRICING_BLENDS = {
   INPUT_3_OUTPUT_1: "0_3_1",
   INPUT_7_OUTPUT_2_1: "7_2_1",
@@ -43,27 +42,22 @@ export const PRICING_BLENDS = {
   INPUT_100_OUTPUT_1_1: "100_1_1",
 } as const;
 
-// ── cache TTLs ─────────────────────────────────────────────────
 export const DEFAULT_TTL_MS = FIVE_MINUTES;
 export const NEWS_TTL_MS = THIRTY_MINUTES;
 export const HEALTH_TTL_MS = 60 * 1_000;
+export const POLYMARKET_TAGS_TTL_MS = 24 * 60 * 60 * 1_000;
 export const START_TTL_MS = 24 * 60 * 60 * 1_000;
+export const PARTIAL_FAIL_TTL_MS = 60_000;
 
-// ── API base ───────────────────────────────────────────────────
 export const apiBase = import.meta.env?.VITE_API_BASE?.replace(/\/+$/, "") ?? "";
 
-// ── Repository ──────────────────────────────────────────────────
 export const REPO_URL = "https://github.com/XELZSSS/modelobservatory";
 
-// ── RSS feed URLs ──────────────────────────────────────────────
-// Each feed source appears in exactly one category to avoid duplicate content across tabs.
 const VENTUREBEAT_AI = "https://venturebeat.com/category/ai/feed/";
 const ARS_TECHNICA = "https://feeds.arstechnica.com/arstechnica/index";
 const WIRED = "https://www.wired.com/feed/tag/ai/latest/rss";
 const TECHCRUNCH_AI = "https://techcrunch.com/category/artificial-intelligence/feed/";
 const ZDNET = "https://www.zdnet.com/topic/artificial-intelligence/rss.xml";
-
-
 const TECHCRUNCH_STARTUPS = "https://techcrunch.com/category/startups/feed/";
 const CRUNCHBASE = "https://news.crunchbase.com/feed/";
 const HF_BLOG = "https://huggingface.co/blog/feed.xml";
@@ -76,3 +70,24 @@ export const rssConfig = {
   hardware: [ZDNET],
   funding: [TECHCRUNCH_STARTUPS, CRUNCHBASE],
 } as const;
+
+export const BENCHMARK_KEYS = [
+  "aime25",
+  "gpqa",
+  "hle",
+  "mmlu_pro",
+  "math_500",
+  "humaneval",
+  "livecodebench",
+  "gdpval",
+  "scicode",
+  "ifbench",
+  "lcr",
+  "tau2",
+  "tau-banking",
+  "terminalbench-v2-1",
+  "terminalbench-hard",
+  "critpt",
+  "apex-agents",
+  "omniscience",
+] as const;

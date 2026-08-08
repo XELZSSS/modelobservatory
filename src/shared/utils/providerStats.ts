@@ -4,14 +4,8 @@ export function getOutputSpeed(model: ArtificialAnalysisModel): number | null {
   return model.speed?.median_output_speed ?? model.speed?.timescaleData?.median_output_speed ?? null;
 }
 
-interface ProviderAggregate {
-  name: string;
-  color: string;
-  models: ArtificialAnalysisModel[];
-}
-
-export function groupByProvider(models: ArtificialAnalysisModel[]): ProviderAggregate[] {
-  const providers = new Map<string, ProviderAggregate>();
+export function groupByProvider(models: ArtificialAnalysisModel[]) {
+  const providers = new Map<string, { name: string; color: string; models: ArtificialAnalysisModel[] }>();
   for (const m of models) {
     const name = m.model_creators?.name || "Unknown";
     const color = m.model_creators?.color || "#78716c";

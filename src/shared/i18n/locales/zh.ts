@@ -1,3 +1,5 @@
+import type { EnDict } from "./en";
+
 export const zh = {
   home: "首页",
   models: "模型",
@@ -104,7 +106,7 @@ export const zh = {
   uptimeMinutes: "{value}分{value2}秒",
   uptimeHours: "{value}时{value2}分",
   uptimeDays: "{value}天{value2}时",
-  aiNews: "快讯",
+  aiNews: "AI 快讯",
   catIndustry: "行业动态",
   catOpenSource: "开源与社区",
   catHardware: "算力与硬件",
@@ -122,19 +124,19 @@ export const zh = {
   unknown: "未知",
   uptime: "运行时长",
 
-  arenaAISource: "数据来源：arena.ai",
+  arenaAISource: "数据来源:arena.ai",
   votes: "票数",
 
   textToImage: "文生图排行",
   bestT2IModel: "最佳文生图",
 
-  huggingFaceSource: "数据来源：Hugging Face Hub",
-  hallucinationSource: "数据来源：Artificial Analysis",
-  artificialSource: "数据来源：Artificial Analysis",
-  openSourceDataSource: "数据来源：Hugging Face Hub",
-  openRouterSource: "数据来源：OpenRouter",
-  releaseDataSource: "数据来源：Hugging Face",
-  ttsSource: "数据来源：Artificial Analysis",
+  huggingFaceSource: "数据来源:Hugging Face Hub",
+  hallucinationSource: "数据来源:Artificial Analysis",
+  artificialSource: "数据来源:Artificial Analysis",
+  openSourceDataSource: "数据来源:Hugging Face Hub",
+  openRouterSource: "数据来源:OpenRouter",
+  releaseDataSource: "数据来源:Hugging Face",
+  ttsSource: "数据来源:Artificial Analysis",
 
   openRouterRankings: "最佳用量",
   openRouterApps: "工具用量",
@@ -146,7 +148,7 @@ export const zh = {
   catGeneral: "通用",
   catCoding: "编程/Agent",
   catReasoning: "深度推理",
-  noRankingsData: "暂无排行榜数据，请检查网络连接或稍后重试。",
+  noRankingsData: "暂无排行榜数据,请检查网络连接或稍后重试。",
 
   modelRankings: "模型排行",
   pricing: "价格",
@@ -167,7 +169,7 @@ export const zh = {
   backToPricing: "返回价格排行",
   backToOpenSourceRankings: "返回开源排行",
   predictions: "市场预测",
-  predictionsSource: "数据来源：Polymarket",
+  predictionsSource: "数据来源:Polymarket",
   modelRankingPredictions: "模型排名预测",
   releasePredictions: "发布时间预测",
   providerPredictions: "提供商预测",
@@ -180,6 +182,10 @@ export const zh = {
   modalities: "模态能力",
   inputModality: "输入",
   outputModality: "输出",
+  modalityText: "文本",
+  modalityImage: "图像",
+  modalitySpeech: "语音",
+  modalityVideo: "视频",
   benchmarkAime25: "AIME 2025",
   benchmarkGpqa: "GPQA",
   benchmarkHle: "HLE",
@@ -214,4 +220,4 @@ export const zh = {
   benchmarkTauBanking: "TAU Banking",
   healthySources: "健康数据源",
   marketPredictions: "市场预测",
-} as const;
+} as const satisfies Record<keyof EnDict, string>;

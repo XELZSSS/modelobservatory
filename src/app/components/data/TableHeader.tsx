@@ -1,0 +1,62 @@
+import { memo } from "react";
+import { cn } from "../../../shared/utils/cn";
+import { ArrowUp, ArrowDown } from "lucide-react";
+import type { DataTableColumn } from "./DataTable";
+import type { SortState } from "./useTableState";
+
+interface TableHeaderProps<T> {
+  columns: DataTableColumn<T>[];
+  sortState: SortState;
+  onSort: (colId: string) => void;
+}
+
+function TableHeaderInner<T>({ columns, sortState, onSort }: TableHeaderProps<T>) {
+  return (
+    <thead>
+      <tr className="border-b border-border bg-bg-secondary">
+        {columns.map((col) => {
+          const isSorted = sortState.col === col.id;
+          return (
+            <th
+              key={col.id}
+              aria-sort={isSorted ? (sortState.dir === "asc" ? "ascending" : "descending") : undefined}
+              className={cn(
+                "px-3 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider",
+                col.align === "right" && "text-right",
+                col.align === "center" && "text-center",
+                col.hiddenMd && "hidden md:table-cell",
+                col.sortable && "cursor-pointer hover:text-text-primary select-none",
+              )}
+              style={{ width: col.width }}
+              onClick={() => col.sortable && onSort(col.id)}
+            >
+              <button
+                type="button"
+                className={cn("inline-flex items-center gap-1", col.sortable ? "cursor-pointer hover:text-text-primary" : "cursor-default")}
+                onClick={(e) => {
+                  if (!col.sortable) return;
+                  e.stopPropagation();
+                  onSort(col.id);
+                }}
+                onKeyDown={(e) => {
+                  if (!col.sortable) return;
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSort(col.id);
+                  }
+                }}
+                disabled={!col.sortable}
+                tabIndex={col.sortable ? 0 : -1}
+              >
+                {col.header}
+                {col.sortable && isSorted && (sortState.dir === "asc" ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
+              </button>
+            </th>
+          );
+        })}
+      </tr>
+    </thead>
+  );
+}
+
+export const TableHeader = memo(TableHeaderInner) as typeof TableHeaderInner;

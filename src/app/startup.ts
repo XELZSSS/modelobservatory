@@ -9,14 +9,6 @@ function writeStorage(key: string, value: string) {
   }
 }
 
-function removeStorage(key: string) {
-  try {
-    localStorage.removeItem(key);
-  } catch {
-    /* ignore */
-  }
-}
-
 function readStorageJson<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);

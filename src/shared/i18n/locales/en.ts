@@ -180,6 +180,10 @@ export const en = {
   modalities: "Modalities",
   inputModality: "Input",
   outputModality: "Output",
+  modalityText: "Text",
+  modalityImage: "Image",
+  modalitySpeech: "Speech",
+  modalityVideo: "Video",
   benchmarkAime25: "AIME 2025",
   benchmarkGpqa: "GPQA",
   benchmarkHle: "HLE",
@@ -215,3 +219,5 @@ export const en = {
   healthySources: "Healthy Sources",
   marketPredictions: "Market Predictions",
 } as const;
+
+export type EnDict = typeof en;
